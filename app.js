@@ -252,26 +252,50 @@ async function toggleFav(id){
 function currentSearchPayload(){
   const f=filters();return {search_query:f.q.slice(0,100),category:f.category||'',city:f.city||'',listing_kind:f.kind||'',min_price:f.min===''?null:Number(f.min),max_price:f.max===''?null:Number(f.max)};
 }
+// V55: local saved searches retain all UI filters; the existing cloud table only
+// has the six basic columns above, so never silently drop advanced constraints.
+function currentSearchDetails(){
+ const f=filters();return {subcategory:f.subcategory||'',district:f.district||'',sort:f.sort||'new'};
+}
 function applySearchPayload(f){
-  $('searchInput').value=f.search_query||'';$('categoryFilter').value=f.category||'';$('cityFilter').value=f.city||'';$('typeFilter').value=f.listing_kind||'';
-  $('minPrice').value=f.min_price??'';$('maxPrice').value=f.max_price??'';marketCountry='SA';storeGlobalPreview();onlyFavorites=false;render();scheduleRemoteSearch();closeModal();document.querySelector('.market-section').scrollIntoView({behavior:'smooth'});
+ $('searchInput').value=f.search_query||'';
+ $('categoryFilter').value=f.category||'';updateCategoryFilters();
+ const sub=$('subcategoryFilter');if(sub)sub.value=f.subcategory||'';
+ $('cityFilter').value=f.city||'';
+ $('cityFilter').dispatchEvent(new Event('change',{bubbles:true}));
+ $('districtFilter').value=f.district||'';
+ $('typeFilter').value=f.listing_kind||'';
+ $('minPrice').value=f.min_price??'';$('maxPrice').value=f.max_price??'';
+ const sort=$('sortFilter');sort.value=f.sort||'new';if(!sort.value)sort.value='new';
+ marketCountry='SA';storeGlobalPreview();onlyFavorites=false;
+ render();scheduleRemoteSearch();closeModal();document.querySelector('.market-section').scrollIntoView({behavior:'smooth'});
 }
 async function saveCurrentSearch(){
-  const q=currentSearchPayload();if(!q.search_query&&!q.category&&!q.city&&!q.listing_kind&&q.min_price===null&&q.max_price===null)return notify('اختر كلمة بحث أو قسمًا أو مدينة أو سعرًا أولًا');
-  if(q.min_price!==null&&q.max_price!==null&&q.min_price>q.max_price)return notify('أقل سعر أكبر من أعلى سعر');
-  if(cloudEnabled()){
-    if(!state.account)return openCloudLogin();
-    try{await window.sooqakCloud.addSavedSearch(q);notify('حُفظ بحثك في حسابك، بدون إرسال إشعارات تلقائية')}catch(e){cloudError(e)}
-  }else{
-    const rows=Array.isArray(state.savedSearch)?state.savedSearch:state.savedSearch?[state.savedSearch]:[];
-    rows.unshift({...q,id:'demo-search-'+Date.now()});state.savedSearch=rows.slice(0,20);save();notify('حُفظ البحث على هذا الجهاز فقط');
-  }
+ const q=currentSearchPayload(),extra=currentSearchDetails();
+ const hasBasic=Boolean(q.search_query||q.category||q.city||q.listing_kind||q.min_price!==null||q.max_price!==null);
+ if(!hasBasic&&!extra.subcategory&&!extra.district&&extra.sort==='new')
+  return notify('اختر كلمة بحث أو قسمًا أو مدينة أو حيًا أو سعرًا أولًا');
+ if(q.min_price!==null&&q.max_price!==null&&q.min_price>q.max_price)
+  return notify('أقل سعر أكبر من أعلى سعر');
+ if(cloudEnabled()){
+  if(!state.account)return openCloudLogin();
+  if(extra.subcategory||extra.district||extra.sort!=='new')
+   return notify('حفظ الحي أو القسم الفرعي أو الترتيب في الحساب يحتاج تحديثًا لقاعدة البيانات؛ عدّل هذه الفلاتر أولًا.');
+  try{await window.sooqakCloud.addSavedSearch(q);notify('حُفظ بحثك في حسابك، بدون إرسال إشعارات تلقائية')}catch(e){cloudError(e)}
+ }else{
+  const rows=Array.isArray(state.savedSearch)?state.savedSearch:state.savedSearch?[state.savedSearch]:[];
+  const payload={...q,...extra};
+  const same=x=>Object.keys(payload).every(key=>(x[key]??(key==='sort'?'new':''))===(payload[key]??''));
+  if(rows.some(same))return notify('هذا البحث محفوظ مسبقًا');
+  rows.unshift({...payload,id:'demo-search-'+Date.now()});
+  state.savedSearch=rows.slice(0,20);save();notify('حُفظ البحث بكل فلاتره على هذا الجهاز فقط');
+ }
 }
 async function openSavedSearches(){
   if(cloudEnabled()&&!state.account)return openCloudLogin();
   let rows=Array.isArray(state.savedSearch)?state.savedSearch:state.savedSearch?[state.savedSearch]:[];
   if(cloudEnabled())try{rows=await window.sooqakCloud.listSavedSearches()}catch(e){return cloudError(e)}
-  const rowHtml=rows.map(x=>{const label=[x.search_query||'',x.category||'',x.city||'',x.min_price!=null?'من '+x.min_price+' ر.س':'',x.max_price!=null?'إلى '+x.max_price+' ر.س':''].filter(Boolean).join(' · ');
+  const rowHtml=rows.map(x=>{const label=[x.search_query||'',x.category||'',x.subcategory||'',x.city||'',x.district||'',x.min_price!=null?'من '+x.min_price+' ر.س':'',x.max_price!=null?'إلى '+x.max_price+' ر.س':'',x.sort&&x.sort!=='new'?({old:'الأقدم',cheap:'الأرخص',expensive:'الأغلى'}[x.sort]||''):''].filter(Boolean).join(' · ');
     return '<div class="saved-search-row"><div><b>'+esc(label||'بحث محفوظ')+'</b><small>يمكنك تطبيق هذا البحث الآن؛ التنبيهات الآلية لم تُفعّل بعد.</small></div><div class="saved-actions"><button class="btn btn-outline btn-mini" data-search-apply="'+esc(x.id)+'">تطبيق</button><button class="btn btn-subtle btn-mini" data-search-delete="'+esc(x.id)+'">حذف</button></div></div>';}).join('');
   showModal('بحوثي المحفوظة',rows.length?rowHtml:'<div class="info">ما عندك بحوث محفوظة حتى الآن. ابحث عن سلعة ثم اضغط «حفظ البحث».</div>');
   document.querySelectorAll('[data-search-apply]').forEach(b=>b.onclick=()=>{const row=rows.find(x=>String(x.id)===b.dataset.searchApply);if(row)applySearchPayload(row)});
