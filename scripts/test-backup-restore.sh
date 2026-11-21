@@ -27,3 +27,6 @@ query="SELECT l.title || '/' || s.final_price FROM listings l JOIN sales s ON l.
 echo 'Verified restored fixture rows, amount and foreign key.'
 createdb policy_fixture
 psql -X -v ON_ERROR_STOP=1 -d policy_fixture -f tests/sql/store-and-decision-fixture.sql
+createdb owner_approval_fixture
+psql -X -v ON_ERROR_STOP=1 -d owner_approval_fixture -f tests/sql/b07-owner-approval-fixture.sql
+echo 'Verified B07 owner approval fixture: no public grants, owner-only decisions, unknown costs blocked.'
