@@ -154,3 +154,27 @@ body.sooqak-search-active .market-section{scroll-margin-top:90px}
 .sooqak-active-filter:hover,.sooqak-active-filter:focus-visible{background:#e0eaf4;outline:2px solid #a17220;outline-offset:2px}
 .sooqak-active-filter span{font-weight:800;margin-inline-start:6px}
 .sooqak-clear-filters{border:0;background:transparent;color:#65440c;text-decoration:underline;cursor:pointer;font:inherit;font-size:12px;padding:8px}
+
+
+/* V53 — accessible suggestions under the existing search field. */
+.header-search{position:relative}
+.header-search .sooqak-search-hints{
+ position:absolute;top:calc(100% + 7px);inset-inline:0;z-index:100;
+ max-height:min(290px,50vh);overflow-y:auto;overscroll-behavior:contain;
+ background:#fff;border:1px solid #dce5ed;border-radius:12px;
+ box-shadow:0 12px 32px rgba(18,44,75,.18);padding:5px;
+}
+.header-search .sooqak-search-hint{
+ width:100%;display:flex;align-items:center;justify-content:space-between;
+ gap:12px;text-align:start;min-height:42px;padding:9px 12px;
+ background:#fff;border:0;border-radius:9px;color:var(--navy);
+}
+.header-search .sooqak-search-hint small{flex:none;color:#677989;font-size:11px}
+.header-search .sooqak-search-hint span{font-size:13px;font-weight:700;color:inherit;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.header-search .sooqak-search-hint:hover,.header-search .sooqak-search-hint.is-active,
+.header-search .sooqak-search-hint:focus-visible{background:#f4f7fc;outline:2px solid transparent}
+.header-search .sooqak-search-hint.is-active{outline-color:var(--gold)}
+@media(max-width:750px){
+ .header-search .sooqak-search-hints{min-width:220px;max-height:45vh}
+ .header-search .sooqak-search-hint{gap:6px;padding:8px}
+}
