@@ -340,8 +340,21 @@ function updateActiveFilterTags(f){
  node.innerHTML=entries.length?entries.map(([id,label])=>'<button type="button" class="sooqak-active-filter" data-remove-filter="'+id+'" aria-label="إزالة فلتر '+esc(label)+'">'+esc(label)+' <span aria-hidden="true">×</span></button>').join('')+'<button type="button" class="sooqak-clear-filters" data-remove-filter="clear">مسح الكل</button>':'';
 }
 function updateFilterBadge(){const f=filters(),num=Number(!!f.q)+Number(!!f.category)+Number(!!f.subcategory)+Number(!!f.city)+Number(!!f.district)+Number(!!f.kind)+Number(f.min!=='')+Number(f.max!=='')+Number(f.sort!=='new');const el=$('activeFilterCount');if(el){el.hidden=num===0;el.textContent=String(num)}}
-function sellerListings(ad){return allAds().filter(x=>{if(x.demo||ad.demo)return Boolean(ad.demo&&x.demo&&x.seller===ad.seller);return cloudEnabled()?Boolean(ad.accountId&&x.accountId===ad.accountId):Boolean(ad.owner&&x.owner===ad.owner&&x.role===ad.role)}).filter(active)}
-function profileBanner(name,city,about,number,isDemo){const initial=(String(name||'س').trim()[0]||'س').toUpperCase();return `<div class="seller-public-head"><div class="seller-avatar" aria-hidden="true">${esc(initial)}</div><div><h3>${esc(name||'بائع سوقك')}</h3><p>${city?'📍 '+esc(city)+' · ':''}${isDemo?'مثال تجريبي · ':''}${number} إعلان متاح</p></div></div>${about?`<p class="seller-bio">${esc(about)}</p>`:'<p class="seller-bio muted">لم يضف البائع نبذة بعد.</p>'}`;}
+function sellerListings(ad){
+ const rows=allAds().filter(x=>{
+  if(x.demo||ad.demo)return Boolean(ad.demo&&x.demo&&x.seller===ad.seller);
+  return cloudEnabled()?Boolean(ad.accountId&&x.accountId===ad.accountId):Boolean(ad.owner&&x.owner===ad.owner&&x.role===ad.role);
+ }).filter(active);
+ // V56: opening a seller profile from a shared ad link must include that
+ // public, active ad even when it was not in the current paginated feed.
+ if(ad.id&&!rows.some(x=>String(x.id)===String(ad.id))&&active(ad))rows.unshift(ad);
+ return rows;
+}
+function profileBanner(name,city,about,number,isDemo,isPartial=false){
+ const initial=(String(name||'س').trim()[0]||'س').toUpperCase();
+ const countLabel=isPartial?'إعلانات ظاهرة من النتائج الحالية: '+number:number+' إعلان متاح';
+ return `<div class="seller-public-head"><div class="seller-avatar" aria-hidden="true">${esc(initial)}</div><div><h3>${esc(name||'بائع سوقك')}</h3><p>${city?'📍 '+esc(city)+' · ':''}${isDemo?'مثال تجريبي · ':''}${esc(countLabel)}</p></div></div>${about?`<p class="seller-bio">${esc(about)}</p>`:'<p class="seller-bio muted">لم يضف البائع نبذة بعد.</p>'}<p class="seller-privacy-note">ملف البائع العام لا يعني أن سوقك تحقق من هويته. لا ترسل بيانات حساسة أو مبالغ قبل التحقق من الطرف الآخر.</p>`;
+}
 async function openSellerProfile(adId){const ad=byId(adId);if(!ad)return;let info=null;if(!ad.demo){if(cloudEnabled()&&ad.accountId){try{info=await window.sooqakCloud.getPublicSellerProfile(ad.accountId)}catch(err){return cloudError(err)}}else if(mine(ad)){info=state.sellerProfiles?.[sellerProfileKey()]||null}}const own=mine(ad);drawSellerProfile(ad,info,own);}
 function sellerContactPanel(ad, own=false, compact=false){
  if(ad.demo)return '<div class="seller-contact-panel"><h4>التواصل مع البائع</h4><div class="contact-options"><button class="btn btn-gold" type="button" disabled>✉ راسل البائع (تجريبي)</button><button class="btn btn-outline" type="button" disabled>🟢 واتساب (غير متاح)</button><button class="btn btn-outline" type="button" disabled>📞 اتصال (غير متاح)</button></div><p class="seller-contact-small">هذا بائع نموذجي لعرض التصميم فقط. لا يوجد رقم أو محادثة فعلية.</p></div>';
@@ -366,8 +379,12 @@ function sellerPhoneButtons(ad){
 }
 
 function drawSellerProfile(ad,info,own){
- const rows=sellerListings(ad),name=info?.display_name||ad.seller||'بائع سوقك';
- let html=profileBanner(name,info?.city||ad.city,info?.about||'',rows.length,!!ad.demo);
+ const rows=sellerListings(ad);
+ // Preserve the current listing identity; a profile marked not visible must
+ // not leak its optional name, biography or city into other users' views.
+ const publicInfo=!own&&info?.is_visible===false?null:info;
+ const name=publicInfo?.display_name||ad.seller||'بائع سوقك';
+ let html=profileBanner(name,publicInfo?.city||ad.city,publicInfo?.about||'',rows.length,!!ad.demo,cloudEnabled());
  if(own)html+='<div class="profile-owner-actions"><button class="btn btn-gold" data-act="editpublic">تعديل البروفايل</button><button class="btn btn-outline" data-act="myads">إعلاناتي</button></div>';
  if(rows.length)html+=sellerContactPanel(rows[0],own);
  else html+='<div class="seller-contact-panel"><h4>التواصل مع البائع</h4><button class="btn btn-gold" type="button" disabled>✉ راسل البائع — يظهر مع إعلان نشط</button><p class="muted">لا توجد إعلانات نشطة لهذا الحساب حاليًا. أضف إعلانًا ليتاح التواصل عبره.</p></div>';
@@ -380,9 +397,18 @@ async function openMySellerProfile(){if(!state.account)return openLogin();let in
  }else{info=state.sellerProfiles?.[sellerProfileKey()]||null;ad=ad||{owner:state.account.email,role:state.role,seller:state.account.name,city:'',demo:false}}
  drawSellerProfile(ad,info,true);
 }
+function sooqakHasContactInPublicBio(value){
+ const s=String(value||'');
+ // Block email, published WhatsApp links and Saudi mobile-number patterns in
+ // public biography fields. Phone sharing has explicit per-listing controls.
+ return /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i.test(s)||
+   /(?:wa\.me\/|api\.whatsapp\.com\/)/i.test(s)||
+   /(?:^|[^\d])(?:\+?966|00966)[\s-]*5(?:[\s-]*\d){8}(?!\d)/.test(s)||
+   /(?:^|[^\d])05(?:[\s-]*\d){8}(?!\d)/.test(s);
+}
 async function editSellerProfile(){if(!state.account)return openLogin();let info=null;if(cloudEnabled()){try{const a=await window.sooqakCloud.ensureAccount(state.role==='متجر'?'business':'personal',state.account.name);info=await window.sooqakCloud.getPublicSellerProfile(a.id)}catch(err){return cloudError(err)}}else info=state.sellerProfiles?.[sellerProfileKey()]||null;
  showModal('تعديل ملف البائع العام',`<div class="seller-privacy">هذه المعلومات ستظهر للمشترين عند فتح ملفك العام. لا تكتب رقم جوالك أو بريدك الإلكتروني في النبذة؛ التواصل داخل سوقك.</div><form id="sellerProfileForm" class="form-grid"><label class="wide">اسم العرض للبائع<input name="display_name" required minlength="2" maxlength="60" value="${esc(info?.display_name||state.account.name)}" placeholder="اسم البائع أو المتجر" /></label><label class="wide">المدينة (اختياري)<input name="city" maxlength="70" value="${esc(info?.city||'')}" placeholder="مثال: الجبيل" /></label><label class="wide">نبذة مختصرة عنك<textarea name="about" maxlength="350" rows="4" placeholder="وش تبيع؟ وش يميزك؟">${esc(info?.about||'')}</textarea></label><div class="form-actions"><button class="btn btn-gold" type="submit">حفظ البروفايل العام</button></div></form>`);
- $('sellerProfileForm').onsubmit=async ev=>{ev.preventDefault();const d=new FormData(ev.currentTarget),name=String(d.get('display_name')||'').trim(),city=String(d.get('city')||'').trim(),about=String(d.get('about')||'').trim();if(name.length<2||name.length>60||city.length>70||about.length>350)return notify('تحقق من طول الاسم والنبذة');const item={display_name:name,city,about,is_visible:true};try{
+ $('sellerProfileForm').onsubmit=async ev=>{ev.preventDefault();const d=new FormData(ev.currentTarget),name=String(d.get('display_name')||'').trim(),city=String(d.get('city')||'').trim(),about=String(d.get('about')||'').trim();if(name.length<2||name.length>60||city.length>70||about.length>350)return notify('تحقق من طول الاسم والنبذة');if(sooqakHasContactInPublicBio(name)||sooqakHasContactInPublicBio(about))return notify('لا تضع رقم الجوال أو البريد في اسم العرض أو النبذة العامة؛ استخدم إعدادات التواصل داخل الإعلان');const item={display_name:name,city,about,is_visible:true};try{
  if(cloudEnabled())await window.sooqakCloud.savePublicSellerProfile(state.role==='متجر'?'business':'personal',item);
  else{const key=sellerProfileKey();state.sellerProfiles=state.sellerProfiles||{};state.sellerProfiles[key]=item;const email=state.account.email;state.ads.forEach(a=>{if(a.owner===email&&a.role===state.role)a.seller=name});state.account.name=name;save();render()}
  notify('تم حفظ ملف البائع'+(cloudEnabled()?' في قاعدة البيانات':' على هذا الجهاز فقط'));await openMySellerProfile();
