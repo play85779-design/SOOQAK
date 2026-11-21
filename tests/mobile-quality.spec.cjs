@@ -20,10 +20,10 @@ for(const path of ['/services.html','/service-detail.html','/pricing.html']){
 }
 test('login modal closes on Escape and returns keyboard focus',async({page})=>{
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
- await page.locator('#signupButton').focus();
- await page.locator('#signupButton').press('Enter');
+ await page.locator('#postButton').focus();
+ await page.locator('#postButton').press('Enter');
  await expect(page.locator('#cloudLoginForm')).toBeVisible();
  await page.keyboard.press('Escape');
  await expect(page.locator('#modalBackdrop')).toBeHidden();
- await expect(page.locator('#signupButton')).toBeFocused();
+ await expect(page.locator('#postButton')).toBeFocused();
 });
