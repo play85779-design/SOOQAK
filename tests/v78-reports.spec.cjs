@@ -26,3 +26,18 @@ test('V78 delayed open reports cannot replace closed reports or survive sign-out
  await expect(page.locator('#adminTools')).toBeHidden();
  await expect(page.locator('#reports article')).toHaveCount(0);
 });
+
+test('V77 closing the marketplace dashboard invalidates pending private report data',async({page})=>{
+ await page.route('**/cloud.js',r=>r.fulfill({contentType:'text/javascript',body:''}));
+ await page.goto('/index.html');
+ await page.evaluate(async()=>{
+  window.SOOQAK_CLOUD_ENABLED=true;state.account={id:'moderator'};
+  let complete;
+  window.sooqakCloud={getAdminDashboard:()=>new Promise(resolve=>complete=resolve)};
+  const pending=openCloudAdminDashboard();
+  closeModal();
+  complete({reports:[{id:'private',details:'محتوى خاص'}]});
+  await pending;
+ });
+ await expect(page.locator('#modalContent')).toBeEmpty();
+});
