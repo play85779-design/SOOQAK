@@ -40,7 +40,7 @@ test('05 search and reset work without external accounts', async ({ page }) => {
   await page.goto(root, {waitUntil:'domcontentloaded'});
   await page.locator('#searchInput').fill('sooqak-never-match-098732');
   await expect(page.locator('#emptyState')).toBeVisible();
-  await page.locator('#resetFilters').click();
+  await page.locator('#emptyReset').click();
   await expect(page.locator('#searchInput')).toHaveValue('');
 });
 
