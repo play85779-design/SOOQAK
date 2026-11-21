@@ -411,6 +411,13 @@ if(!currentUser)throw new Error('يجب تسجيل الدخول لرفع الص�
       markSold:(id,price)=>runRpc('sooqak_mark_sold',{p_listing:id,p_price:price}),
       reserve:(id,hours)=>runRpc('sooqak_reserve',{p_listing:id,p_hours:hours}),
       bump:id=>runRpc('sooqak_bump',{p_listing:id}),
+      resetPasswordEmail:async email=>{
+        const normalized=String(email||'').trim().toLowerCase();
+        if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)||normalized.length>254)throw new Error('البريد الإلكتروني غير صالح');
+        const r=await supabase.auth.resetPasswordForEmail(normalized,{redirectTo:sooqakAuthReturnURL()});
+        errorIfAny(r);
+        return true;
+      },
       signInEmail:async (email,{createAccount=false,displayName=''}={})=>{
         const options={emailRedirectTo:sooqakAuthReturnURL(),shouldCreateUser:Boolean(createAccount)};
         if(createAccount&&displayName)options.data={full_name:displayName.slice(0,60)};
@@ -443,7 +450,12 @@ if(!currentUser)throw new Error('يجب تسجيل الدخول لرفع الص�
       signOut:async()=>{errorIfAny(await supabase.auth.signOut());currentUser=null;await refreshUser();}
     });
     window.dispatchEvent(new Event('sooqak:cloud-ready'));
-    supabase.auth.onAuthStateChange(()=>{setTimeout(()=>refreshUser().catch(err=>{
+    supabase.auth.onAuthStateChange(event=>{
+      if(event==='PASSWORD_RECOVERY'){
+        window.sooqakPasswordRecoveryPending=true;
+        window.dispatchEvent(new Event('sooqak:password-recovery'));
+      }
+      setTimeout(()=>refreshUser().catch(err=>{
       window.dispatchEvent(new CustomEvent('sooqak:cloud-error',{detail:{message:err.message}}));
     }),0)});
     await refreshUser();

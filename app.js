@@ -155,7 +155,7 @@ function sooqakTrapFocus(e){
 }
 function sooqakViewRoadmap(){window.open('./roadmap.html','_blank','noopener,noreferrer');}
 
-function initialize(){setupFilterDrawer();const c=$('categoryCards');c.innerHTML=categories.map(([name,icon])=>`<button class="category-card" data-category="${esc(name)}"><span class="cat-icon">${icon}</span>${esc(name)}</button>`).join('');$('categoryFilter').innerHTML='<option value="">جميع الأقسام</option>'+categories.map(([c])=>`<option>${esc(c)}</option>`).join('');$('searchButton').onclick=()=>{onlyFavorites=false;render();document.querySelector('.market-section').scrollIntoView({behavior:'smooth'})};$('searchInput').oninput=()=>{render();scheduleRemoteSearch()};['categoryFilter','cityFilter','districtFilter','typeFilter','sortFilter','minPrice','maxPrice'].forEach(id=>$(id).addEventListener('input',()=>{onlyFavorites=false;render();scheduleRemoteSearch()}));$('resetFilters').onclick=$('emptyReset').onclick=reset;$('showAllCats').onclick=()=>{selectedCat='';$('categoryFilter').value='';render();scheduleRemoteSearch()};$('homeLink').onclick=e=>{e.preventDefault();reset();window.scrollTo({top:0,behavior:'smooth'})};$('favButton').onclick=showFavorites;$('chatButton').onclick=openChats;$('profileButton').onclick=openProfile;$('signupButton').onclick=()=>openCloudLogin('signup');$('loginButton').onclick=()=>openCloudLogin('login');$('postButton').onclick=openPosting;$('heroPost').onclick=openPosting;$('aboutButton').onclick=about;$('saveSearchButton').onclick=saveCurrentSearch;$('savedSearchesButton').onclick=openSavedSearches;$('modalClose').onclick=closeModal;$('modalBackdrop').onclick=e=>{if(e.target.id==='modalBackdrop')closeModal()};document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('filterDrawer')?.classList.contains('is-open'))closeFilterDrawer();else closeModal();}if(e.key==='Enter'&&e.target.dataset.open)openAd(e.target.dataset.open)});document.addEventListener('click',handleClick);document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{state.view=b.dataset.view;save();render()});document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>mobileNav(b.dataset.nav));setupGlobalPreview();render();refreshAuthEntry();openListingFromLink();window.addEventListener('hashchange',openListingFromLink);document.addEventListener('keydown',sooqakTrapFocus);if(cloudEnabled()){window.addEventListener('sooqak:cloud-ready',onCloudReady);window.addEventListener('sooqak:auth',onCloudAuth);window.addEventListener('sooqak:cloud-error',e=>{sooqakAuthResolved=true;refreshAuthEntry();notify(e.detail.message);});if(window.sooqakCloud)onCloudReady();}if(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'){if('serviceWorker'in navigator)Promise.resolve()}}
+function initialize(){setupFilterDrawer();const c=$('categoryCards');c.innerHTML=categories.map(([name,icon])=>`<button class="category-card" data-category="${esc(name)}"><span class="cat-icon">${icon}</span>${esc(name)}</button>`).join('');$('categoryFilter').innerHTML='<option value="">جميع الأقسام</option>'+categories.map(([c])=>`<option>${esc(c)}</option>`).join('');$('searchButton').onclick=()=>{onlyFavorites=false;render();document.querySelector('.market-section').scrollIntoView({behavior:'smooth'})};$('searchInput').oninput=()=>{render();scheduleRemoteSearch()};['categoryFilter','cityFilter','districtFilter','typeFilter','sortFilter','minPrice','maxPrice'].forEach(id=>$(id).addEventListener('input',()=>{onlyFavorites=false;render();scheduleRemoteSearch()}));$('resetFilters').onclick=$('emptyReset').onclick=reset;$('showAllCats').onclick=()=>{selectedCat='';$('categoryFilter').value='';render();scheduleRemoteSearch()};$('homeLink').onclick=e=>{e.preventDefault();reset();window.scrollTo({top:0,behavior:'smooth'})};$('favButton').onclick=showFavorites;$('chatButton').onclick=openChats;$('profileButton').onclick=openProfile;$('signupButton').onclick=()=>openCloudLogin('signup');$('loginButton').onclick=()=>openCloudLogin('login');$('postButton').onclick=openPosting;$('heroPost').onclick=openPosting;$('aboutButton').onclick=about;$('saveSearchButton').onclick=saveCurrentSearch;$('savedSearchesButton').onclick=openSavedSearches;$('modalClose').onclick=closeModal;$('modalBackdrop').onclick=e=>{if(e.target.id==='modalBackdrop')closeModal()};document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('filterDrawer')?.classList.contains('is-open'))closeFilterDrawer();else closeModal();}if(e.key==='Enter'&&e.target.dataset.open)openAd(e.target.dataset.open)});document.addEventListener('click',handleClick);document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{state.view=b.dataset.view;save();render()});document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>mobileNav(b.dataset.nav));setupGlobalPreview();render();refreshAuthEntry();openListingFromLink();window.addEventListener('hashchange',openListingFromLink);document.addEventListener('keydown',sooqakTrapFocus);if(cloudEnabled()){window.addEventListener('sooqak:cloud-ready',onCloudReady);window.addEventListener('sooqak:auth',onCloudAuth);window.addEventListener('sooqak:password-recovery',()=>{if(state.account){window.sooqakPasswordRecoveryPending=false;openSetPassword(true)}});window.addEventListener('sooqak:cloud-error',e=>{sooqakAuthResolved=true;refreshAuthEntry();notify(e.detail.message);});if(window.sooqakCloud)onCloudReady();}if(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'){if('serviceWorker'in navigator)Promise.resolve()}}
 function reset(){marketCountry='SA';storeGlobalPreview();selectedCat='';onlyFavorites=false;['searchInput','categoryFilter','cityFilter','districtFilter','typeFilter','minPrice','maxPrice'].forEach(id=>$(id).value='');$('sortFilter').value='new';render();scheduleRemoteSearch()}
 function showFavorites(){onlyFavorites=true;selectedCat='';$('categoryFilter').value='';render();if(cloudEnabled()&&window.sooqakCloud)refreshCloudAds();closeModal();document.querySelector('.market-section').scrollIntoView({behavior:'smooth'})}
 function mobileNav(n){if(n==='home'){reset();window.scrollTo({top:0,behavior:'smooth'})}if(n==='search'){$('searchInput').focus();window.scrollTo({top:0,behavior:'smooth'})}if(n==='post')openPosting();if(n==='favorites')showFavorites();if(n==='account')openProfile()}
@@ -520,6 +520,11 @@ function onCloudAuth(e){
   if(!user)showAuthRedirectFailure();
   // If a login link came from mail, close the email-check screen and restore the market.
   if(user && !$('modalBackdrop').hidden && ['تسجيل الدخول','إنشاء حساب جديد','تحقق من بريدك'].includes($('modalTitle').textContent))closeModal();
+  if(user && window.sooqakPasswordRecoveryPending){
+    window.sooqakPasswordRecoveryPending=false;
+    openSetPassword(true);
+    return;
+  }
   if(user && changed){
     try{
       const dest=sessionStorage.getItem('sooqak_return_to')||'';
@@ -613,6 +618,7 @@ function openCloudLogin(mode='login',method='password',emailPreset=''){
       <button id="authEmailSubmit" class="btn btn-gold auth-form-submit" type="submit">${actionLabel}</button>
     </form>
     ${isLink?'<p class="auth-security-note">رسائل البريد محدودة في النسخة التجريبية. لا تكرر الضغط عند بلوغ حد الإرسال.</p>':isNew?'<p class="auth-security-note">يلزم تأكيد البريد قبل تفعيل حسابك. كلمة المرور لا تتجاوز مرحلة التحقق.</p>':'<p class="auth-security-note">إذا أنشأت حسابك سابقًا برابط البريد ولم تضبط كلمة مرور، اختر «رابط بالبريد» مرة واحدة ثم اضبط كلمة مرور من «حسابي».</p>'}
+    ${!isNew?'<button id="authForgotPassword" type="button" class="btn btn-subtle">نسيت كلمة المرور؟</button>':''}
     <div class="line"></div>
     <button id="cloudGoogle" class="btn btn-outline auth-social" type="button" disabled>تسجيل Google — التحقق من الجاهزية…</button>
     <p id="authProviderStatus" class="auth-security-note" role="status" aria-live="polite"></p>
@@ -623,6 +629,7 @@ function openCloudLogin(mode='login',method='password',emailPreset=''){
   $('authLoginTab').onclick=()=>openCloudLogin('login',method,currentEmail());
   $('authMethodPassword').onclick=()=>openCloudLogin(mode,'password',currentEmail());
   $('authMethodLink').onclick=()=>openCloudLogin(mode,'link',currentEmail());
+  if(!isNew)$('authForgotPassword').onclick=()=>openForgotPassword(currentEmail());
   $('cloudLoginForm').onsubmit=async e=>{
     e.preventDefault();
     const email=currentEmail().toLowerCase();
@@ -666,9 +673,24 @@ function openCloudLogin(mode='login',method='password',emailPreset=''){
     catch(err){cloudError(err);if(btn.isConnected){btn.disabled=true;btn.textContent='Google — تعذر الاتصال، أعد فتح شاشة الدخول';}}
   };
 }
-function openSetPassword(){
+function openForgotPassword(emailPreset=''){
+  if(!cloudEnabled()||!window.sooqakCloud)return openCloudLogin('login');
+  showModal('استعادة كلمة المرور',`${sooqakAuthLogo()}<p class="auth-modal-lead">اكتب بريدك المسجل في سوقك، وسنطلب إرسال رابط لإعادة تعيين كلمة المرور. لا تشارك الرابط مع أحد.</p><form id="sooqakForgotForm" class="auth-screen-form"><label for="forgotEmail">البريد الإلكتروني<input id="forgotEmail" type="email" name="email" autocomplete="email" value="${esc(emailPreset)}" required maxlength="254" /></label><button id="sooqakForgotSubmit" type="submit" class="btn btn-gold">طلب رابط استعادة كلمة المرور</button></form><p class="auth-security-note">إذا كان البريد مسجلًا ومسموحًا بالإرسال، قد تصلك رسالة. لا تعاود الطلب مرات كثيرة.</p>`);
+  const form=$('sooqakForgotForm');
+  form.onsubmit=async e=>{
+    e.preventDefault();
+    const email=String($('forgotEmail').value||'').trim().toLowerCase();
+    const btn=$('sooqakForgotSubmit');btn.disabled=true;
+    try{
+      await window.sooqakCloud.resetPasswordEmail(email);
+      showModal('تحقق من بريدك',`${sooqakAuthLogo()}<div class="info">إذا كان هذا البريد مسجلًا، ستصلك رسالة استعادة كلمة المرور متى سمحت حدود الإرسال. افتح أحدث رسالة واتبع الرابط.</div><p class="muted">لا تشارك الرابط مع أحد. إذا لم تصل الرسالة، راجع البريد غير المرغوب فيه ولا تكرر الطلب مباشرة.</p><button class="btn btn-outline" type="button" id="sooqakBackToLogin">العودة إلى تسجيل الدخول</button>`);
+      $('sooqakBackToLogin').onclick=()=>openCloudLogin('login','password',email);
+    }catch(err){cloudError(err);if(btn.isConnected)btn.disabled=false}
+  };
+}
+function openSetPassword(isRecovery=false){
   if(!cloudEnabled()||!state.account)return openLogin();
-  showModal('كلمة مرور الحساب',`${sooqakAuthLogo()}<div class="info">يمكنك ضبط كلمة مرور لحسابك المؤكد، حتى تدخل لاحقًا بدون طلب رسالة بريد كل مرة. لا تشاركها مع أحد.</div><form id="setPasswordForm" class="auth-screen-form"><label for="passwordNew">كلمة مرور جديدة (12 حرفًا على الأقل)<input id="passwordNew" type="password" name="newPassword" autocomplete="new-password" minlength="12" maxlength="128" required /></label><label for="passwordConfirm">تأكيد كلمة المرور<input id="passwordConfirm" type="password" name="confirmPassword" autocomplete="new-password" minlength="12" maxlength="128" required /></label><button class="btn btn-gold auth-form-submit" type="submit" id="setPasswordSubmit">حفظ كلمة المرور</button></form><p class="auth-security-note">قد تطلب الخدمة إعادة تسجيل الدخول إذا انتهت فترة التحقق الأخيرة. لا يتم حفظ كلمة المرور على جهازك بواسطة سوقك.</p>`);
+  showModal(isRecovery?'تعيين كلمة مرور جديدة':'كلمة مرور الحساب',`${sooqakAuthLogo()}<div class="info">${isRecovery?'تم التحقق من رابط الاستعادة. اختر كلمة مرور جديدة لحسابك.':'يمكنك ضبط كلمة مرور لحسابك المؤكد، حتى تدخل لاحقًا بدون طلب رسالة بريد كل مرة.'} لا تشاركها مع أحد.</div><form id="setPasswordForm" class="auth-screen-form"><label for="passwordNew">كلمة مرور جديدة (12 حرفًا على الأقل)<input id="passwordNew" type="password" name="newPassword" autocomplete="new-password" minlength="12" maxlength="128" required /></label><label for="passwordConfirm">تأكيد كلمة المرور<input id="passwordConfirm" type="password" name="confirmPassword" autocomplete="new-password" minlength="12" maxlength="128" required /></label><button class="btn btn-gold auth-form-submit" type="submit" id="setPasswordSubmit">حفظ كلمة المرور</button></form><p class="auth-security-note">قد تطلب الخدمة إعادة تسجيل الدخول إذا انتهت فترة التحقق الأخيرة. لا يتم حفظ كلمة المرور على جهازك بواسطة سوقك.</p>`);
   $('setPasswordForm').onsubmit=async e=>{
     e.preventDefault();
     const pw=String($('passwordNew').value||'');

@@ -1,0 +1,3 @@
+# Password recovery — not activated server-side
+
+Sooqak client sends resetPasswordForEmail with same-origin index.html callback, handles Supabase PASSWORD_RECOVERY to prompt a new password. Development-branch only; no real emails sent. Template auth-email-templates/recovery.html is suggested only, not applied to Supabase. Site URL/redirect allowlist must include the test origin + index.html and needs one real inbox test after rate limits clear. Never paste recovery links or access tokens into logs or chats.
