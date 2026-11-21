@@ -829,7 +829,7 @@ function openReport(id){if(cloudEnabled())return openCloudReport(id);if(!state.a
 function about(){showModal('عن سوقك',`<p><strong>سوقك | SOOQAK</strong> مشروع منصة إعلانات مبوبة سعودية. هذه نسخة واجهات وسلوك محلي للتجربة وليست خدمة عامة.</p><div class="info"><strong>المتاح للتجربة:</strong> البحث والأقسام والفلاتر والمفضلة ونشر إعلان محلي ومسوّدة وعرض الإعلانات وإدارة بعض الحالات وحساب عمولة 1%.</div><div class="warning"><strong>غير متاح بعد:</strong> توثيق Google لم يُفعّل بعد، ولا توجد لوحة مشرف أو إيصالات بنكية أو اختبار أمان شامل أو إطلاق عام. الإعلانات والصور والمحادثات متصلة بقاعدة بيانات سوقك عند تهيئة تسجيل الدخول؛ لم يتم اختبارها بحسابين فعليين. لا تستخدم بيانات شخصية حساسة.</div><p>خطتنا: إكمال الخدمات الآمنة واختبارها، ثم إطلاق مغلق، وبعدها 100 إعلان حقيقي و1000 مستخدم.</p>`)}
 
 // === V11: private chat read receipts and lightweight 30-second inbox refresh ===
-let sooqakActiveChatId=null,sooqakUnreadBaseline=null,sooqakHeartbeatStarted=false,sooqakHeartbeatBusy=false;
+let sooqakActiveChatId=null,sooqakUnreadBaseline=null,sooqakUnreadFetchSeq=0,sooqakHeartbeatStarted=false,sooqakHeartbeatBusy=false;
 function setChatUnreadBadge(amount){
   const badge=$('chatUnreadBadge');if(!badge)return;
   const n=Math.max(0,Number(amount)||0);badge.hidden=n===0;badge.textContent=n>99?'99+':String(n);
@@ -838,8 +838,10 @@ function setChatUnreadBadge(amount){
 async function refreshUnreadMessages(announce=false){
   const cloud=window.sooqakCloud;const id=state.account?.id;
   if(!cloud||!id){setChatUnreadBadge(0);sooqakUnreadBaseline=null;return null}
+  const request=++sooqakUnreadFetchSeq;
   const summary=await cloud.unreadSummary();
-  if(state.account?.id!==id)return null;
+  // V63: stale requests must never reset unread count or duplicate alerts.
+  if(state.account?.id!==id||request!==sooqakUnreadFetchSeq)return null;
   const count=Math.max(0,Number(summary?.total)||0);
   setChatUnreadBadge(count);
   if(announce&&sooqakUnreadBaseline!==null&&count>sooqakUnreadBaseline&&sooqakActiveChatId===null){
@@ -897,7 +899,7 @@ function onCloudAuth(e){
   if(changed){
     sooqakOwnedAdCache.clear();sooqakSharedLinkCache.clear();
     state.ads=[];state.cloudPledgeAcceptedAt=null;state.favorites=[];
-    sooqakUnreadBaseline=null;sooqakActiveChatId=null;setChatUnreadBadge(0);
+    sooqakUnreadBaseline=null;sooqakUnreadFetchSeq++;sooqakActiveChatId=null;setChatUnreadBadge(0);
   }
   save();
   render();
