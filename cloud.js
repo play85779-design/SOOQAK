@@ -263,7 +263,7 @@ if(!currentUser)throw new Error('يجب تسجيل الدخول لرفع الص�
     }
     async function saveAccountDraft(kind,input){
       if(!currentUser)throw new Error('سجّل الدخول أولًا');
-      const allowed=['title','description','category','city','district','kind','price','priceType'];
+      const allowed=['title','description','category','city','district','kind','price','priceType',...Object.keys(input||{}).filter(key=>/^spec_[a-z]{2,16}$/.test(key))];
       const payload={};for(const key of allowed)if(typeof input?.[key]==='string')payload[key]=input[key].slice(0,key==='description'?4000:120);
       const r=await supabase.from('sooqak_account_drafts').upsert({user_id:currentUser.id,account_kind:kind,payload,updated_at:new Date().toISOString()},{onConflict:'user_id,account_kind'});
       errorIfAny(r);return true;
