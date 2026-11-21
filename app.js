@@ -90,7 +90,7 @@ function normalizeSearchText(text){return String(text||'').toLowerCase().normali
 function filters(){return {q:$('searchInput').value.trim().toLowerCase(),category:$('categoryFilter').value,city:$('cityFilter').value,kind:$('typeFilter').value,district:$('districtFilter').value.trim().toLowerCase(),min:$('minPrice').value,max:$('maxPrice').value,sort:$('sortFilter').value}}
 let remoteQueryTimer=null,remoteQuerySeq=0;
 function scheduleRemoteSearch(){
- if(!cloudEnabled()||!window.sooqakCloud||onlyFavorites||marketCountry!=='SA')return;
+ if(!cloudEnabled()||!window.sooqakCloud||marketCountry!=='SA')return;
  clearTimeout(remoteQueryTimer);
  remoteQueryTimer=setTimeout(()=>refreshCloudAds(),400);
 }
@@ -155,7 +155,7 @@ function sooqakViewRoadmap(){window.open('./roadmap.html','_blank','noopener,nor
 
 function initialize(){setupFilterDrawer();const c=$('categoryCards');c.innerHTML=categories.map(([name,icon])=>`<button class="category-card" data-category="${esc(name)}"><span class="cat-icon">${icon}</span>${esc(name)}</button>`).join('');$('categoryFilter').innerHTML='<option value="">جميع الأقسام</option>'+categories.map(([c])=>`<option>${esc(c)}</option>`).join('');$('searchButton').onclick=()=>{onlyFavorites=false;render();document.querySelector('.market-section').scrollIntoView({behavior:'smooth'})};$('searchInput').oninput=()=>{render();scheduleRemoteSearch()};['categoryFilter','cityFilter','districtFilter','typeFilter','sortFilter','minPrice','maxPrice'].forEach(id=>$(id).addEventListener('input',()=>{onlyFavorites=false;render();scheduleRemoteSearch()}));$('resetFilters').onclick=$('emptyReset').onclick=reset;$('showAllCats').onclick=()=>{selectedCat='';$('categoryFilter').value='';render();scheduleRemoteSearch()};$('homeLink').onclick=e=>{e.preventDefault();reset();window.scrollTo({top:0,behavior:'smooth'})};$('favButton').onclick=showFavorites;$('chatButton').onclick=openChats;$('profileButton').onclick=openProfile;$('signupButton').onclick=()=>openCloudLogin('signup');$('loginButton').onclick=()=>openCloudLogin('login');$('postButton').onclick=openPosting;$('heroPost').onclick=openPosting;$('aboutButton').onclick=about;$('saveSearchButton').onclick=saveCurrentSearch;$('savedSearchesButton').onclick=openSavedSearches;$('modalClose').onclick=closeModal;$('modalBackdrop').onclick=e=>{if(e.target.id==='modalBackdrop')closeModal()};document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('filterDrawer')?.classList.contains('is-open'))closeFilterDrawer();else closeModal();}if(e.key==='Enter'&&e.target.dataset.open)openAd(e.target.dataset.open)});document.addEventListener('click',handleClick);document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{state.view=b.dataset.view;save();render()});document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>mobileNav(b.dataset.nav));setupGlobalPreview();render();refreshAuthEntry();openListingFromLink();window.addEventListener('hashchange',openListingFromLink);document.addEventListener('keydown',sooqakTrapFocus);if(cloudEnabled()){window.addEventListener('sooqak:cloud-ready',onCloudReady);window.addEventListener('sooqak:auth',onCloudAuth);window.addEventListener('sooqak:cloud-error',e=>{sooqakAuthResolved=true;refreshAuthEntry();notify(e.detail.message);});if(window.sooqakCloud)onCloudReady();}if(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'){if('serviceWorker'in navigator)Promise.resolve()}}
 function reset(){marketCountry='SA';storeGlobalPreview();selectedCat='';onlyFavorites=false;['searchInput','categoryFilter','cityFilter','districtFilter','typeFilter','minPrice','maxPrice'].forEach(id=>$(id).value='');$('sortFilter').value='new';render();scheduleRemoteSearch()}
-function showFavorites(){onlyFavorites=true;selectedCat='';$('categoryFilter').value='';render();scheduleRemoteSearch();closeModal();document.querySelector('.market-section').scrollIntoView({behavior:'smooth'})}
+function showFavorites(){onlyFavorites=true;selectedCat='';$('categoryFilter').value='';render();if(cloudEnabled()&&window.sooqakCloud)refreshCloudAds();closeModal();document.querySelector('.market-section').scrollIntoView({behavior:'smooth'})}
 function mobileNav(n){if(n==='home'){reset();window.scrollTo({top:0,behavior:'smooth'})}if(n==='search'){$('searchInput').focus();window.scrollTo({top:0,behavior:'smooth'})}if(n==='post')openPosting();if(n==='favorites')showFavorites();if(n==='account')openProfile()}
 function handleClick(e){
  const native=e.target.closest('[data-share-native]');if(native){shareViaDevice(native.dataset.shareNative);return;}
@@ -530,9 +530,10 @@ async function refreshCloudAds(){
  if(!window.sooqakCloud)return;
  const request=++remoteQuerySeq,criteria=filters();
  try{
-  const rows=await window.sooqakCloud.fetchListings(0,60,criteria);
+  const favoritesOnly=onlyFavorites;
+  const rows=favoritesOnly?await window.sooqakCloud.fetchFavoriteListings():await window.sooqakCloud.fetchListings(0,60,criteria);
   if(request!==remoteQuerySeq)return;
-  v12CloudLoaded=rows.length;v12HasMoreListings=rows.length===60;
+  v12CloudLoaded=rows.length;v12HasMoreListings=!favoritesOnly&&rows.length===60;
   state.ads=rows.map(convertCloudAd);render();openListingFromLink();
  }catch(e){if(request===remoteQuerySeq)cloudError(e)}
 }

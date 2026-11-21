@@ -31,25 +31,8 @@ if (window.SOOQAK_CLOUD_ENABLED) {
       if (error) throw error;
       return data;
     }
-    async function fetchListings(offset=0,pageSize=60,criteria={}) {
-      let query=supabase.from('sooqak_listings')
-        .select('id,account_id,seller_user_id,seller_display_name,seller_kind,title,description,category,city,district,listing_kind,price,price_mode,status,created_at,expires_at,bumped_at,reserved_until,hidden_at,renewed_at,renewal_count');
-      if(criteria.category)query=query.eq('category',criteria.category);
-      if(criteria.city)query=query.eq('city',criteria.city);
-      if(criteria.kind)query=query.eq('listing_kind',criteria.kind==='مطلوب'?'wanted':'sale');
-      if(criteria.district)query=query.ilike('district','%'+String(criteria.district).replace(/[%_*,()\\]/g,'').slice(0,70)+'%');
-      if(criteria.min!=='' && criteria.min!=null && Number.isFinite(Number(criteria.min)))query=query.gte('price',Number(criteria.min));
-      if(criteria.max!=='' && criteria.max!=null && Number.isFinite(Number(criteria.max)))query=query.lte('price',Number(criteria.max));
-      if(criteria.q){
-        // PostgREST safe characters; robust Arabic normalization needs a later DB search index.
-        const value=String(criteria.q).replace(/[\\%_*,()]/g,' ').replace(/\s+/g,' ').trim().slice(0,70);
-        if(value)query=query.or(`title.ilike.%${value}%,description.ilike.%${value}%`);
-      }
-      if(criteria.sort==='cheap')query=query.order('price',{ascending:true,nullsFirst:false});
-      else if(criteria.sort==='expensive')query=query.order('price',{ascending:false,nullsFirst:false});
-      else query=query.order('created_at',{ascending:false});
-      const {data,error} = await query.order('id',{ascending:false}).range(Math.max(0,offset),Math.max(0,offset)+Math.min(60,Math.max(1,pageSize))-1);
-      if (error) throw error;
+    // Shared public hydration for search pages and saved favorites. RLS remains authoritative.
+    async function enrichListings(data) {
       if(!data?.length)return[];
       const ids=data.map(a=>a.id);
       const photos=await supabase.from('sooqak_listing_photos')
@@ -69,6 +52,44 @@ if (window.SOOQAK_CLOUD_ENABLED) {
       const byContact=new Map((result.data||[]).map(row=>[row.listing_id,row]));
       return data.map(listing=>({...listing,photos:byListing.get(listing.id)||[],contact:byContact.get(listing.id)||null}));
     }
+    async function fetchListings(offset=0,pageSize=60,criteria={}) {
+      let query=supabase.from('sooqak_listings')
+        .select('id,account_id,seller_user_id,seller_display_name,seller_kind,title,description,category,city,district,listing_kind,price,price_mode,status,created_at,expires_at,bumped_at,reserved_until,hidden_at,renewed_at,renewal_count');
+      if(criteria.category)query=query.eq('category',criteria.category);
+      if(criteria.city)query=query.eq('city',criteria.city);
+      if(criteria.kind)query=query.eq('listing_kind',criteria.kind==='مطلوب'?'wanted':'sale');
+      if(criteria.district)query=query.ilike('district','%'+String(criteria.district).replace(/[%_*,()\\]/g,'').slice(0,70)+'%');
+      if(criteria.min!=='' && criteria.min!=null && Number.isFinite(Number(criteria.min)))query=query.gte('price',Number(criteria.min));
+      if(criteria.max!=='' && criteria.max!=null && Number.isFinite(Number(criteria.max)))query=query.lte('price',Number(criteria.max));
+      if(criteria.q){
+        // PostgREST safe characters; robust Arabic normalization needs a later DB search index.
+        const value=String(criteria.q).replace(/[\\%_*,()]/g,' ').replace(/\s+/g,' ').trim().slice(0,70);
+        if(value)query=query.or(`title.ilike.%${value}%,description.ilike.%${value}%`);
+      }
+      if(criteria.sort==='cheap')query=query.order('price',{ascending:true,nullsFirst:false});
+      else if(criteria.sort==='expensive')query=query.order('price',{ascending:false,nullsFirst:false});
+      else query=query.order('created_at',{ascending:false});
+      const {data,error} = await query.order('id',{ascending:false}).range(Math.max(0,offset),Math.max(0,offset)+Math.min(60,Math.max(1,pageSize))-1);
+      if (error) throw error;
+      return enrichListings(data);
+    }
+    // Saved ads must be fetched by their own IDs, not only from the first search page.
+    // Requests are batched to keep browser/API URL sizes bounded; RLS excludes forbidden rows.
+    async function fetchFavoriteListings() {
+      if (!currentUser) return [];
+      const ids=[...new Set((await listFavorites()).filter(id=>/^[a-f0-9-]{36}$/i.test(String(id))))].slice(0,300);
+      const all=[];
+      for(let offset=0;offset<ids.length;offset+=40){
+        const batch=ids.slice(offset,offset+40);
+        const response=await supabase.from('sooqak_listings')
+          .select('id,account_id,seller_user_id,seller_display_name,seller_kind,title,description,category,city,district,listing_kind,price,price_mode,status,created_at,expires_at,bumped_at,reserved_until,hidden_at,renewed_at,renewal_count')
+          .in('id',batch).order('created_at',{ascending:false}).limit(40);
+        errorIfAny(response);
+        all.push(...await enrichListings(response.data||[]));
+      }
+      return all.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+    }
+
     async function saveListing(payload, existingId=null) {
       if (!currentUser) throw new Error('سجّل الدخول أولًا');
       let response;
@@ -342,7 +363,7 @@ if(!currentUser)throw new Error('يجب تسجيل الدخول لرفع الص�
       getUser:()=>currentUser,
       loadPrivateProfile,savePrivateProfile,hasAcceptedPledge,acceptPledge,getContactPrefs,saveContactPrefs,listFavorites,setFavorite,listSavedSearches,addSavedSearch,deleteSavedSearch,
       ensureAccount,getPublicSellerProfile,savePublicSellerProfile,
-      fetchListings,
+      fetchListings,fetchFavoriteListings,
       saveListing,saveListingContact,
       removeListing,
       uploadPhotos,
