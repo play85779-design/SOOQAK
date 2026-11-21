@@ -77,6 +77,15 @@ jobs:
               out.write(f"- Current files: {current} potential secret matches\n")
               out.write("- Secret values, paths, fingerprints, and detailed reports are NOT published.\n")
           print(f"Gitleaks safe counts: history={old}; current_files={current}")
+          # Diagnostics show only rule names, never matched text or file paths.
+          def rule_names(filename):
+              p = pathlib.Path(os.environ["RUNNER_TEMP"]) / filename
+              if not p.exists():
+                  return []
+              return sorted({str(item.get("RuleID", "unknown")) for item in json.loads(p.read_text())})
+          print("Detection rule IDs only: " + ", ".join(
+              sorted(set(rule_names("sooqak-git-scan.json") +
+                         rule_names("sooqak-files-scan.json")))))
           if h_code not in (0, 1) or f_code not in (0, 1):
               print("One or more scanner invocations did not complete normally.")
               sys.exit(2)
