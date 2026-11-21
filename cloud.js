@@ -53,8 +53,13 @@ if (window.SOOQAK_CLOUD_ENABLED) {
       return data.map(listing=>({...listing,photos:byListing.get(listing.id)||[],contact:byContact.get(listing.id)||null}));
     }
     async function fetchListings(offset=0,pageSize=60,criteria={}) {
+      // Filter before pagination: otherwise sold, expired or hidden owner listings
+      // can consume the first page and conceal newer public offers.
       let query=supabase.from('sooqak_listings')
-        .select('id,account_id,seller_user_id,seller_display_name,seller_kind,title,description,category,city,district,listing_kind,price,price_mode,status,created_at,expires_at,bumped_at,reserved_until,hidden_at,renewed_at,renewal_count');
+        .select('id,account_id,seller_user_id,seller_display_name,seller_kind,title,description,category,city,district,listing_kind,price,price_mode,status,created_at,expires_at,bumped_at,reserved_until,hidden_at,renewed_at,renewal_count')
+        .in('status',['active','reserved'])
+        .is('hidden_at',null)
+        .gt('expires_at',new Date().toISOString());
       if(criteria.category)query=query.eq('category',criteria.category);
       if(criteria.city)query=query.eq('city',criteria.city);
       if(criteria.kind)query=query.eq('listing_kind',criteria.kind==='مطلوب'?'wanted':'sale');

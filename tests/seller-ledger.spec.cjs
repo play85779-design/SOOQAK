@@ -32,6 +32,8 @@ function query(table){
   select:(columns,options)=>{head=options?.head===true;return obj},
   eq:(key,value)=>{clauses.push(v=>v[key]===value);return obj},
   in:(key,values)=>{clauses.push(v=>values.includes(v[key]));return obj},
+  is:(key,value)=>{clauses.push(v=>v[key]===value);return obj},
+  gt:(key,value)=>{clauses.push(v=>v[key]!=null&&String(v[key])>String(value));return obj},
   order:(key,options)=>{if(!sortBy){sortBy=key;asc=options?.ascending===true}return obj},
   limit:n=>{size=n;return obj},
   range:(s,e)=>{start=s;size=e-s+1;return obj},

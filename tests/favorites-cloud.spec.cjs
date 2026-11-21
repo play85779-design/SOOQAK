@@ -24,6 +24,8 @@ function makeQuery(table){
    select:()=>q,
    eq:(col,value)=>{const prev=where;where=row=>prev(row)&&row[col]===value;return q;},
    in:(col,values)=>{const prev=where;where=row=>prev(row)&&values.includes(row[col]);if(table==='sooqak_listings')window.__SOOQAK_TEST_IN_REQUESTS.push([...values]);return q;},
+   is:(col,value)=>{const prev=where;where=row=>prev(row)&&row[col]===value;return q;},
+   gt:(col,value)=>{const prev=where;where=row=>prev(row)&&row[col]!=null&&String(row[col])>String(value);return q;},
    order:()=>q,limit:n=>{take=n;return q;},
    range:(start,end)=>{skip=start;take=end-start+1;return q;},
    then:(ok,bad)=>{
