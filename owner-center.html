@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="theme-color" content="#122C4B">
+  <meta name="description" content="معاينة محمية قيد التطوير لمركز قيادة مالك سوقك؛ لا تحتوي على بيانات مالية حية.">
+  <title>مركز قيادة المالك | سوقك SOOQAK — تطوير</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#122c4b;background:#f4f6f9}
+    *{box-sizing:border-box}body{margin:0}a{color:inherit}
+    .header{background:#122c4b;color:#fff;padding:18px 22px}
+    .header .row{max-width:1120px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .header a{color:#e8cc83;text-decoration:none;font-weight:700}
+    main{max-width:1120px;margin:28px auto;padding:0 18px 48px}
+    .eyebrow{color:#8a6821;font-size:13px;font-weight:700}
+    h1{font-size:clamp(24px,4vw,36px);margin:9px 0}h2{font-size:18px}
+    .muted{color:#566575;line-height:1.8}
+    .status{padding:16px 20px;border:1px solid #cbd7e3;border-radius:14px;background:#fff;line-height:1.9}
+    .notice{border-right:4px solid #b88322;background:#fff7e7;border-radius:10px;padding:13px 16px;line-height:1.8;margin-top:18px}
+    .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:22px 0}
+    .metric{background:white;border:1px solid #e1e6ec;border-radius:16px;padding:20px;min-height:142px}
+    .metric h2{color:#526272;font-size:14px;font-weight:600;margin:0 0 16px}
+    .metric strong{font-size:18px;display:block;color:#122c4b}
+    .metric small{display:block;color:#6a7784;margin-top:12px;line-height:1.6}
+    .sections{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+    .section{padding:20px;background:#fff;border:1px solid #e1e6ec;border-radius:16px;line-height:1.8}
+    ul{margin:8px 0;padding-right:20px}.footer{font-size:12px;color:#596675;margin-top:25px}
+    [hidden]{display:none!important}
+    @media(max-width:800px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.sections{grid-template-columns:1fr}}
+    @media(max-width:420px){.metrics{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header class="header"><div class="row"><strong>سوقك | SOOQAK</strong><a href="./index.html">العودة إلى المنصة</a></div></header>
+  <main>
+    <p class="eyebrow">OWNER COMMAND CENTER — B09</p>
+    <h1>مركز قيادة المالك</h1>
+    <p class="muted">نسخة تطوير فقط. صلاحية المالك تفحص عبر الخادم، ولا تعرض أي بيانات مالية حية قبل تأكيد الصلاحيات ومصدر كل رقم.</p>
+    <div id="ownerStatus" class="status" role="status" aria-live="polite">جاري التحقق من صلاحية المالك…</div>
+    <section id="ownerPanel" hidden aria-label="لوحة المالك">
+      <div class="notice">جميع البيانات أدناه <strong>غير متحقق منها</strong>؛ لا توجد هنا فواتير أو ربط بنكي أو سحب تلقائي من مزودي الخدمات.</div>
+      <div class="metrics">
+        <article class="metric"><h2>الإيرادات المحصلة</h2><strong data-financial-value>غير متحقق منه</strong><small>المصدر: لم يُربط بعد</small></article>
+        <article class="metric"><h2>المصاريف المستحقة</h2><strong data-financial-value>غير متحقق منه</strong><small>المصدر: لم يُربط بعد</small></article>
+        <article class="metric"><h2>المستخدمون النشطون</h2><strong data-financial-value>غير متحقق منه</strong><small>المصدر: لم يُربط بعد</small></article>
+        <article class="metric"><h2>الصفقات المثبتة</h2><strong data-financial-value>غير متحقق منه</strong><small>المصدر: لم يُربط بعد</small></article>
+      </div>
+      <div class="sections">
+        <section class="section"><h2>الرقابة المالية</h2><ul><li>تنبيهات 50% و80% و100% بعد التحقق من بيانات الإنفاق</li><li>احتياطي تشغيل ستة أشهر بعد مطابقة الالتزامات</li><li>نقطة التعادل والسيولة بدون أرقام تخمينية</li></ul></section>
+        <section class="section"><h2>مراجعة الجاهزية</h2><ul><li>التحقق من المالك على الخادم — مطلوب</li><li>مصادر مالية وتاريخ تحديثها — غير مربوطة</li><li>اختبار حسابات وصلاحيات في بيئة معزولة — معلق</li></ul></section>
+      </div>
+      <p class="footer">هذه واجهة مراجعة للمطورين، وليست إثباتًا على تفعيل الحسابات المالية أو جاهزية الإطلاق. يمنع نشر البيانات المالية دون سياسة صلاحيات خادمية موثقة.</p>
+    </section>
+  </main>
+  <script type="module" src="./owner-center.js"></script>
+</body>
+</html>
