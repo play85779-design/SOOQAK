@@ -1,0 +1,90 @@
+name: SOOQAK - ZAP Passive Website Scan (Free)
+on:
+  workflow_dispatch:
+  push:
+    branches: [develop/v38-recovery]
+    paths:
+      - '*.html'
+      - '*.js'
+      - '*.css'
+      - 'assets/**'
+      - '.github/workflows/security-zap-passive.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sooqak-zap-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  zap-passive:
+    # GitHub-hosted standard runners are free for public repositories.
+    # Don't run this when the repository switches to private (zero-spend rule).
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Read development source only
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Run passive baseline against local static copy only
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The target must always be our LOCAL copy, never the published site.
+          python3 -m http.server 4173 --bind 127.0.0.1 > "${RUNNER_TEMP}/sooqak-http.log" 2>&1 &
+          http_pid=$!
+          trap 'kill "$http_pid" 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do
+            if curl --silent --fail http://127.0.0.1:4173/index.html >/dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail --silent --show-error http://127.0.0.1:4173/index.html >/dev/null
+          mkdir -p "${RUNNER_TEMP}/sooqak-zap-private"
+          chmod 777 "${RUNNER_TEMP}/sooqak-zap-private"
+          # Localhost via Docker host network. ZAP baseline is passive only;
+          # no login, no active attacks and no real Supabase test data.
+          set +e
+          docker run --rm --network host \
+            -v "${RUNNER_TEMP}/sooqak-zap-private:/zap/wrk:rw" \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py -t http://127.0.0.1:4173/index.html -m 1 -I -s \
+            -J zap-private.json \
+            > "${RUNNER_TEMP}/sooqak-zap-private.log" 2>&1
+          scan_status=$?
+          set -e
+          # NEVER publish raw logs, URLs, cookies or per-request reports.
+          python3 - "$scan_status" <<'PY'
+          import collections, json, os, pathlib, sys
+          scan_status = int(sys.argv[1])
+          report = pathlib.Path(os.environ['RUNNER_TEMP']) / 'sooqak-zap-private' / 'zap-private.json'
+          if not report.is_file():
+              print('ZAP did not generate a report; setup needs correction.')
+              sys.exit(2)
+          try:
+              doc = json.loads(report.read_text())
+              alerts = [a for site in doc.get('site', []) for a in site.get('alerts', [])]
+          except (OSError, ValueError, TypeError):
+              print('ZAP report could not be read; scan unverified.')
+              sys.exit(2)
+          risks = collections.Counter(str(a.get('riskcode', '-1')) for a in alerts)
+          high = risks.get('3', 0)
+          medium = risks.get('2', 0)
+          low = risks.get('1', 0)
+          info = risks.get('0', 0)
+          print(f'ZAP local passive scan: HIGH={high} MEDIUM={medium} LOW={low} INFO={info}; tool_exit={scan_status}')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf8') as out:
+              out.write('## SOOQAK passive website scan (local source only)\n')
+              out.write(f'- Unique alert types: high {high}, medium {medium}, low {low}, info {info}\n')
+              out.write('- Raw reports and paths remain private to the runner and are not uploaded.\n')
+              out.write('- No live website or authenticated user was tested.\n')
+          if scan_status not in (0, 1, 2):
+              print('ZAP execution failed. See only restricted runner diagnostics.')
+              sys.exit(2)
+          if high:
+              print('High-severity passive alerts need remediation before release.')
+              sys.exit(1)
+          print('PASS: passive baseline completed; review medium/low findings separately.')
+          PY
