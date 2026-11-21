@@ -5,7 +5,7 @@
  * No identifiers are returned, logged or stored. No network access.
  */
 const uuid = x => typeof x==='string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(x);
-const month = x => typeof x==='string' && /^\\d{4}-(0[1-9]|1[0-2])$/.test(x);
+const month = x => typeof x==='string' && /^\d{4}-(0[1-9]|1[0-2])$/.test(x);
 const sourceUrl = x => typeof x==='string' && /^https:\/\/[^\s]+$/i.test(x);
 const day = x => typeof x==='string' && /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{3})?Z$/.test(x) &&
   Number.isFinite(Date.parse(x));
