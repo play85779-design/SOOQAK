@@ -99,6 +99,10 @@ function filters(){return {q:$('searchInput').value.trim().toLowerCase(),categor
 let remoteQueryTimer=null,remoteQuerySeq=0,sooqakRemoteSearchPending=false;
 function scheduleRemoteSearch(){
  if(!cloudEnabled()||!window.sooqakCloud||marketCountry!=='SA')return;
+ const bounds=filters();
+ if(bounds.min!==''&&bounds.max!==''&&Number(bounds.min)>Number(bounds.max)){
+  clearTimeout(remoteQueryTimer);++remoteQuerySeq;sooqakRemoteSearchPending=false;return;
+ }
  clearTimeout(remoteQueryTimer);
  ++remoteQuerySeq; // Any pending request is now stale even during the debounce.
  sooqakRemoteSearchPending=true;
@@ -106,8 +110,11 @@ function scheduleRemoteSearch(){
 }
 
 function active(ad){if(ad.hidden)return false;if(ad.status==='محجوز'&&ad.reservedUntil&&new Date(ad.reservedUntil).getTime()<=Date.now()){if(cloudEnabled())return !ad.expiresAt||new Date(ad.expiresAt).getTime()>Date.now();ad.status='متاح';delete ad.reservedUntil;save()}return (ad.status==='متاح'||ad.status==='محجوز')&&(!ad.expiresAt||new Date(ad.expiresAt).getTime()>Date.now());}
-function render(){const f=filters();const searching=Boolean(f.q);document.body.classList.toggle('sooqak-search-active',searching);updateFilterBadge();let ads=allAds().filter(ad=>active(ad));ads=ads.filter(ad=>(ad.country||'SA')===marketCountry);if(onlyFavorites)ads=ads.filter(ad=>state.favorites.includes(ad.id));if(f.q){const terms=normalizeSearchText(f.q).split(' ').filter(Boolean);ads=ads.filter(ad=>{const haystack=[ad.title,ad.description,ad.city,ad.category,DEMOS_EN[ad.id]||'',CATEGORIES_EN[ad.category]||'',CITIES_EN[ad.city]||''].map(normalizeSearchText).join(' ');return terms.every(term=>haystack.includes(term))})}if(f.category)ads=ads.filter(ad=>ad.category===f.category);if(f.subcategory)ads=ads.filter(ad=>{const tag=String(ad.subcategory||'').trim();if(tag)return tag===f.subcategory;const hay=normalizeSearchText([ad.title,ad.description].join(' '));return hay.includes(normalizeSearchText(f.subcategory));});if(f.city)ads=ads.filter(ad=>ad.city===f.city);if(f.district)ads=ads.filter(ad=>normalizeSearchText(ad.district||'').includes(normalizeSearchText(f.district)));if(f.kind)ads=ads.filter(ad=>ad.kind===f.kind);if(f.min!=='')ads=ads.filter(ad=>ad.price!==null&&Number(ad.price)>=Number(f.min));if(f.max!=='')ads=ads.filter(ad=>ad.price!==null&&Number(ad.price)<=Number(f.max));if(f.sort==='cheap')ads.sort((a,b)=>(a.price??Infinity)-(b.price??Infinity));else if(f.sort==='expensive')ads.sort((a,b)=>(b.price??-Infinity)-(a.price??-Infinity));else ads.sort((a,b)=>new Date(effectiveDate(b))-new Date(effectiveDate(a)));
-$('listingGrid').innerHTML=ads.map(card).join('');renderV12LoadMore();$('listingGrid').className='listing-grid'+(state.view==='list'?' list-view':'');$('emptyState').hidden=ads.length>0||sooqakRemoteSearchPending;$('resultsTitle').textContent=onlyFavorites?'إعلاناتك المفضلة':searching?'نتائج البحث':f.category?`إعلانات ${f.category}`:'أحدث الإعلانات';$('resultsCount').textContent=sooqakRemoteSearchPending?'جاري البحث عن إعلانات مطابقة...':`${ads.length} إعلانًا ${demos.length?'(تشمل أمثلة تجريبية)':''}`;$('feedLabel').textContent=onlyFavorites?'المفضلة':'إعلانات متنوعة من السعودية';$('favBadge').hidden=!state.favorites.length;$('favBadge').textContent=state.favorites.length;document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===state.view));document.querySelectorAll('[data-category]').forEach(b=>b.classList.toggle('active',b.dataset.category===f.category));refreshGlobalUI();}
+function render(){
+ const f=filters(),invalidRange=f.min!==''&&f.max!==''&&Number(f.min)>Number(f.max);
+ updateActiveFilterTags(f);
+ const searching=Boolean(f.q);document.body.classList.toggle('sooqak-search-active',searching);updateFilterBadge();let ads=invalidRange?[]:allAds().filter(ad=>active(ad));ads=ads.filter(ad=>(ad.country||'SA')===marketCountry);if(onlyFavorites)ads=ads.filter(ad=>state.favorites.includes(ad.id));if(f.q){const terms=normalizeSearchText(f.q).split(' ').filter(Boolean);ads=ads.filter(ad=>{const haystack=[ad.title,ad.description,ad.city,ad.category,DEMOS_EN[ad.id]||'',CATEGORIES_EN[ad.category]||'',CITIES_EN[ad.city]||''].map(normalizeSearchText).join(' ');return terms.every(term=>haystack.includes(term))})}if(f.category)ads=ads.filter(ad=>ad.category===f.category);if(f.subcategory)ads=ads.filter(ad=>{const tag=String(ad.subcategory||'').trim();if(tag)return tag===f.subcategory;const hay=normalizeSearchText([ad.title,ad.description].join(' '));return hay.includes(normalizeSearchText(f.subcategory));});if(f.city)ads=ads.filter(ad=>ad.city===f.city);if(f.district)ads=ads.filter(ad=>normalizeSearchText(ad.district||'').includes(normalizeSearchText(f.district)));if(f.kind)ads=ads.filter(ad=>ad.kind===f.kind);if(f.min!=='')ads=ads.filter(ad=>ad.price!==null&&Number(ad.price)>=Number(f.min));if(f.max!=='')ads=ads.filter(ad=>ad.price!==null&&Number(ad.price)<=Number(f.max));if(f.sort==='cheap')ads.sort((a,b)=>(a.price??Infinity)-(b.price??Infinity));else if(f.sort==='expensive')ads.sort((a,b)=>(b.price??-Infinity)-(a.price??-Infinity));else ads.sort((a,b)=>new Date(effectiveDate(b))-new Date(effectiveDate(a)));
+$('listingGrid').innerHTML=ads.map(card).join('');renderV12LoadMore();$('listingGrid').className='listing-grid'+(state.view==='list'?' list-view':'');$('emptyState').hidden=ads.length>0||sooqakRemoteSearchPending;$('resultsTitle').textContent=onlyFavorites?'إعلاناتك المفضلة':searching?'نتائج البحث':f.category?`إعلانات ${f.category}`:'أحدث الإعلانات';$('resultsCount').textContent=invalidRange?'أقل سعر يجب أن يكون مساويًا أو أقل من أعلى سعر':sooqakRemoteSearchPending?'جاري البحث عن إعلانات مطابقة...':`${ads.length} إعلانًا ${demos.length?'(تشمل أمثلة تجريبية)':''}`;$('feedLabel').textContent=onlyFavorites?'المفضلة':'إعلانات متنوعة من السعودية';const emptyHelp=$('emptyState')?.querySelector('p');if(emptyHelp)emptyHelp.textContent=invalidRange?'عدّل حد السعر الأدنى أو الأعلى حتى تظهر النتائج.':'جرّب تغير المدينة أو القسم أو نطاق السعر.';$('favBadge').hidden=!state.favorites.length;$('favBadge').textContent=state.favorites.length;document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===state.view));document.querySelectorAll('[data-category]').forEach(b=>b.classList.toggle('active',b.dataset.category===f.category));refreshGlobalUI();}
 
 // Preview usability: working deep-links, accessible dialogs, mobile sharing.
 let sooqakPreviousFocus=null;
@@ -206,6 +213,17 @@ function reset(){renderSubcategoryPreview('');marketCountry='SA';storeGlobalPrev
 function showFavorites(){renderSubcategoryPreview('');onlyFavorites=true;selectedCat='';$('categoryFilter').value='';updateCategoryFilters();render();if(cloudEnabled()&&window.sooqakCloud)refreshCloudAds();closeModal();document.querySelector('.market-section').scrollIntoView({behavior:'smooth'})}
 function mobileNav(n){if(n==='home'){reset();window.scrollTo({top:0,behavior:'smooth'})}if(n==='search'){$('searchInput').focus();window.scrollTo({top:0,behavior:'smooth'})}if(n==='post')openPosting();if(n==='favorites')showFavorites();if(n==='account')openProfile()}
 function handleClick(e){
+ const tag=e.target.closest('[data-remove-filter]');
+ if(tag){
+  const field=tag.dataset.removeFilter;
+  if(field==='clear'){reset();return}
+  const map={q:'searchInput',category:'categoryFilter',subcategory:'subcategoryFilter',city:'cityFilter',district:'districtFilter',kind:'typeFilter',min:'minPrice',max:'maxPrice',sort:'sortFilter'};
+  if(!Object.prototype.hasOwnProperty.call(map,field))return;
+  const el=$(map[field]);if(!el)return;
+  el.value=field==='sort'?'new':'';
+  if(field==='category')updateCategoryFilters();
+  onlyFavorites=false;render();scheduleRemoteSearch();return;
+ }
  const native=e.target.closest('[data-share-native]');if(native){shareViaDevice(native.dataset.shareNative);return;}
  const copy=e.target.closest('[data-share-copy]');if(copy){copyListingLink(copy.dataset.shareCopy);return;}
 const sub=e.target.closest('[data-subcategory-search]');if(sub){selectedCat=sub.dataset.subcategoryParent;$('categoryFilter').value=selectedCat;updateCategoryFilters();$('subcategoryFilter').value=sub.dataset.subcategorySearch;$('searchInput').value=sub.dataset.subcategorySearch;onlyFavorites=false;render();scheduleRemoteSearch();document.querySelector('.market-section').scrollIntoView({behavior:'smooth'});return}const cat=e.target.closest('[data-category]');if(cat){selectedCat=cat.dataset.category;$('categoryFilter').value=selectedCat;updateCategoryFilters();onlyFavorites=false;renderSubcategoryPreview(selectedCat);render();scheduleRemoteSearch();$('subcategoryPreview').scrollIntoView({behavior:'smooth',block:'nearest'});return}const heart=e.target.closest('[data-fav]');if(heart){e.stopPropagation();toggleFav(heart.dataset.fav);return}const el=e.target.closest('[data-open]');if(el){openAd(el.dataset.open);return}const act=e.target.closest('[data-act]');if(act)onAction(act.dataset.act,act.dataset.id||'')}
@@ -270,7 +288,21 @@ function setupFilterDrawer(){
 }
 function openFilterDrawer(){const d=$('filterDrawer');if(!d)return;$('filterOverlay').hidden=false;d.classList.add('is-open');d.setAttribute('aria-hidden','false');$('filterToggle').setAttribute('aria-expanded','true');document.body.style.overflow='hidden';$('filterClose').focus();}
 function closeFilterDrawer(restoreFocus=true){const d=$('filterDrawer');if(!d||!d.classList.contains('is-open'))return;d.classList.remove('is-open');d.setAttribute('aria-hidden','true');$('filterOverlay').hidden=true;$('filterToggle').setAttribute('aria-expanded','false');document.body.style.overflow='';if(restoreFocus)$('filterToggle').focus();}
-function updateFilterBadge(){const f=filters(),num=Number(!!f.category)+Number(!!f.subcategory)+Number(!!f.city)+Number(!!f.kind)+Number(f.min!=='')+Number(f.max!=='')+Number(f.sort!=='new');const el=$('activeFilterCount');if(el){el.hidden=num===0;el.textContent=String(num)}}
+/* V51: visible, removable active filters with no new server dependency. */
+function updateActiveFilterTags(f){
+ const node=$('activeSearchFilters');if(!node)return;
+ const entries=[
+  ['q',f.q?'بحث: '+f.q:''],['category',f.category?'القسم: '+f.category:''],
+  ['subcategory',f.subcategory?'الفرعي: '+f.subcategory:''],
+  ['city',f.city?'المدينة: '+f.city:''],['district',f.district?'الحي: '+f.district:''],
+  ['kind',f.kind?'النوع: '+f.kind:''],['min',f.min!==''?'من '+f.min+' ر.س':''],
+  ['max',f.max!==''?'إلى '+f.max+' ر.س':''],
+  ['sort',f.sort==='cheap'?'الأرخص أولًا':f.sort==='expensive'?'الأغلى أولًا':f.sort==='old'?'الأقدم أولًا':'']
+ ].filter(([,label])=>Boolean(label));
+ node.hidden=entries.length===0;
+ node.innerHTML=entries.length?entries.map(([id,label])=>'<button type="button" class="sooqak-active-filter" data-remove-filter="'+id+'" aria-label="إزالة فلتر '+esc(label)+'">'+esc(label)+' <span aria-hidden="true">×</span></button>').join('')+'<button type="button" class="sooqak-clear-filters" data-remove-filter="clear">مسح الكل</button>':'';
+}
+function updateFilterBadge(){const f=filters(),num=Number(!!f.q)+Number(!!f.category)+Number(!!f.subcategory)+Number(!!f.city)+Number(!!f.district)+Number(!!f.kind)+Number(f.min!=='')+Number(f.max!=='')+Number(f.sort!=='new');const el=$('activeFilterCount');if(el){el.hidden=num===0;el.textContent=String(num)}}
 function sellerListings(ad){return allAds().filter(x=>{if(x.demo||ad.demo)return Boolean(ad.demo&&x.demo&&x.seller===ad.seller);return cloudEnabled()?Boolean(ad.accountId&&x.accountId===ad.accountId):Boolean(ad.owner&&x.owner===ad.owner&&x.role===ad.role)}).filter(active)}
 function profileBanner(name,city,about,number,isDemo){const initial=(String(name||'س').trim()[0]||'س').toUpperCase();return `<div class="seller-public-head"><div class="seller-avatar" aria-hidden="true">${esc(initial)}</div><div><h3>${esc(name||'بائع سوقك')}</h3><p>${city?'📍 '+esc(city)+' · ':''}${isDemo?'مثال تجريبي · ':''}${number} إعلان متاح</p></div></div>${about?`<p class="seller-bio">${esc(about)}</p>`:'<p class="seller-bio muted">لم يضف البائع نبذة بعد.</p>'}`;}
 async function openSellerProfile(adId){const ad=byId(adId);if(!ad)return;let info=null;if(!ad.demo){if(cloudEnabled()&&ad.accountId){try{info=await window.sooqakCloud.getPublicSellerProfile(ad.accountId)}catch(err){return cloudError(err)}}else if(mine(ad)){info=state.sellerProfiles?.[sellerProfileKey()]||null}}const own=mine(ad);drawSellerProfile(ad,info,own);}
