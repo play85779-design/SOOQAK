@@ -1393,10 +1393,12 @@ function openCloudReport(adId) {
 async function openCloudAdminDashboard(status='pending') {
   if(!cloudEnabled() || !state.account || !window.sooqakCloud)return openCloudLogin();
   showModal('لوحة إدارة البلاغات','<p class="muted">جارٍ التحقق من صلاحية المشرف وتحميل البلاغات...</p>');
+  const viewer=state.account.id,revision=modalRevision;
+  const current=()=>state.account?.id===viewer && modalRevision===revision;
   try {
     const service=window.sooqakCloud;
     const dashboard=await service.getAdminDashboard(status);
-    if($('modalTitle').textContent!=='لوحة إدارة البلاغات')return;
+    if(!current())return;
     const summary=dashboard?.summary||{};
     const reports=Array.isArray(dashboard?.reports)?dashboard.reports:[];
     const audit=Array.isArray(dashboard?.audit)?dashboard.audit:[];
@@ -1408,7 +1410,7 @@ async function openCloudAdminDashboard(status='pending') {
     $('modalContent').innerHTML=`<div class="warning">مراجعة داخلية تجريبية. لا تشارك بيانات البلاغات خارج فريق الإدارة. كل قرار محفوظ في سجل مراجعة لا يمكن تعديله من واجهة المستخدم.</div>${summaryBlock}<label>عرض البلاغات<select id="sooqakAdminStatusFilter">${options.map(([v,label])=>`<option value="${v}" ${status===v?'selected':''}>${label}</option>`).join('')}</select></label><p class="muted">عرض آخر 50 بلاغًا كحد أقصى حسب التاريخ.</p>${rows||'<div class="info">لا توجد بلاغات في هذه الحالة.</div>'}${auditBlock}`;
     if (typeof service.getAdminSaleCorrections==='function') {
       service.getAdminSaleCorrections().then(entries=>{
-        if($('modalTitle').textContent!=='لوحة إدارة البلاغات')return;
+        if(!current())return;
         const content=$('modalContent');if(!content)return;
         const list=Array.isArray(entries)?entries:[];
         const section=document.createElement('details');section.className='admin-audit';
@@ -1418,25 +1420,27 @@ async function openCloudAdminDashboard(status='pending') {
     }
     $('sooqakAdminStatusFilter').onchange=e=>openCloudAdminDashboard(e.target.value);
     $('modalContent').querySelectorAll('[data-admin-review]').forEach(button=>button.onclick=async()=>{
+      if(!current()||button.disabled)return;
       const panel=button.closest('[data-report-item]');
       const next=panel.querySelector('[data-admin-next]').value;
       const note=panel.querySelector('[data-admin-note]').value.trim();
       if(note.length<3){notify('اكتب سبب القرار، ثلاثة أحرف على الأقل');return;}
       button.disabled=true;
-      try{await service.adminReviewReport(button.dataset.adminReview,next,note);notify('حُفظ القرار في سجل الإدارة');await openCloudAdminDashboard(status)}
+      try{await service.adminReviewReport(button.dataset.adminReview,next,note);if(!current())return;notify('حُفظ القرار في سجل الإدارة');await openCloudAdminDashboard(status)}
       catch(err){button.disabled=false;cloudError(err)}
     });
     $('modalContent').querySelectorAll('[data-admin-hide]').forEach(button=>button.onclick=async()=>{
+      if(!current()||button.disabled)return;
       const panel=button.closest('[data-report-item]');
       const note=panel.querySelector('[data-admin-note]').value.trim();
       if(note.length<10){notify('سبب الإخفاء يجب أن يكون 10 أحرف على الأقل');return;}
       if(!confirm('هل تريد إخفاء الإعلان المرتبط بهذا البلاغ؟ سيختفي من نتائج المشترين مع بقاء سجلات المحادثة والقرار.'))return;
       button.disabled=true;
-      try{await service.adminHideReportedListing(button.dataset.adminHide,note);await refreshCloudAds();notify('تم إخفاء الإعلان وتوثيق القرار');await openCloudAdminDashboard(status)}
+      try{await service.adminHideReportedListing(button.dataset.adminHide,note);if(!current())return;await refreshCloudAds();if(!current())return;notify('تم إخفاء الإعلان وتوثيق القرار');await openCloudAdminDashboard(status)}
       catch(err){button.disabled=false;cloudError(err)}
     });
   }catch(err){
-    if($('modalTitle').textContent==='لوحة إدارة البلاغات')$('modalContent').innerHTML='<div class="warning">هذه اللوحة متاحة للمشرفين الموثقين فقط. لم يُفعّل أي مشرف تلقائيًا.</div><button class="btn btn-outline" data-act="account">العودة إلى الحساب</button>';
+    if(current())$('modalContent').innerHTML='<div class="warning">هذه اللوحة متاحة للمشرفين الموثقين فقط. لم يُفعّل أي مشرف تلقائيًا.</div><button class="btn btn-outline" data-act="account">العودة إلى الحساب</button>';
     cloudError(err);
   }
 }

@@ -30,3 +30,25 @@ SET fixture.uid='00000000-0000-4000-8000-000000000001';
 DO $$ BEGIN
  IF EXISTS(SELECT FROM public.sooqak_moderation_decisions) THEN RAISE EXCEPTION 'Audit visibility mismatch'; END IF;
 END $$;
+RESET ROLE;
+ALTER TABLE public.sooqak_service_directory ADD COLUMN owner_id uuid, ADD COLUMN status text;
+GRANT SELECT ON public.sooqak_service_directory TO authenticated;
+INSERT INTO public.sooqak_service_directory VALUES ('20000000-0000-4000-8000-000000000001','approved','00000000-0000-4000-8000-000000000002','active');
+\ir ../../migrations/NOT_APPLIED_V73_V74_SERVICE_REVIEWS.sql
+SET ROLE authenticated;
+SET fixture.uid='00000000-0000-4000-8000-000000000001';
+INSERT INTO public.sooqak_service_orders(service_id,provider_id) VALUES ('20000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000002') RETURNING id AS order_ref \gset
+INSERT INTO public.sooqak_service_completions(order_id) VALUES (:'order_ref');
+DO $$ BEGIN
+ BEGIN
+  INSERT INTO public.sooqak_service_reviews(order_id,stars) SELECT id,5 FROM public.sooqak_service_orders;
+  RAISE EXCEPTION 'Premature review accepted';
+ EXCEPTION WHEN insufficient_privilege THEN NULL; END;
+END $$;
+SET fixture.uid='00000000-0000-4000-8000-000000000002';
+INSERT INTO public.sooqak_service_completions(order_id) VALUES (:'order_ref');
+SET fixture.uid='00000000-0000-4000-8000-000000000001';
+INSERT INTO public.sooqak_service_reviews(order_id,stars) VALUES (:'order_ref',5);
+DO $$ BEGIN
+ IF (SELECT count(*) FROM public.sooqak_service_reviews WHERE stars=5)<>1 THEN RAISE EXCEPTION 'Completed service review missing'; END IF;
+END $$;
