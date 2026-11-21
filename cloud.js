@@ -1,3 +1,4 @@
+import { sooqakAuthReturnURL } from './auth-return.mjs';
 /* ربط تجريبي اختياري مع Supabase. لا يُحمّل أي كود خارجي عند غياب إعدادات المشروع. */
 if (window.SOOQAK_CLOUD_ENABLED) {
   try {
@@ -369,7 +370,7 @@ if(!currentUser)throw new Error('يجب تسجيل الدخول لرفع الص�
       reserve:(id,hours)=>runRpc('sooqak_reserve',{p_listing:id,p_hours:hours}),
       bump:id=>runRpc('sooqak_bump',{p_listing:id}),
       signInEmail:async (email,{createAccount=false,displayName=''}={})=>{
-        const options={emailRedirectTo:location.origin+location.pathname,shouldCreateUser:Boolean(createAccount)};
+        const options={emailRedirectTo:sooqakAuthReturnURL(),shouldCreateUser:Boolean(createAccount)};
         if(createAccount&&displayName)options.data={full_name:displayName.slice(0,60)};
         const r=await supabase.auth.signInWithOtp({email,options});
         errorIfAny(r);
@@ -382,7 +383,7 @@ if(!currentUser)throw new Error('يجب تسجيل الدخول لرفع الص�
       signUpPassword:async (email,password,displayName)=>{
         const result=await supabase.auth.signUp({
           email,password,
-          options:{emailRedirectTo:location.origin+location.pathname,data:{full_name:String(displayName).slice(0,60)}}
+          options:{emailRedirectTo:sooqakAuthReturnURL(),data:{full_name:String(displayName).slice(0,60)}}
         });
         errorIfAny(result);
         return Boolean(result.data?.session);
@@ -394,7 +395,7 @@ if(!currentUser)throw new Error('يجب تسجيل الدخول لرفع الص�
         return true;
       },
       signInGoogle:async ()=>{
-        const r=await supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});
+        const r=await supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:sooqakAuthReturnURL()}});
         errorIfAny(r);
       },
       signOut:async()=>{errorIfAny(await supabase.auth.signOut());currentUser=null;await refreshUser();}
