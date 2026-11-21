@@ -16,7 +16,7 @@ test('01 registration has email, password, and explicit email-link option', asyn
 test('02 password form validates locally without sending an email', async ({ page }) => {
   await page.goto(root + '?auth=signup', {waitUntil:'domcontentloaded'});
   await expect(page.locator('#cloudLoginForm')).toBeVisible();
-  await expect(page.locator('#authPassword')).toHaveAttribute('minlength','12');
+  await expect(page.locator('#authPassword')).toHaveAttribute('minlength','6');
   await expect(page.locator('#authDisplayName')).toHaveAttribute('required','');
 });
 
@@ -88,4 +88,33 @@ test('11 beta crawler restriction remains enabled', async ({ page, request }) =>
 test('12 core static routes respond successfully', async ({ request }) => {
   const routes=['/index.html','/listing.html','/services.html','/service-detail.html','/admin-services.html','/privacy.html','/terms.html','/pricing.html','/content-policy.html'];
   for(const route of routes){const response=await request.get(route);expect(response.status(),route).toBe(200);}
+});
+
+test('typing into header search immediately hides hero and categories, showing results below header',async({page})=>{
+ await page.goto(root,{waitUntil:'domcontentloaded'});
+ await page.locator('#searchInput').fill('سيارة');
+ await expect(page.locator('body')).toHaveClass(/sooqak-search-active/);
+ await expect(page.locator('.hero')).toBeHidden();
+ await expect(page.locator('.categories-section')).toBeHidden();
+ await expect(page.locator('.service-callout')).toBeHidden();
+ await expect(page.locator('#resultsTitle')).toContainText('نتائج البحث');
+ await expect(page.locator('#listingGrid')).toContainText('سيارة سيدان');
+ const distances=await page.evaluate(()=>({header:document.querySelector('.topbar').getBoundingClientRect().bottom,results:document.querySelector('.market-section').getBoundingClientRect().top}));
+ expect(distances.results-distances.header).toBeLessThan(65);
+ await page.locator('#searchInput').fill('');
+ await expect(page.locator('.hero')).toBeVisible();
+ await expect(page.locator('body')).not.toHaveClass(/sooqak-search-active/);
+});
+
+test('singular and plural Arabic car and land terms normalize consistently',async({page})=>{
+ await page.goto(root,{waitUntil:'domcontentloaded'});
+ const terms=await page.evaluate(()=>['أرض','أراضي','سيارة','سيارات'].map(normalizeSearchText));
+ expect(terms).toEqual(['ارض','ارض','سياره','سياره']);
+});
+
+test('login accepts previously established short password and new signup allows six characters',async({page})=>{
+ await page.goto(root+'?auth=signup',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#authPassword')).toHaveAttribute('minlength','6');
+ await page.locator('#authLoginTab').click();
+ await expect(page.locator('#authPassword')).toHaveAttribute('minlength','1');
 });

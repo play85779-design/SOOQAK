@@ -67,9 +67,23 @@ if (window.SOOQAK_CLOUD_ENABLED) {
       if(criteria.min!=='' && criteria.min!=null && Number.isFinite(Number(criteria.min)))query=query.gte('price',Number(criteria.min));
       if(criteria.max!=='' && criteria.max!=null && Number.isFinite(Number(criteria.max)))query=query.lte('price',Number(criteria.max));
       if(criteria.q){
-        // PostgREST safe characters; robust Arabic normalization needs a later DB search index.
-        const value=String(criteria.q).replace(/[\\%_*,()]/g,' ').replace(/\s+/g,' ').trim().slice(0,70);
-        if(value)query=query.or(`title.ilike.%${value}%,description.ilike.%${value}%`);
+        // Include familiar Saudi singular/plural spellings without broadening all multiword queries.
+        // Only Unicode letters, numbers and spaces enter the PostgREST OR expression.
+        const value=String(criteria.q).replace(/[^\p{L}\p{N}\s]/gu,' ').replace(/\s+/g,' ').trim().slice(0,70);
+        const lookup=value.toLowerCase().replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه');
+        const synonyms={
+          'ارض':['أرض','ارض','أراضي','اراضي','أراض','الأراضي'],
+          'اراضي':['أرض','ارض','أراضي','اراضي','أراض','الأراضي'],
+          'الارض':['أرض','ارض','أراضي','اراضي','أراض','الأراضي'],
+          'الاراضي':['أرض','ارض','أراضي','اراضي','أراض','الأراضي'],
+          'سياره':['سيارة','سياره','سيارات','السيارات'],
+          'سيارات':['سيارة','سياره','سيارات','السيارات'],
+          'السيارات':['سيارة','سياره','سيارات','السيارات']
+        };
+        const terms=[...new Set(synonyms[lookup]||[value])].filter(Boolean);
+        if(terms.length)query=query.or(terms.flatMap(word=>[
+          `title.ilike.%${word}%`,`description.ilike.%${word}%`,`category.ilike.%${word}%`
+        ]).join(','));
       }
       if(criteria.sort==='cheap')query=query.order('price',{ascending:true,nullsFirst:false});
       else if(criteria.sort==='expensive')query=query.order('price',{ascending:false,nullsFirst:false});
