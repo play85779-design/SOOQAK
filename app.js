@@ -381,6 +381,24 @@ function sellerPhoneButtons(ad){
  return buttons;
 }
 
+// V60: verified facts available in this preview, not an identity certificate or risk score.
+function sellerTrustFacts(ad,rows){
+ const count=rows.length;
+ const sample=Boolean(ad.demo);
+ const contact=Boolean(!sample&&active(ad)&&/^[1-9][0-9]{7,14}$/.test(String(ad.whatsapp||'').replace(/\D/g,''))&&(ad.showWhatsapp!==false||ad.allowCall));
+ const scope=cloudEnabled()?'من نتائج الإعلانات التي حُمّلت في هذه الجلسة':'من الإعلانات الظاهرة في هذه المعاينة';
+ return '<section class="seller-trust-facts" aria-label="مؤشرات معلومات البائع">'+
+   '<h3>معلومات البائع المتاحة للتحقق</h3>'+
+   '<ul>'+
+   '<li>عدد الإعلانات المتاحة الظاهرة: <strong>'+count+'</strong> <small>'+esc(scope)+'</small></li>'+
+   '<li>الهوية التجارية أو الشخصية: <strong>لم يتم إثبات التوثيق في هذه النسخة</strong></li>'+
+   '<li>وسائل التواصل: <strong>'+(contact?'اختار البائع إظهار وسيلة اتصال في أحد إعلاناته':'المتاح حسب إعدادات كل إعلان')+'</strong> <small>الرقم غير موثّق من سوقك</small></li>'+
+   '<li>تقييمات بعد شراء مثبت: <strong>غير مفعّلة حتى الآن</strong></li>'+
+   '</ul>'+
+   (sample?'<p class="warning">هذا ملف تجريبي وليس بائعًا حقيقيًا.</p>':'')+
+   '<p class="muted">هذه بيانات عرض وليست ضمانًا للبيع أو تقييمًا ائتمانيًا أو شهادة ثقة. لا تحول مبالغ دون التحقق بنفسك.</p>'+
+   '</section>';
+}
 function drawSellerProfile(ad,info,own){
  const rows=sellerListings(ad);
  // Preserve the current listing identity; a profile marked not visible must
@@ -391,6 +409,7 @@ function drawSellerProfile(ad,info,own){
  // V58: no rating is trustworthy without a verified completed transaction and
  // a server-side one-review-per-deal rule. Never fabricate a rating from demo data.
  html+='<section class="seller-review-readiness" aria-label="تقييمات البائع"><h3>تقييمات البائع</h3><p class="muted">التقييمات غير مفعّلة حاليًا. لن تظهر نجوم أو مراجعات إلا بعد ربطها بتعامل مكتمل والتحقق من أهلية المقيّم.</p></section>';
+ html+=sellerTrustFacts(ad,rows);
  if(!own&&!ad.demo&&sellerMuteKey(ad))html+='<div class="profile-owner-actions"><button class="btn btn-outline" data-act="muteSeller" data-id="'+esc(ad.id)+'">إخفاء إعلانات هذا البائع على جهازي</button></div>';
  if(own)html+='<div class="profile-owner-actions"><button class="btn btn-gold" data-act="editpublic">تعديل البروفايل</button><button class="btn btn-outline" data-act="myads">إعلاناتي</button></div>';
  if(rows.length)html+=sellerContactPanel(rows[0],own);
