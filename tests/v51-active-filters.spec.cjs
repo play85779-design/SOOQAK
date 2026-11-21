@@ -3,6 +3,9 @@ async function setup(page){
  await page.route('**/cloud.js',route=>route.fulfill({status:200,contentType:'text/javascript',body:'// V51 local filters only'}));
  await page.goto('/index.html');
  await page.evaluate(()=>{window.SOOQAK_CLOUD_ENABLED=false;reset()});
+ // Filter inputs are inside a modal drawer, so open the drawer before interacting.
+ await page.locator('#filterToggle').click();
+ await expect(page.locator('#filterDrawer')).toHaveAttribute('aria-hidden','false');
 }
 test('V51 combination of filters is visible and chips remove only their own filter',async({page})=>{
  await setup(page);
