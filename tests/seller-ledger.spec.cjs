@@ -89,6 +89,7 @@ test('profile count includes old, sold and hidden own ads',async({page})=>{
  await start(page);
  await page.locator('#profileButton').click();
  await expect(page.locator('#sooqakOwnListingCount')).toHaveText('45');
+ await expect(page.locator('#sooqakSoldListingCount')).toHaveText('23');
 });
 
 test('V83 seller can open a correction for an older sale outside the public feed',async({page})=>{
