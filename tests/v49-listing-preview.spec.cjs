@@ -13,7 +13,7 @@ async function start(page){
 test('V49 preview shows current information but never publishes',async({page})=>{
  await start(page);
  await page.locator('[name="title"]').fill('سيارة تجريبية معاينة');
- await page.locator('[name="description"]').fill('وصف صحيح من تجربة محلية فقط');
+ await page.locator('#adForm [name="description"]').fill('وصف صحيح من تجربة محلية فقط');
  await page.locator('[name="price"]').fill('27000');
  await page.locator('#previewAdButton').click();
  await expect(page.locator('#sooqakAdPreview')).toBeVisible();
