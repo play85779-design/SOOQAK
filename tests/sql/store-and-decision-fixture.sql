@@ -52,3 +52,20 @@ INSERT INTO public.sooqak_service_reviews(order_id,stars) VALUES (:'order_ref',5
 DO $$ BEGIN
  IF (SELECT count(*) FROM public.sooqak_service_reviews WHERE stars=5)<>1 THEN RAISE EXCEPTION 'Completed service review missing'; END IF;
 END $$;
+RESET ROLE;
+CREATE TABLE public.sooqak_messages(id bigint GENERATED ALWAYS AS IDENTITY, sender_id uuid DEFAULT auth.uid(), body text);
+GRANT INSERT(body) ON public.sooqak_messages TO authenticated;
+\ir ../../migrations/NOT_APPLIED_V65_MESSAGE_THROTTLE.sql
+SET ROLE authenticated;
+INSERT INTO public.sooqak_messages(body) SELECT 'fixture' FROM generate_series(1,20);
+DO $$ BEGIN
+ BEGIN
+  INSERT INTO public.sooqak_messages(body) VALUES ('over limit');
+  RAISE EXCEPTION 'Unexpected extra send' USING ERRCODE='23514';
+ EXCEPTION WHEN SQLSTATE 'P0001' THEN NULL; END;
+END $$;
+RESET ROLE;
+DO $$ BEGIN IF (SELECT count(*) FROM public.sooqak_messages)<>20 THEN RAISE EXCEPTION 'Limit mismatch'; END IF; END $$;
+UPDATE public.sooqak_message_windows SET started_at=now()-interval '2 minutes';
+SET ROLE authenticated;
+INSERT INTO public.sooqak_messages(body) VALUES ('new interval');
