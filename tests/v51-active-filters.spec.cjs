@@ -45,7 +45,14 @@ test('V51 choosing a subcategory shows removable parent and child filters',async
  await page.locator('#filterClose').click();
  await expect(page.locator('[data-remove-filter="category"]')).toContainText('سيارات');
  await expect(page.locator('[data-remove-filter="subcategory"]')).toContainText(sub);
+ // A refresh while the pointer is down must not replace the pressed button.
+ await page.locator('[data-remove-filter="category"]').evaluate(button=>{
+  button.addEventListener('pointerdown',()=>render(),{once:true});
+ });
  await page.locator('[data-remove-filter="category"]').click();
+ await expect(page.locator('[data-remove-filter="category"]')).toHaveCount(0);
+ await expect(page.locator('[data-remove-filter="subcategory"]')).toHaveCount(0);
+ await expect(page.locator('#categoryFilter')).toHaveValue('');
  await expect(page.locator('#subcategoryFilterGroup')).toBeHidden();
  expect(await page.locator('#subcategoryFilter').inputValue()).toBe('');
 });
