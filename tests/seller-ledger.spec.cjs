@@ -27,9 +27,9 @@ const collections={
  sooqak_sale_corrections:[],sooqak_favorites:[],sooqak_listing_photos:[],sooqak_listing_contacts:[]
 };
 function query(table){
- let clauses=[],sortBy=null,asc=false,start=0,size=1000;
+ let clauses=[],sortBy=null,asc=false,start=0,size=1000,head=false;
  const obj={
-  select:()=>obj,
+  select:(columns,options)=>{head=options?.head===true;return obj},
   eq:(key,value)=>{clauses.push(v=>v[key]===value);return obj},
   in:(key,values)=>{clauses.push(v=>values.includes(v[key]));return obj},
   order:(key,options)=>{if(!sortBy){sortBy=key;asc=options?.ascending===true}return obj},
@@ -39,7 +39,7 @@ function query(table){
   then:(ok,bad)=>{
     let rows=(collections[table]||[]).filter(row=>clauses.every(fn=>fn(row)));
     if(sortBy)rows.sort((a,b)=>{let x=String(a[sortBy]),y=String(b[sortBy]);return asc?x.localeCompare(y):y.localeCompare(x)});
-    return Promise.resolve({data:rows.slice(start,start+size),error:null}).then(ok,bad);
+    return Promise.resolve({data:head?null:rows.slice(start,start+size),count:rows.length,error:null}).then(ok,bad);
   }
  };
  return obj;
@@ -81,4 +81,10 @@ test('commission ledger includes sale from listing absent from current public fe
  const summary=await page.locator('#modalContent .count-card strong').first().textContent();
  const western=summary.replace(/[٠-٩]/g,c=>String(c.charCodeAt(0)-0x660)).replace(/[۰-۹]/g,c=>String(c.charCodeAt(0)-0x6f0));
  expect(western).toContain('50');
+});
+
+test('profile count includes old, sold and hidden own ads',async({page})=>{
+ await start(page);
+ await page.locator('#profileButton').click();
+ await expect(page.locator('#sooqakOwnListingCount')).toHaveText('45');
 });
