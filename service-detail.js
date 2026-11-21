@@ -22,7 +22,12 @@ async function start(){
   const actions=node('div',undefined,'actions');
   if(data.map_url){try{const m=new URL(data.map_url);if(m.protocol==='https:'&&(m.hostname==='maps.app.goo.gl'||m.hostname==='goo.gl'&&m.pathname.startsWith('/maps/')||['maps.google.com','maps.google.com.sa'].includes(m.hostname)||['www.google.com','www.google.com.sa','google.com','google.com.sa'].includes(m.hostname)&&m.pathname.startsWith('/maps/'))){const a=node('a','افتح موقع النشاط على الخريطة','btn');a.href=m.href;a.target='_blank';a.rel='noopener noreferrer';actions.append(a)}}catch{}}
   if(data.phone_public&&data.phone_e164){const call=node('a','اتصال','btn dark');call.href='tel:'+data.phone_e164;actions.append(call);
-   const whatsapp=node('a','مراسلة واتساب','btn gold');whatsapp.href='https://wa.me/'+data.phone_e164.replace(/\D/g,'');whatsapp.target='_blank';whatsapp.rel='noopener noreferrer';actions.append(whatsapp)}
+   const whatsapp=node('a','مراسلة واتساب','btn gold');whatsapp.href='https://wa.me/'+data.phone_e164.replace(/\D/g,'');whatsapp.target='_blank';whatsapp.rel='noopener noreferrer';actions.append(whatsapp);
+   const quote=node('a','طلب عرض سعر عبر واتساب','btn');
+   const draft=new URL(whatsapp.href);
+   draft.searchParams.set('text','السلام عليكم، وجدت '+data.name+' في سوقك وأرغب في عرض سعر لخدمة '+data.specialty+'.');
+   quote.href=draft.href;quote.target='_blank';quote.rel='noopener noreferrer';actions.append(quote);
+  }
   const share=node('button','مشاركة رابط النشاط','btn');share.type='button';share.onclick=async()=>{try{if(navigator.share)await navigator.share({title:data.name,url:location.href});else if(navigator.clipboard){await navigator.clipboard.writeText(location.href);share.textContent='تم نسخ الرابط'}else share.textContent='انسخ الرابط من شريط العنوان'}catch(e){if(e.name!=='AbortError')share.textContent='انسخ الرابط من شريط العنوان'}};actions.append(share);body.append(actions);
   body.append(node('p','هذا النشاط أضافه صاحبه، ولا يعني نشره أنه معتمد أو مرخص من سوقك.','muted'));
  }catch(error){body.className='error';body.textContent='تعذر تحميل بيانات النشاط. حاول مرة ثانية لاحقًا.'}

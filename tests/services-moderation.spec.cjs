@@ -70,3 +70,31 @@ test('admin panel stays hidden when signed-in user is not in server allowlist',a
  await expect(page.locator('#adminTools')).toBeHidden();
  await expect(page.locator('#status')).toContainText('للمشرفين');
 });
+
+test('V75 shared city and specialty filters survive refresh and clear together',async({page})=>{
+ await start(page,'/services.html?city='+encodeURIComponent('الجبيل')+'&specialty='+encodeURIComponent('ميكانيكا سيارات'));
+ await expect(page.locator('#cards .card')).toHaveCount(1);
+ await expect(page.locator('#cards')).toContainText('الجبيل');
+ await page.reload();
+ await expect(page.locator('#clearFilters')).toBeVisible();
+ await page.locator('#clearFilters').click();
+ await expect(page.locator('#cards .card')).toHaveCount(2);
+ await expect(page).not.toHaveURL(/specialty=/);
+});
+
+for(const published of [true,false]){
+ test('V73 quote draft follows contact consent '+published,async({page})=>{
+  const service={name:'ورشة الجبيل',kind:'workshop',specialty:'ميكانيكا سيارات',status:'active',moderation_state:'approved',phone_e164:'+966500000000',phone_public:published};
+  await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'text/javascript',body:`
+   export function createClient(){const q={select:()=>q,eq:()=>q,maybeSingle:async()=>({data:${JSON.stringify(service)}})};return {from:()=>q}}
+  `}));
+  await page.goto('/service-detail.html?id=00000000-0000-4000-8000-000000000001');
+  await expect(page.locator('h1')).toHaveText(service.name);
+  const request=page.getByRole('link',{name:'طلب عرض سعر عبر واتساب'});
+  if(published){
+   const link=new URL(await request.getAttribute('href'));
+   expect(link.hostname).toBe('wa.me');
+   expect(link.searchParams.get('text')).toContain(service.specialty);
+  }else await expect(request).toHaveCount(0);
+ });
+}
