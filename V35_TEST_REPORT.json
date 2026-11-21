@@ -1,0 +1,40 @@
+{
+  "version": "V35",
+  "based_on": "V34",
+  "date": "2026-11-21",
+  "scope": "auth UI and confirmation-return diagnostics",
+  "automated_tests": {
+    "node_syntax": [
+      "app.js",
+      "cloud.js"
+    ],
+    "browser_isolated_auth_state": [
+      390,
+      760,
+      1280
+    ],
+    "browser_mock_cloud_startup": [
+      390,
+      1280
+    ],
+    "tested": [
+      "pending state",
+      "guest state",
+      "verified session header",
+      "profile modal",
+      "sign-out",
+      "same-user refresh preserves favorites",
+      "metadata name update"
+    ]
+  },
+  "not_tested": [
+    "real Supabase Magic Link on user phone",
+    "Gmail in-app browser handoff",
+    "real authenticated listing/chat uploads",
+    "email sender branding"
+  ],
+  "production_changed": false,
+  "database_schema_changed": false,
+  "supabase_email_template_applied": false,
+  "credentials_included": "public publishable Supabase key only"
+}
