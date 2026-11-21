@@ -3,7 +3,7 @@ import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2
 const api=createClient('https://zwbtiyqgrgjybwaguuyn.supabase.co','sb_publishable_42t2ty_ID8MfKoxQkw3CkA_3p1GG4kr',{auth:{persistSession:true,detectSessionInUrl:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id);
 const el=(tag,value,cls='')=>{const x=document.createElement(tag);if(value!==undefined)x.textContent=value;if(cls)x.className=cls;return x};
-let admin=false;
+let admin=false,reportRequest=0;
 
 // New/edited service entries stay invisible until a verified administrator approves.
 async function refreshPending(){
@@ -13,6 +13,7 @@ async function refreshPending(){
   .select('id,name,kind,city,district,specialty,description,created_at,updated_at,moderation_state')
   .eq('moderation_state','pending').order('updated_at',{ascending:true}).limit(100);
  if(r.error){$('pendingStatus').textContent='تعذر تحميل الطلبات: '+r.error.message;return}
+ if(!admin)return;
  const rows=r.data||[];
  $('pendingStatus').textContent=rows.length?`يوجد ${rows.length} طلب اعتماد${rows.length===100?' (تعرض أول 100 فقط)':''}.`:'لا توجد طلبات اعتماد معلقة.';
  for(const svc of rows){
@@ -43,8 +44,9 @@ async function decideService(svc,decision){
 async function refresh(){
  if(!admin)return;
  $('status').textContent='جاري جلب البلاغات…';$('reports').replaceChildren();
- const state=$('statusFilter').value;
+ const state=$('statusFilter').value,request=++reportRequest;
  const r=await api.from('sooqak_service_reports').select('id,service_id,reason,details,status,created_at,sooqak_service_directory(name,city,kind,status,moderation_state)').eq('status',state).order('created_at',{ascending:false}).limit(100);
+ if(!admin||request!==reportRequest)return;
  if(r.error){$('status').textContent='تعذر جلب البلاغات: '+r.error.message;return;}
  const rows=r.data||[];$('status').textContent=rows.length?`تم عرض ${rows.length} بلاغًا (${state==='pending'?'مفتوح':'مغلق'}).`:'لا توجد بلاغات في هذا التصنيف.';
  for(const d of rows){
@@ -78,6 +80,14 @@ async function moderate(d,hide){
 }
 (async()=>{try{
  const u=await api.auth.getUser();if(u.error||!u.data?.user?.email_confirmed_at){$('status').textContent='يلزم تسجيل الدخول بحساب موثّق قبل فتح لوحة الإدارة.';return}
- const r=await api.rpc('sooqak_is_admin');if(r.error||r.data!==true){$('status').textContent='هذه الصفحة للمشرفين المصرح لهم فقط.';return}
+ let sessionChanged=false;
+ api.auth.onAuthStateChange?.((event,session)=>{
+  if(session?.user?.id===u.data.user.id)return;
+  sessionChanged=true;admin=false;++reportRequest;
+  $('adminTools').hidden=true;
+  $('pendingServices').replaceChildren();$('reports').replaceChildren();
+  $('status').textContent='تغيّر الحساب. أعد فتح الصفحة للتحقق من صلاحيات الحساب الحالي.';
+ });
+ const r=await api.rpc('sooqak_is_admin');if(sessionChanged)return;if(r.error||r.data!==true){$('status').textContent='هذه الصفحة للمشرفين المصرح لهم فقط.';return}
  admin=true;$('adminTools').hidden=false;$('statusFilter').onchange=refresh;$('reload').onclick=refresh;$('pendingReload').onclick=refreshPending;await Promise.all([refreshPending(),refresh()]);
  }catch(e){$('status').textContent='تعذر التحقق من صلاحيات الإدارة. حاول لاحقًا.'}})();

@@ -22,7 +22,8 @@ const cloudError=e=>{const raw=String(e?.message||e);const code=String(e?.code||
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const todayRiyadh=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Riyadh',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-const money=n=>new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(Number(n)||0);
+const priceFormat=new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2});
+const money=n=>priceFormat.format(Number(n)||0);
 const save=()=>{try{const value=cloudEnabled()?{view:state.view,favorites:state.favorites,role:state.role,savedSearch:state.savedSearch,sellerMutes:state.sellerMutes}:state;localStorage.setItem(STORAGE_KEY,JSON.stringify(value))}catch(e){alert('امتلأ التخزين المحلي. جرّب استخدام صور أقل أو أصغر.') }};
 const allAds=()=>[...state.ads,...demos];
 // V59: local seller hiding is a display preference, NOT a server-side ban.
@@ -96,7 +97,8 @@ function showModal(title,html){++modalRevision;closeFilterDrawer(false);clearPho
 function closeModal(){++modalRevision;clearTimeout(sooqakDraftAutoSaveTimer);sooqakActiveChatId=null;clearPhotoPreviewUrls();$('modalBackdrop').hidden=true;$('modalContent').innerHTML='';document.body.style.overflow='';modalId=null;if(sooqakPreviousFocus?.isConnected)sooqakPreviousFocus.focus();sooqakPreviousFocus=null;}
 function cardPrice(ad){return ad.priceType==='تواصل للسعر'||ad.price===null?'تواصل للسعر':`${money(ad.price)} <small>ر.س</small>`}
 function cardMedia(ad){return ad.images?.[0]?`<img src="${esc(ad.images[0])}" alt="صورة ${esc(ad.title)}" loading="lazy" decoding="async"/>`:`<span class="item-emoji">${esc(ad.emoji||'📦')}</span>`}
-function card(ad){const favorite=state.favorites.includes(ad.id);const date=new Date(ad.createdAt).toLocaleDateString('ar-SA',{year:'numeric',month:'short',day:'numeric'});return `<article class="listing-card" data-open="${esc(ad.id)}" role="button" tabindex="0" aria-label="عرض ${esc(ad.title)}"><div class="listing-media" data-color="${esc(ad.color||'blue')}">${cardMedia(ad)}${ad.demo?'<span class="media-tag">إعلان تجريبي</span>':''}${ad.status==='مباع'?'<span class="sold-tag">تم البيع</span>':ad.status==='محجوز'?'<span class="sold-tag">محجوز مؤقتًا</span>':''}<button class="heart ${favorite?'active':''}" data-fav="${esc(ad.id)}" aria-label="${favorite?'إزالة من المفضلة':'إضافة للمفضلة'}" aria-pressed="${favorite?'true':'false'}">${favorite?'♥':'♡'}</button></div><div class="listing-body"><h3 class="listing-title">${esc(ad.title)}</h3><div class="listing-price">${cardPrice(ad)}</div><div class="listing-meta"><span>⌖ ${esc(ad.city)}</span><span>${esc(date)}</span></div></div></article>`}
+const cardDateFormat=new Intl.DateTimeFormat('ar-SA',{year:'numeric',month:'short',day:'numeric'});
+function card(ad){const favorite=state.favorites.includes(ad.id);const created=new Date(ad.createdAt);const date=Number.isFinite(created.getTime())?cardDateFormat.format(created):'';return `<article class="listing-card" data-open="${esc(ad.id)}" role="button" tabindex="0" aria-label="عرض ${esc(ad.title)}"><div class="listing-media" data-color="${esc(ad.color||'blue')}">${cardMedia(ad)}${ad.demo?'<span class="media-tag">إعلان تجريبي</span>':''}${ad.status==='مباع'?'<span class="sold-tag">تم البيع</span>':ad.status==='محجوز'?'<span class="sold-tag">محجوز مؤقتًا</span>':''}<button class="heart ${favorite?'active':''}" data-fav="${esc(ad.id)}" aria-label="${favorite?'إزالة من المفضلة':'إضافة للمفضلة'}" aria-pressed="${favorite?'true':'false'}">${favorite?'♥':'♡'}</button></div><div class="listing-body"><h3 class="listing-title">${esc(ad.title)}</h3><div class="listing-price">${cardPrice(ad)}</div><div class="listing-meta"><span>⌖ ${esc(ad.city)}</span><span>${esc(date)}</span></div></div></article>`}
 const SOOQAK_SEARCH_ALIASES=Object.freeze({اراضي:'ارض',اراض:'ارض',الاراضي:'ارض',الارض:'ارض',ارض:'ارض',سيارات:'سياره',السيارات:'سياره',سياره:'سياره',عقارات:'عقار',العقارات:'عقار',عقار:'عقار'});
 function normalizeSearchText(text){return String(text||'').toLowerCase().normalize('NFKC').replace(/[٠-٩]/g,c=>String(c.charCodeAt(0)-0x660)).replace(/[۰-۹]/g,c=>String(c.charCodeAt(0)-0x6f0)).replace(/[\u064b-\u065f\u0670\u0640]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/ؤ/g,'و').replace(/ئ/g,'ي').replace(/[^\p{L}\p{N}\s]/gu,' ').replace(/\s+/g,' ').trim().split(' ').map(token=>SOOQAK_SEARCH_ALIASES[token]||token).join(' ')}
 function filters(){return {q:$('searchInput').value.trim().toLowerCase(),category:$('categoryFilter').value,subcategory:$('subcategoryFilter')?.value||'',city:$('cityFilter').value,kind:$('typeFilter').value,district:$('districtFilter').value.trim().toLowerCase(),min:$('minPrice').value,max:$('maxPrice').value,sort:$('sortFilter').value}}
@@ -909,7 +911,7 @@ function onCloudAuth(e){
   state.account=user?{id:user.id,email:user.email,name}:null;
   sooqakAuthResolved=true;
   if(changed){
-    if(sooqakActiveChatId || $('sooqakInboxSummary'))closeModal();
+    if(previousId && !$('modalBackdrop').hidden)closeModal();
     sooqakOwnedAdCache.clear();sooqakSharedLinkCache.clear();
     state.ads=[];state.cloudPledgeAcceptedAt=null;state.favorites=[];
     sooqakUnreadBaseline=null;sooqakUnreadFetchSeq++;sooqakActiveChatId=null;setChatUnreadBadge(0);
@@ -1223,14 +1225,34 @@ async function moveV12Photo(listingId,photoId,direction){const ad=byId(listingId
   async function removeCloudPhoto(id,path,listingId){if(!mine(byId(listingId)))return notify('غير مسموح');if(!confirm('حذف هذه الصورة من الإعلان؟'))return;try{await window.sooqakCloud.removePhoto(id,path);await refreshCloudAds();openPosting(listingId);notify('حُذفت الصورة')}catch(e){cloudError(e)}}
 async function reserveCloud(id){if(!mine(byId(id)))return notify('غير مسموح');const hours=prompt('مدة الحجز بالساعات: 24 أو 48 أو 72','24');if(hours===null)return;if(!['24','48','72'].includes(hours))return notify('اختر 24 أو 48 أو 72');try{await window.sooqakCloud.reserve(id,Number(hours));await refreshCloudAds();openAd(id);notify('تم تسجيل الحجز')}catch(e){cloudError(e)}}
 async function bumpCloud(id){if(!mine(byId(id)))return notify('غير مسموح');try{await window.sooqakCloud.bump(id);closeModal();await refreshCloudAds();notify('تم رفع الإعلان')}catch(e){cloudError(e)}}
-async function sellCloud(id){const ad=byId(id);if(!mine(ad)||ad.status==='مباع')return;const raw=prompt('كم السعر النهائي الفعلي الذي تم البيع عليه؟',String(ad.price||''));if(raw===null)return;const amount=Number(raw);if(!Number.isFinite(amount)||amount<=0||amount>999999999)return notify('أدخل قيمة بيع صحيحة');if(!confirm(`ستُسجل عمولة 1% بمبلغ ${money(Math.round(amount*100)/100*.01)} ريال ضمن حسابك التجريبي. متأكد؟`))return;try{await window.sooqakCloud.markSold(id,amount);closeModal();await refreshCloudAds();notify('سُجل البيع والعمولة في قاعدة البيانات')}catch(e){cloudError(e)}}
+const pendingSales=new Set();
+async function sellCloud(id){
+ const ad=byId(id);
+ if(!mine(ad)||ad.status==='مباع'||pendingSales.has(id))return;
+ const viewer=state.account?.id;
+ const raw=prompt('كم السعر النهائي الفعلي الذي تم البيع عليه؟',String(ad.price||''));
+ if(raw===null)return;
+ const amount=Number(raw);
+ if(!Number.isFinite(amount)||amount<=0||amount>999999999||!/^\d+(?:\.\d{1,2})?$/.test(raw.trim())){
+  return notify('أدخل مبلغ البيع بالريال حتى منزلتين عشريتين');
+ }
+ if(!confirm(`ستُسجل عمولة 1% بمبلغ ${money(Math.round(amount)/100)} ريال ضمن حسابك التجريبي. متأكد؟`))return;
+ pendingSales.add(id);
+ try{
+  await window.sooqakCloud.markSold(id,amount);
+  if(state.account?.id!==viewer)return;
+  closeModal();await refreshCloudAds();notify('سُجل البيع والعمولة في قاعدة البيانات');
+ }catch(e){cloudError(e)}finally{pendingSales.delete(id)}
+}
 async function openCloudCommissions(){
   if(!state.account)return openCloudLogin();
+  const viewer=state.account.id;
   try{
     const service=window.sooqakCloud;
     const [rows,corrections]=await Promise.all([service.getSales(),service.getSaleCorrections()]);
     // sooqak_sales is already restricted by the server's owner RLS. Do not filter
     // against the first 60 visible ads: old and sold listings must remain in the ledger.
+    if(state.account?.id!==viewer)return;
     const mineRows=rows;
     const history=corrections.filter(c=>mineRows.some(r=>r.id===c.sale_id));
     const total=mineRows.reduce((n,r)=>n+Number(r.commission),0);
@@ -1244,14 +1266,17 @@ async function openCloudCommissions(){
 }
 async function openCloudSaleCorrection(saleId){
   if(!state.account)return openCloudLogin();
+  const viewer=state.account.id;
   try{
     const rows=await window.sooqakCloud.getSales();
-    const sale=rows.find(r=>r.id===saleId && state.ads.some(a=>a.id===r.listing_id&&mine(a)));
+    if(state.account?.id!==viewer)return;
+    const sale=rows.find(r=>r.id===saleId);
     if(!sale)return notify('هذه العملية لا تخص حسابك الحالي');
     if(Number(sale.correction_count)>=3)return notify('وصلت الحد الأقصى للتصحيحات');
     showModal('تصحيح سعر بيع مسجل',`<div class="info">المبلغ الحالي ${money(sale.final_price)} ريال، والعمولة ${money(sale.commission)} ريال. أي تعديل سيُحفظ في سجل غير قابل للمحو بواسطة البائع.</div><form id="correctSaleForm" class="form-grid"><label class="wide">السعر النهائي الصحيح (ر.س)<input name="price" type="number" min="0.01" max="999999999.99" step="0.01" value="${Number(sale.final_price)}" required></label><label class="wide">سبب التصحيح (من 10 إلى 300 حرف)<textarea name="reason" maxlength="300" minlength="10" required placeholder="مثال: تم الاتفاق على خصم موثّق في سعر البيع النهائي"></textarea></label><div class="form-actions"><button type="button" class="btn btn-outline" data-act="commissions">رجوع</button><button type="submit" class="btn btn-gold">توثيق التصحيح</button></div></form>`);
     $('correctSaleForm').onsubmit=async event=>{
       event.preventDefault();const form=event.currentTarget;
+      if(state.account?.id!==viewer || form.querySelector('button[type=submit]').disabled)return;
       const data=new FormData(form);const amount=Number(data.get('price'));
       const reason=String(data.get('reason')||'').trim();
       if(!Number.isFinite(amount)||amount<=0||amount>999999999.99)return notify('أدخل سعرًا صحيحًا');

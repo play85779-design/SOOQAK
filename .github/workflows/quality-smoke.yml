@@ -41,3 +41,15 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Run local browser smoke tests
         run: npx playwright test --config=playwright.config.cjs
+  backup-restore-fixture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore synthetic data in a fresh socket-only PostgreSQL cluster
+        shell: bash
+        run: |
+          set -euo pipefail
+          pg_bin=$(find /usr/lib/postgresql -name initdb -type f | sort -V | tail -1)
+          test -x "$pg_bin"
+          PATH="$(dirname "$pg_bin"):$PATH" bash scripts/test-backup-restore.sh
