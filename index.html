@@ -58,6 +58,8 @@ window.SOOQAK_SUPABASE = Object.freeze({
   url: 'https://zwbtiyqgrgjybwaguuyn.supabase.co',
   publishableKey: 'sb_publishable_42t2ty_ID8MfKoxQkw3CkA_3p1GG4kr'
 });
+// Do not set true until a verified SMTP sender and live delivery test are complete.
+window.SOOQAK_AUTH_MAIL_READY = false;
 window.SOOQAK_CLOUD_ENABLED = Boolean(
   /^https:\/\/[^/]+\.supabase\.co\/?$/.test(window.SOOQAK_SUPABASE.url) &&
   /^sb_publishable_/.test(window.SOOQAK_SUPABASE.publishableKey)

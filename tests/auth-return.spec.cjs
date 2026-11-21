@@ -38,7 +38,7 @@ async function mockedAuth(page){
           auth:{
             getUser:async()=>window.__TEST_LOGGED_IN?({data:{user:{id:'11111111-1111-4111-8111-111111111111',email:'buyer@example.invalid',email_confirmed_at:'2026-11-20T00:00:00Z',user_metadata:{full_name:'مستخدم تجريبي'}}},error:null}):({data:{user:null},error:{name:'AuthSessionMissingError'}}),
             onAuthStateChange:(cb)=>{window.__TEST_AUTH_CALLBACK=cb;return {data:{subscription:{unsubscribe(){}}}}},
-            signUp:async value=>{window.__SOOQAK_AUTH_TEST_CALLS.push({method:'signup',value});return {data:{session:null},error:null}},
+            signUp:async value=>{window.__SOOQAK_AUTH_TEST_CALLS.push({method:'signup',value});return window.__TEST_AUTH_SERVER_REJECTS?{data:null,error:{message:'Email address not authorized',code:'email_address_not_authorized'}}:{data:{session:null},error:null}},
             signInWithOtp:async value=>{window.__SOOQAK_AUTH_TEST_CALLS.push({method:'otp',value});return {data:{},error:null}},
             signInWithOAuth:async value=>{window.__SOOQAK_AUTH_TEST_CALLS.push({method:'google',value});return {data:{},error:null}},
             resetPasswordForEmail:async (email,options)=>{window.__SOOQAK_AUTH_TEST_CALLS.push({method:'recovery-email',email,options});return {data:{},error:null}},
@@ -110,4 +110,34 @@ test('recovery callback prompts for a new password and updates it locally',async
   await expect.poll(()=>page.evaluate(()=>window.__SOOQAK_AUTH_TEST_CALLS.some(x=>x.method==='update-password'))).toBe(true);
   const payload=await page.evaluate(()=>window.__SOOQAK_AUTH_TEST_CALLS.find(x=>x.method==='update-password'));
   expect(payload.value.password).toBe('very-strong-passphrase-1234');
+});
+
+test('sign up warns that the shared SMTP sender cannot guarantee delivery',async({page})=>{
+ await mockedAuth(page);
+ await page.goto('/index.html?auth=signup',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#authMailWarning')).toContainText('SMTP');
+ await page.locator('#authDisplayName').fill('Test User');
+ await page.locator('#authEmail').fill('nonexistent@example.invalid');
+ await page.locator('#authPassword').fill('demoPassword1234');
+ await page.locator('#authEmailSubmit').click();
+ await expect(page.locator('#modalTitle')).toContainText('تحقق من بريدك');
+ await expect(page.locator('#modalContent')).toContainText('ليس إثباتًا للإرسال أو وصول الرسالة');
+});
+test('password login remains available without SMTP configuration',async({page})=>{
+ await mockedAuth(page);
+ await page.goto('/index.html?auth=login',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#authMailWarning')).toHaveCount(0);
+ await expect(page.locator('#authPassword')).toBeVisible();
+});
+test('unauthorized recipient displays meaningful SMTP guidance without pretending mail arrived',async({page})=>{
+ await mockedAuth(page);
+ await page.goto('/index.html?auth=signup',{waitUntil:'domcontentloaded'});
+ await page.locator('#authDisplayName').fill('Test User');
+ await page.locator('#authEmail').fill('nonexistent@example.invalid');
+ await page.locator('#authPassword').fill('demoPassword1234');
+ await page.evaluate(()=>{window.__TEST_AUTH_SERVER_REJECTS=true});
+ await page.locator('#authEmailSubmit').click();
+ await expect(page.locator('#toast')).toContainText('SMTP');
+ await expect(page.locator('#cloudLoginForm')).toBeVisible();
+ await expect(page.locator('#authEmailSubmit')).toBeEnabled();
 });

@@ -18,7 +18,7 @@ let selectedCat='',onlyFavorites=false,modalId=null,toastTimer=null;
 const cloudEnabled=()=>Boolean(window.SOOQAK_CLOUD_ENABLED);
 let sooqakAuthResolved=!cloudEnabled();
 if(cloudEnabled()){state.account=null;state.ads=[];state.chats={};state.reports=[];state.sales=[];state.payments=[];}
-const cloudError=e=>{const raw=String(e?.message||e);const message=/Signups not allowed for otp|signup.*disabled/i.test(raw)?'إنشاء الحساب عبر البريد غير متاح في إعدادات المشروع حاليًا.':/Unsupported provider|provider is not enabled/i.test(raw)?'Google غير مفعّل في إعدادات تسجيل الدخول.':/rate limit|too many requests|over_email_send_rate_limit/i.test(raw)?'بلغ البريد حد الإرسال المؤقت. إذا سبق إعداد كلمة مرور، استخدمها بدل طلب رابط جديد.':/Invalid login credentials|invalid.*password/i.test(raw)?'البريد أو كلمة المرور غير صحيحة. إذا لم تُنشئ كلمة مرور سابقًا، استخدم الدخول برابط البريد.':/weak_password|password.*(least|short|weak)/i.test(raw)?'رفضت خدمة الحسابات كلمة المرور لضعفها أو لوجود متطلبات أمان إضافية. اختر كلمة أطول أو أصعب.':/email.*not confirmed/i.test(raw)?'تأكد من بريدك الإلكتروني أولًا.':/network|Failed to fetch/i.test(raw)?'تعذر الاتصال بخدمة الحسابات. تحقق من الإنترنت.':/invalid.*(otp|token)|expired/i.test(raw)?'رابط أو رمز الدخول غير صالح أو انتهت صلاحيته.':'تعذر إكمال الطلب في سوقك حاليًا. حاول مرة أخرى.';notify('تعذر إكمال العملية: '+message.slice(0,240))};
+const cloudError=e=>{const raw=String(e?.message||e);const code=String(e?.code||e?.error_code||'');const detail=(code+' '+raw).toLowerCase();const message=/email_address_not_authorized|email address not authorized/.test(detail)?'خدمة البريد الافتراضية لا ترسل لهذا العنوان. يجب تهيئة مرسل SMTP معتمد قبل استقبال حسابات جديدة. لا تكرر الطلب.':/email_send_failed|error sending confirmation email|smtp.*error|send.*mail.*fail/.test(detail)?'فشل إرسال رسالة التحقق من الخادم. يحتاج إعداد بريد SMTP ومراجعة سجلات الإرسال.':/Signups not allowed for otp|signup.*disabled/i.test(raw)?'إنشاء الحساب عبر البريد غير متاح في إعدادات المشروع حاليًا.':/Unsupported provider|provider is not enabled/i.test(raw)?'Google غير مفعّل في إعدادات تسجيل الدخول.':/rate limit|too many requests|over_email_send_rate_limit/i.test(raw)?'بلغ البريد حد الإرسال المؤقت. إذا سبق إعداد كلمة مرور، استخدمها بدل طلب رابط جديد.':/Invalid login credentials|invalid.*password/i.test(raw)?'البريد أو كلمة المرور غير صحيحة. إذا لم تُنشئ كلمة مرور سابقًا، استخدم الدخول برابط البريد.':/weak_password|password.*(least|short|weak)/i.test(raw)?'رفضت خدمة الحسابات كلمة المرور لضعفها أو لوجود متطلبات أمان إضافية. اختر كلمة أطول أو أصعب.':/email.*not confirmed/i.test(raw)?'تأكد من بريدك الإلكتروني أولًا.':/network|Failed to fetch/i.test(raw)?'تعذر الاتصال بخدمة الحسابات. تحقق من الإنترنت.':/invalid.*(otp|token)|expired/i.test(raw)?'رابط أو رمز الدخول غير صالح أو انتهت صلاحيته.':'تعذر إكمال الطلب في سوقك حاليًا. حاول مرة أخرى.';notify('تعذر إكمال العملية: '+message.slice(0,240))};
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const todayRiyadh=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Riyadh',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
@@ -628,6 +628,7 @@ function openCloudLogin(mode='login',method='password',emailPreset=''){
       <button id="authLoginTab" type="button" role="tab" aria-selected="${!isNew}" aria-controls="cloudLoginForm">تسجيل الدخول</button>
     </div>
     ${sooqakAuthLogo()}
+    ${(isNew||isLink)&&window.SOOQAK_AUTH_MAIL_READY!==true?'<div class="warning" role="status" id="authMailWarning">تنبيه: خدمة بريد التفعيل التجريبية لا تضمن وصول الرسائل لغير أعضاء فريق المشروع. لا تعاود التسجيل بنفس البريد؛ يلزم ربط بريد SMTP موثوق أولًا.</div>':''}
     <p class="auth-modal-lead">${isNew?'أنشئ حسابك في '+sooqakAuthWordmark+'، ثم أكّد بريدك الإلكتروني.':'أهلًا بك في '+sooqakAuthWordmark+'! اختر طريقة الدخول.'}</p>
     <div class="auth-method-tabs" role="group" aria-label="طريقة الدخول">
       <button id="authMethodPassword" type="button" class="${!isLink?'active':''}" aria-pressed="${!isLink}">كلمة مرور</button>
@@ -671,7 +672,7 @@ function openCloudLogin(mode='login',method='password',emailPreset=''){
         await window.sooqakCloud.signInPassword(email,password);
         closeModal();notify('نجح تسجيل الدخول، جاري تحميل حسابك');return;
       }
-      showModal('تحقق من بريدك',`${sooqakAuthLogo()}<div class="info">${isNew?'استلمت خدمة التسجيل طلب تأكيد البريد لإنشاء حسابك في ':'استلمت خدمة الدخول طلب إرسال رابط إلى بريدك من '}${sooqakAuthWordmark}. إذا وصلتك رسالة جديدة، افتحها وأكمل التأكيد.</div><p class="muted">هذا تأكيد لقبول الطلب وليس إثباتًا لوصول رسالة البريد. راجع الوارد والرسائل غير المرغوب فيها (Junk / Spam)، وابحث عن رسائل Supabase. خادم الإرسال التجريبي محدود ولا يضمن التوصيل. لا تكرر الطلب عدة مرات أو تشارك الرابط.</p><button type="button" id="authRetry" class="btn btn-outline">العودة إلى ${isNew?'إنشاء الحساب':'الدخول'}</button>`);
+      showModal('تحقق من بريدك',`${sooqakAuthLogo()}<div class="info">${isNew?'استلم الخادم طلب تأكيد البريد لإنشاء حسابك في ':'استلم الخادم طلب إرسال رابط إلى بريدك من '}${sooqakAuthWordmark}. إذا وصلتك رسالة جديدة، افتحها وأكمل التأكيد.</div><p class="muted">هذا قبول تقني للطلب وليس إثباتًا للإرسال أو وصول الرسالة؛ إعداد خدمة البريد الافتراضية يمنع التوصيل لمعظم العناوين خارج فريق المشروع. راجع الوارد والرسائل غير المرغوب فيها (Junk / Spam)، وابحث عن رسائل Supabase. خادم الإرسال التجريبي محدود ولا يضمن التوصيل. لا تكرر الطلب عدة مرات أو تشارك الرابط.</p><button type="button" id="authRetry" class="btn btn-outline">العودة إلى ${isNew?'إنشاء الحساب':'الدخول'}</button>`);
       $('authRetry').onclick=()=>openCloudLogin(mode,method,email);
     }catch(err){cloudError(err);if(submit.isConnected){submit.disabled=false;submit.textContent=actionLabel;}}
   };
@@ -697,7 +698,7 @@ function openCloudLogin(mode='login',method='password',emailPreset=''){
 }
 function openForgotPassword(emailPreset=''){
   if(!cloudEnabled()||!window.sooqakCloud)return openCloudLogin('login');
-  showModal('استعادة كلمة المرور',`${sooqakAuthLogo()}<p class="auth-modal-lead">اكتب بريدك المسجل في سوقك، وسنطلب إرسال رابط لإعادة تعيين كلمة المرور. لا تشارك الرابط مع أحد.</p><form id="sooqakForgotForm" class="auth-screen-form"><label for="forgotEmail">البريد الإلكتروني<input id="forgotEmail" type="email" name="email" autocomplete="email" value="${esc(emailPreset)}" required maxlength="254" /></label><button id="sooqakForgotSubmit" type="submit" class="btn btn-gold">طلب رابط استعادة كلمة المرور</button></form><p class="auth-security-note">إذا كان البريد مسجلًا ومسموحًا بالإرسال، قد تصلك رسالة. لا تعاود الطلب مرات كثيرة.</p>`);
+  showModal('استعادة كلمة المرور',`${sooqakAuthLogo()}<p class="auth-modal-lead">اكتب بريدك المسجل في سوقك، وسنطلب إرسال رابط لإعادة تعيين كلمة المرور. لا تشارك الرابط مع أحد.</p><form id="sooqakForgotForm" class="auth-screen-form"><label for="forgotEmail">البريد الإلكتروني<input id="forgotEmail" type="email" name="email" autocomplete="email" value="${esc(emailPreset)}" required maxlength="254" /></label><button id="sooqakForgotSubmit" type="submit" class="btn btn-gold">طلب رابط استعادة كلمة المرور</button></form><p class="auth-security-note">تنبيه: الإرسال قد لا يعمل خارج أعضاء المشروع حتى ربط SMTP معتمد. لا تكرر الطلب قبل ضبط الخدمة، ولا تشارك رابط الاستعادة.</p>`);
   const form=$('sooqakForgotForm');
   form.onsubmit=async e=>{
     e.preventDefault();
@@ -705,7 +706,7 @@ function openForgotPassword(emailPreset=''){
     const btn=$('sooqakForgotSubmit');btn.disabled=true;
     try{
       await window.sooqakCloud.resetPasswordEmail(email);
-      showModal('تحقق من بريدك',`${sooqakAuthLogo()}<div class="info">إذا كان هذا البريد مسجلًا، ستصلك رسالة استعادة كلمة المرور متى سمحت حدود الإرسال. افتح أحدث رسالة واتبع الرابط.</div><p class="muted">لا تشارك الرابط مع أحد. إذا لم تصل الرسالة، راجع البريد غير المرغوب فيه ولا تكرر الطلب مباشرة.</p><button class="btn btn-outline" type="button" id="sooqakBackToLogin">العودة إلى تسجيل الدخول</button>`);
+      showModal('تحقق من بريدك',`${sooqakAuthLogo()}<div class="info">استلم الخادم طلب الاستعادة، لكن هذا لا يثبت إرسال رسالة أو وصولها. إذا كان البريد مسجلًا وسمحت الخدمة بالإرسال، افتح أحدث رسالة واتبع الرابط.</div><p class="muted">لا تشارك الرابط مع أحد. إذا لم تصل الرسالة، راجع البريد غير المرغوب فيه ولا تكرر الطلب مباشرة.</p><button class="btn btn-outline" type="button" id="sooqakBackToLogin">العودة إلى تسجيل الدخول</button>`);
       $('sooqakBackToLogin').onclick=()=>openCloudLogin('login','password',email);
     }catch(err){cloudError(err);if(btn.isConnected)btn.disabled=false}
   };
