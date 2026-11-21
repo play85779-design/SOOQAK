@@ -30,7 +30,10 @@ function makeQuery(table){
      const source=table==='sooqak_favorites'?ids.map(id=>({user_id:userId,listing_id:id})):table==='sooqak_listings'?listings:[];
      return Promise.resolve({data:source.filter(where).slice(skip,skip+take),error:null}).then(ok,bad);
    },
-   maybeSingle:async()=>({data:null,error:null})
+   maybeSingle:async()=>{
+     const source=table==='sooqak_listings'?listings:[];
+     return {data:source.find(where)||null,error:null};
+   }
  };
  return q;
 }
@@ -63,4 +66,32 @@ test('switching home from favorites restores normal results without extra favori
  await expect(page.locator('#listingGrid .listing-card')).toHaveCount(70);
  await page.locator('#homeLink').click();
  await expect(page.locator('#resultsTitle')).toContainText('أحدث');
+});
+
+test('shared link opens an older advertisement outside the first 60 listings',async({page})=>{
+ await installMock(page);
+ const id='00000000-0000-4000-8000-000000000070';
+ await page.goto('/index.html#ad-'+id,{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#modalTitle')).toHaveText('تفاصيل الإعلان',{timeout:9000});
+ await expect(page.locator('#modalContent')).toContainText('جهاز تجريبي رقم 70');
+ await expect(page.locator('#modalContent')).toContainText('بائع تجريبي');
+ await expect(page.locator('#listingGrid')).not.toContainText('جهاز تجريبي رقم 70');
+});
+
+test('the return-to-market link on a public detail opens the same older item',async({page})=>{
+ await installMock(page);
+ const id='00000000-0000-4000-8000-000000000070';
+ await page.goto('/listing.html?id='+id,{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#listingDetail')).toContainText('جهاز تجريبي رقم 70');
+ await page.getByRole('link',{name:'العودة إلى السوق والتواصل مع البائع'}).click();
+ await expect(page).toHaveURL(new RegExp('#ad-'+id+'$'));
+ await expect(page.locator('#modalTitle')).toHaveText('تفاصيل الإعلان',{timeout:9000});
+});
+
+test('a deleted or inaccessible shared advertisement does not open a fake card',async({page})=>{
+ await installMock(page);
+ const id='99999999-9999-4999-8999-999999999999';
+ await page.goto('/index.html#ad-'+id,{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#toast')).toContainText('غير متاح',{timeout:9000});
+ await expect(page.locator('#modalBackdrop')).toBeHidden();
 });
