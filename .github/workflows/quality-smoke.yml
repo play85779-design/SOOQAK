@@ -21,7 +21,7 @@ jobs:
             node --check "$f"
           done < <(find . -type f \( -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \) -not -path './node_modules/*' -print0)
       - name: Zero-cost owner finance unit tests
-        run: node --test tests/owner-finance.test.mjs
+        run: node --test tests/owner-finance.test.mjs tests/owner-economy.test.mjs
       - name: Basic tracked-file secret guard
         shell: bash
         run: |
