@@ -73,6 +73,18 @@ if (window.SOOQAK_CLOUD_ENABLED) {
       if (error) throw error;
       return enrichListings(data);
     }
+    // A shared advertisement may be older than the first paginated public feed.
+    // Its detail is loaded by exact UUID and always checked by Supabase RLS.
+    async function fetchListingById(id) {
+      if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(id||'')))return null;
+      const response=await supabase.from('sooqak_listings')
+        .select('id,account_id,seller_user_id,seller_display_name,seller_kind,title,description,category,city,district,listing_kind,price,price_mode,status,created_at,expires_at,bumped_at,reserved_until,hidden_at,renewed_at,renewal_count')
+        .eq('id',id).maybeSingle();
+      errorIfAny(response);
+      if(!response.data)return null;
+      const entries=await enrichListings([response.data]);
+      return entries[0]||null;
+    }
     // Saved ads must be fetched by their own IDs, not only from the first search page.
     // Requests are batched to keep browser/API URL sizes bounded; RLS excludes forbidden rows.
     async function fetchFavoriteListings() {
@@ -384,7 +396,7 @@ if(!currentUser)throw new Error('يجب تسجيل الدخول لرفع الص�
       getUser:()=>currentUser,
       loadPrivateProfile,savePrivateProfile,hasAcceptedPledge,acceptPledge,getContactPrefs,saveContactPrefs,listFavorites,setFavorite,listSavedSearches,addSavedSearch,deleteSavedSearch,
       ensureAccount,getPublicSellerProfile,savePublicSellerProfile,
-      fetchListings,fetchFavoriteListings,fetchMyListings,countMyListings,
+      fetchListings,fetchFavoriteListings,fetchListingById,fetchMyListings,countMyListings,
       saveListing,saveListingContact,
       removeListing,
       uploadPhotos,

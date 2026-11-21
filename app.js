@@ -28,7 +28,11 @@ const allAds=()=>[...state.ads,...demos];
 const mine=ad=>!ad.demo&&state.account&&ad.role===state.role&&(cloudEnabled()?ad.ownerId===state.account.id:ad.owner===state.account.email);
 // Owner library is cached separately so old/hidden ads never pollute the public feed.
 const sooqakOwnedAdCache=new Map();
-const byId=id=>allAds().find(a=>a.id===id)||sooqakOwnedAdCache.get(String(id));
+// Shared links can reference records outside the first page; keep those
+// records separate from the authenticated seller's private listing cache.
+const sooqakSharedLinkCache=new Map();
+let sooqakSharedLinkLoadingId='';
+const byId=id=>allAds().find(a=>a.id===id)||sooqakOwnedAdCache.get(String(id))||sooqakSharedLinkCache.get(String(id));
 const effectiveDate=ad=>ad.bumpAt||ad.createdAt;
 
 // Stage 9: optional market/language preview. Demo data remains strictly Saudi.
@@ -143,8 +147,22 @@ function openListingFromLink(){
   let id='';try{id=decodeURIComponent(location.hash.slice(4));}catch(e){return;}
   if(!/^[a-zA-Z0-9_-]{1,90}$/.test(id))return;
   const ad=byId(id);
-  if(ad){if($('modalBackdrop').hidden)openAd(id);}
-  else if(!cloudEnabled())notify('الإعلان غير موجود في هذه النسخة. الإعلانات المحلية لا تنتقل بين الأجهزة.');
+  if(ad){if($('modalBackdrop').hidden)openAd(id);return;}
+  if(!cloudEnabled()){notify('الإعلان غير موجود في هذه النسخة. الإعلانات المحلية لا تنتقل بين الأجهزة.');return;}
+  const validUuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  if(!validUuid.test(id)||!window.sooqakCloud?.fetchListingById)return;
+  if(sooqakSharedLinkLoadingId===id)return;
+  sooqakSharedLinkLoadingId=id;
+  window.sooqakCloud.fetchListingById(id).then(row=>{
+    if(location.hash!=='#ad-'+encodeURIComponent(id))return;
+    if(!row){notify('هذا الإعلان غير متاح أو لم يعد منشورًا.');return;}
+    const hydrated=convertCloudAd(row);
+    sooqakSharedLinkCache.set(id,hydrated);
+    // Bound temporary detail cache; never insert linked records into the public feed.
+    if(sooqakSharedLinkCache.size>5)sooqakSharedLinkCache.delete(sooqakSharedLinkCache.keys().next().value);
+    if($('modalBackdrop').hidden)openAd(id);
+  }).catch(()=>notify('تعذر تحميل الإعلان من الرابط. تحقق من الاتصال وحاول مرة ثانية.'))
+    .finally(()=>{if(sooqakSharedLinkLoadingId===id)sooqakSharedLinkLoadingId='';});
 }
 function sooqakTrapFocus(e){
   if(e.key!=='Tab'||$('modalBackdrop').hidden)return;
@@ -502,7 +520,7 @@ function onCloudAuth(e){
   state.account=user?{id:user.id,email:user.email,name}:null;
   sooqakAuthResolved=true;
   if(changed){
-    sooqakOwnedAdCache.clear();
+    sooqakOwnedAdCache.clear();sooqakSharedLinkCache.clear();
     state.ads=[];state.cloudPledgeAcceptedAt=null;state.favorites=[];
     sooqakUnreadBaseline=null;sooqakActiveChatId=null;setChatUnreadBadge(0);
   }
