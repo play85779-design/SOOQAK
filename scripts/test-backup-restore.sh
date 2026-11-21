@@ -27,3 +27,29 @@ query="SELECT l.title || '/' || s.final_price FROM listings l JOIN sales s ON l.
 echo 'Verified restored fixture rows, amount and foreign key.'
 createdb policy_fixture
 psql -X -v ON_ERROR_STOP=1 -d policy_fixture -f tests/sql/store-and-decision-fixture.sql
+
+# PGHOST is the private socket of the disposable cluster created above.
+createdb capacity_fixture
+for workload in '100 4' '1000 10' '10000 20'; do
+  read -r users clients <<< "$workload"
+  psql -X -v ON_ERROR_STOP=1 -d capacity_fixture -v users="$users" <<'SQL'
+CREATE TABLE IF NOT EXISTS fixture_ads(id int PRIMARY KEY,city int NOT NULL);
+CREATE INDEX IF NOT EXISTS fixture_city ON fixture_ads(city,id);
+CREATE TABLE IF NOT EXISTS fixture_images(ad_id int,slot int,PRIMARY KEY(ad_id,slot));
+INSERT INTO fixture_ads SELECT i,i%10 FROM generate_series(1,:users/5) AS i ON CONFLICT DO NOTHING;
+INSERT INTO fixture_images SELECT id,slot FROM fixture_ads CROSS JOIN generate_series(1,3) AS slot ON CONFLICT DO NOTHING;
+ANALYZE fixture_ads;
+ANALYZE fixture_images;
+SQL
+  cat > "$root/catalog.pgbench" <<'BENCH'
+\set city random(0,9)
+BEGIN;
+SELECT a.id,p.slot FROM (SELECT id FROM fixture_ads WHERE city=:city ORDER BY id LIMIT 24) a
+ JOIN fixture_images p ON p.ad_id=a.id ORDER BY a.id,p.slot;
+COMMIT;
+BENCH
+  echo "Synthetic catalog sessions=$users concurrent_clients=$clients"
+  result=$(pgbench -n -c "$clients" -j 2 -t "$((users/clients))" -f "$root/catalog.pgbench" capacity_fixture)
+  echo "$result"
+  grep -Eq "transactions actually processed: ${users}/${users}" <<< "$result"
+done
