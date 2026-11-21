@@ -385,6 +385,9 @@ function drawSellerProfile(ad,info,own){
  const publicInfo=!own&&info?.is_visible===false?null:info;
  const name=publicInfo?.display_name||ad.seller||'بائع سوقك';
  let html=profileBanner(name,publicInfo?.city||ad.city,publicInfo?.about||'',rows.length,!!ad.demo,cloudEnabled());
+ // V58: no rating is trustworthy without a verified completed transaction and
+ // a server-side one-review-per-deal rule. Never fabricate a rating from demo data.
+ html+='<section class="seller-review-readiness" aria-label="تقييمات البائع"><h3>تقييمات البائع</h3><p class="muted">التقييمات غير مفعّلة حاليًا. لن تظهر نجوم أو مراجعات إلا بعد ربطها بتعامل مكتمل والتحقق من أهلية المقيّم.</p></section>';
  if(own)html+='<div class="profile-owner-actions"><button class="btn btn-gold" data-act="editpublic">تعديل البروفايل</button><button class="btn btn-outline" data-act="myads">إعلاناتي</button></div>';
  if(rows.length)html+=sellerContactPanel(rows[0],own);
  else html+='<div class="seller-contact-panel"><h4>التواصل مع البائع</h4><button class="btn btn-gold" type="button" disabled>✉ راسل البائع — يظهر مع إعلان نشط</button><p class="muted">لا توجد إعلانات نشطة لهذا الحساب حاليًا. أضف إعلانًا ليتاح التواصل عبره.</p></div>';
