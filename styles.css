@@ -143,3 +143,6 @@ body.sooqak-search-active .market-section{scroll-margin-top:90px}
 
 /* V48 draft autosave status */
 .sooqak-draft-status{display:block;flex-basis:100%;font-size:11px;color:#536879;line-height:1.6}
+
+/* V49 prepublication read-only card */
+#sooqakAdPreview{background:#fff;border:1px solid #d6e0e9;border-radius:14px;padding:16px;margin:14px 0;box-shadow:0 5px 20px #122c4b0c}#sooqakAdPreview h3{font-size:13px;color:#986e20;margin:0 0 10px}#sooqakAdPreview h4{font-size:18px;color:var(--navy);margin:7px 0}#sooqakAdPreview .sooqak-preview-meta{font-size:12px;color:#657b8f;margin:0}#sooqakAdPreview .sooqak-preview-price{font-size:19px;color:#1e5873;display:block;margin-bottom:10px}#sooqakAdPreview .sooqak-preview-description{white-space:pre-line;overflow-wrap:anywhere;line-height:1.8}#sooqakAdPreview .sooqak-preview-cover{display:block;width:100%;max-height:220px;object-fit:contain;border-radius:10px;background:#e9eef4}#sooqakAdPreview .sooqak-preview-note{color:#60768c;font-size:11px;display:block;margin-top:14px}
