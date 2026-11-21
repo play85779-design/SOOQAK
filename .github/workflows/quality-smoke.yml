@@ -19,7 +19,7 @@ jobs:
           set -euo pipefail
           while IFS= read -r -d '' f; do
             node --check "$f"
-          done < <(find . -type f -name '*.js' -not -path './node_modules/*' -print0)
+          done < <(find . -type f \( -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \) -not -path './node_modules/*' -print0)
       - name: Basic tracked-file secret guard
         shell: bash
         run: |
