@@ -4,6 +4,42 @@ const api=createClient('https://zwbtiyqgrgjybwaguuyn.supabase.co','sb_publishabl
 const $=id=>document.getElementById(id);
 const el=(tag,value,cls='')=>{const x=document.createElement(tag);if(value!==undefined)x.textContent=value;if(cls)x.className=cls;return x};
 let admin=false;
+
+// New/edited service entries stay invisible until a verified administrator approves.
+async function refreshPending(){
+ if(!admin)return;
+ $('pendingStatus').textContent='جاري تحميل طلبات الاعتماد…';$('pendingServices').replaceChildren();
+ const r=await api.from('sooqak_service_directory')
+  .select('id,name,kind,city,district,specialty,description,created_at,updated_at,moderation_state')
+  .eq('moderation_state','pending').order('updated_at',{ascending:true}).limit(100);
+ if(r.error){$('pendingStatus').textContent='تعذر تحميل الطلبات: '+r.error.message;return}
+ const rows=r.data||[];
+ $('pendingStatus').textContent=rows.length?`يوجد ${rows.length} طلب اعتماد${rows.length===100?' (تعرض أول 100 فقط)':''}.`:'لا توجد طلبات اعتماد معلقة.';
+ for(const svc of rows){
+  const article=el('article');
+  article.append(el('h2',svc.name),el('p',[svc.city,svc.kind,svc.specialty].filter(Boolean).join(' • '),'muted'));
+  if(svc.description)article.append(el('p',svc.description));
+  article.append(el('p','آخر تعديل: '+new Date(svc.updated_at).toLocaleString('ar-SA'),'muted'));
+  const actions=el('div',undefined,'actions');
+  const approve=el('button','اعتماد ونشر النشاط','btn');approve.type='button';
+  approve.onclick=()=>decideService(svc,'approved');actions.append(approve);
+  const suspend=el('button','رفض وإيقاف النشاط','btn danger');suspend.type='button';
+  suspend.onclick=()=>decideService(svc,'suspended');actions.append(suspend);
+  article.append(actions);$('pendingServices').append(article);
+ }
+}
+async function decideService(svc,decision){
+ if(!admin||!['approved','suspended'].includes(decision))return;
+ const question=decision==='approved'?`هل راجعت بيانات «${svc.name}» وتريد اعتمادها للعرض العام؟`:`هل تريد إيقاف طلب «${svc.name}»؟ لن يظهر للزوار.`;
+ if(!confirm(question))return;
+ $('pendingStatus').textContent='جارٍ حفظ قرار المراجعة…';
+ const r=await api.from('sooqak_service_directory')
+  .update({moderation_state:decision})
+  .eq('id',svc.id).eq('moderation_state','pending').select('id').single();
+ if(r.error){$('pendingStatus').textContent='تعذر اعتماد القرار: '+r.error.message;return}
+ await refreshPending();
+}
+
 async function refresh(){
  if(!admin)return;
  $('status').textContent='جاري جلب البلاغات…';$('reports').replaceChildren();
@@ -43,5 +79,5 @@ async function moderate(d,hide){
 (async()=>{try{
  const u=await api.auth.getUser();if(u.error||!u.data?.user?.email_confirmed_at){$('status').textContent='يلزم تسجيل الدخول بحساب موثّق قبل فتح لوحة الإدارة.';return}
  const r=await api.rpc('sooqak_is_admin');if(r.error||r.data!==true){$('status').textContent='هذه الصفحة للمشرفين المصرح لهم فقط.';return}
- admin=true;$('adminTools').hidden=false;$('statusFilter').onchange=refresh;$('reload').onclick=refresh;await refresh();
+ admin=true;$('adminTools').hidden=false;$('statusFilter').onchange=refresh;$('reload').onclick=refresh;$('pendingReload').onclick=refreshPending;await Promise.all([refreshPending(),refresh()]);
  }catch(e){$('status').textContent='تعذر التحقق من صلاحيات الإدارة. حاول لاحقًا.'}})();
