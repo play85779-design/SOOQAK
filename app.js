@@ -419,6 +419,9 @@ function drawSellerProfile(ad,info,own){
  // a server-side one-review-per-deal rule. Never fabricate a rating from demo data.
  html+='<section class="seller-review-readiness" aria-label="تقييمات البائع"><h3>تقييمات البائع</h3><p class="muted">التقييمات غير مفعّلة حاليًا. لن تظهر نجوم أو مراجعات إلا بعد ربطها بتعامل مكتمل والتحقق من أهلية المقيّم.</p></section>';
  html+=sellerTrustFacts(ad,rows);
+ if(cloudEnabled() && !ad.demo && ad.role==='متجر' && ad.accountId){
+  html+='<a class="btn btn-outline" href="./store.html?id='+encodeURIComponent(ad.accountId)+'">عرض جميع منتجات المتجر</a>';
+ }
  if(!own&&!ad.demo&&sellerMuteKey(ad))html+='<div class="profile-owner-actions"><button class="btn btn-outline" data-act="muteSeller" data-id="'+esc(ad.id)+'">إخفاء إعلانات هذا البائع على جهازي</button></div>';
  if(own)html+='<div class="profile-owner-actions"><button class="btn btn-gold" data-act="editpublic">تعديل البروفايل</button><button class="btn btn-outline" data-act="myads">إعلاناتي</button></div>';
  if(rows.length)html+=sellerContactPanel(rows[0],own);
