@@ -25,12 +25,13 @@ test('V51 invalid price boundaries provide useful error without claiming empty i
  await setup(page);
  await page.locator('#minPrice').fill('90000');
  await page.locator('#maxPrice').fill('1000');
- const diagnostic=await page.evaluate(()=>({min:document.getElementById('minPrice').value,max:document.getElementById('maxPrice').value,filters:filters(),summary:document.getElementById('resultsCount').textContent}));
- console.log('V51-BOUNDS:',JSON.stringify(diagnostic));
+ // Exercise the same native input event as interactive typing in Chromium.
+ await page.locator('#maxPrice').dispatchEvent('input');
  await expect(page.locator('#resultsCount')).toContainText('أقل سعر');
  await expect(page.locator('#listingGrid .listing-card')).toHaveCount(0);
  await expect(page.locator('#emptyState')).toContainText('عدّل حد السعر');
  await page.locator('#maxPrice').fill('99999');
+ await page.locator('#maxPrice').dispatchEvent('input');
  await expect(page.locator('#resultsCount')).not.toContainText('أقل سعر');
  await expect(page.locator('#listingGrid .listing-card')).not.toHaveCount(0);
 });
