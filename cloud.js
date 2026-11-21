@@ -128,11 +128,13 @@ if (window.SOOQAK_CLOUD_ENABLED) {
     }
 
     // Owner library is paged independently of the public feed (including sold/hidden ads).
-    async function countMyListings(kind='personal') {
+    async function countMyListings(kind='personal',soldOnly=false) {
       if(!currentUser)throw new Error('سجّل الدخول إلى حسابك أولًا');
       if(!['personal','business'].includes(kind))throw new Error('نوع الحساب غير صالح');
-      const r=await supabase.from('sooqak_listings').select('id',{count:'exact',head:true})
+      let query=supabase.from('sooqak_listings').select('id',{count:'exact',head:true})
         .eq('seller_user_id',currentUser.id).eq('seller_kind',kind);
+      if(soldOnly)query=query.eq('status','sold');
+      const r=await query;
       errorIfAny(r);
       return Number(r.count)||0;
     }
