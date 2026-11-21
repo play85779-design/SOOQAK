@@ -91,6 +91,14 @@ if (window.SOOQAK_CLOUD_ENABLED) {
     }
 
     // Owner library is paged independently of the public feed (including sold/hidden ads).
+    async function countMyListings(kind='personal') {
+      if(!currentUser)throw new Error('سجّل الدخول إلى حسابك أولًا');
+      if(!['personal','business'].includes(kind))throw new Error('نوع الحساب غير صالح');
+      const r=await supabase.from('sooqak_listings').select('id',{count:'exact',head:true})
+        .eq('seller_user_id',currentUser.id).eq('seller_kind',kind);
+      errorIfAny(r);
+      return Number(r.count)||0;
+    }
     async function fetchMyListings(offset=0,pageSize=40,kind='personal') {
       if(!currentUser)throw new Error('سجّل الدخول إلى حسابك أولًا');
       if(!['personal','business'].includes(kind))throw new Error('نوع الحساب غير صالح');
@@ -376,7 +384,7 @@ if(!currentUser)throw new Error('يجب تسجيل الدخول لرفع الص�
       getUser:()=>currentUser,
       loadPrivateProfile,savePrivateProfile,hasAcceptedPledge,acceptPledge,getContactPrefs,saveContactPrefs,listFavorites,setFavorite,listSavedSearches,addSavedSearch,deleteSavedSearch,
       ensureAccount,getPublicSellerProfile,savePublicSellerProfile,
-      fetchListings,fetchFavoriteListings,fetchMyListings,
+      fetchListings,fetchFavoriteListings,fetchMyListings,countMyListings,
       saveListing,saveListingContact,
       removeListing,
       uploadPhotos,
