@@ -25,19 +25,13 @@ test('V51 invalid price boundaries provide useful error without claiming empty i
  await setup(page);
  await page.locator('#minPrice').fill('90000');
  await page.locator('#maxPrice').fill('1000');
- // Exercise the same native input event as interactive typing in Chromium.
- await page.locator('#maxPrice').dispatchEvent('input');
- const v51RenderDiagnostic=await page.evaluate(()=>{
-  const before=document.getElementById('resultsCount').textContent;
-  let error='';
-  try{render()}catch(e){error=String(e?.stack||e)}
-  return {min:document.getElementById('minPrice').value,max:document.getElementById('maxPrice').value,before,after:document.getElementById('resultsCount').textContent,error};
- });
- console.log('V51_RENDER_DIAGNOSTIC',JSON.stringify(v51RenderDiagnostic));
  await expect(page.locator('#resultsCount')).toContainText('أقل سعر');
  await expect(page.locator('#listingGrid .listing-card')).toHaveCount(0);
  await expect(page.locator('#emptyState')).toContainText('عدّل حد السعر');
  await page.locator('#maxPrice').fill('99999');
+ // Move the minimum below the fixture's actual prices (highest mock price is 68000).
+ // Merely making min <= max is not enough to guarantee any listing matches.
+ await page.locator('#minPrice').fill('1000');
  await page.locator('#maxPrice').dispatchEvent('input');
  await expect(page.locator('#resultsCount')).not.toContainText('أقل سعر');
  await expect(page.locator('#listingGrid .listing-card')).not.toHaveCount(0);
