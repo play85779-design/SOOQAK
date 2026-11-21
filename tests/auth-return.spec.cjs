@@ -36,11 +36,13 @@ async function mockedAuth(page){
         return {
           from:()=>q,
           auth:{
-            getUser:async()=>({data:{user:null},error:{name:'AuthSessionMissingError'}}),
-            onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),
+            getUser:async()=>window.__TEST_LOGGED_IN?({data:{user:{id:'11111111-1111-4111-8111-111111111111',email:'buyer@example.invalid',email_confirmed_at:'2026-11-20T00:00:00Z',user_metadata:{full_name:'مستخدم تجريبي'}}},error:null}):({data:{user:null},error:{name:'AuthSessionMissingError'}}),
+            onAuthStateChange:(cb)=>{window.__TEST_AUTH_CALLBACK=cb;return {data:{subscription:{unsubscribe(){}}}}},
             signUp:async value=>{window.__SOOQAK_AUTH_TEST_CALLS.push({method:'signup',value});return {data:{session:null},error:null}},
             signInWithOtp:async value=>{window.__SOOQAK_AUTH_TEST_CALLS.push({method:'otp',value});return {data:{},error:null}},
             signInWithOAuth:async value=>{window.__SOOQAK_AUTH_TEST_CALLS.push({method:'google',value});return {data:{},error:null}},
+            resetPasswordForEmail:async (email,options)=>{window.__SOOQAK_AUTH_TEST_CALLS.push({method:'recovery-email',email,options});return {data:{},error:null}},
+            updateUser:async value=>{window.__SOOQAK_AUTH_TEST_CALLS.push({method:'update-password',value});return {data:{user:null},error:null}},
             signInWithPassword:async()=>({data:{session:null},error:null})
           }
         };
@@ -79,4 +81,33 @@ test('magic email link uses the same reliable on-site callback',async({page})=>{
   expect(payload.method).toBe('otp');
   expect(payload.value.options.emailRedirectTo).toBe('http://127.0.0.1:4173/index.html');
   expect(payload.value.options.shouldCreateUser).toBe(false);
+});
+
+test('forgot-password form sends on-site callback without real email',async({page})=>{
+  await mockedAuth(page);
+  await page.goto('/index.html?auth=login',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('#cloudLoginForm')).toBeVisible();
+  await page.locator('#authForgotPassword').click();
+  await expect(page.locator('#sooqakForgotForm')).toBeVisible();
+  await page.locator('#forgotEmail').fill('example@example.invalid');
+  await page.locator('#sooqakForgotSubmit').click();
+  await expect.poll(()=>page.evaluate(()=>window.__SOOQAK_AUTH_TEST_CALLS.length)).toBe(1);
+  const payload=await page.evaluate(()=>window.__SOOQAK_AUTH_TEST_CALLS[0]);
+  expect(payload.method).toBe('recovery-email');
+  expect(payload.options.redirectTo).toBe('http://127.0.0.1:4173/index.html');
+  await expect(page.locator('#modalTitle')).toContainText('تحقق من بريدك');
+});
+test('recovery callback prompts for a new password and updates it locally',async({page})=>{
+  await page.addInitScript(()=>{window.__TEST_LOGGED_IN=true});
+  await mockedAuth(page);
+  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+  await expect(page.locator('#profileButton')).toBeVisible();
+  await page.evaluate(()=>window.__TEST_AUTH_CALLBACK('PASSWORD_RECOVERY',{}));
+  await expect(page.locator('#modalTitle')).toContainText('تعيين كلمة مرور جديدة');
+  await page.locator('#passwordNew').fill('very-strong-passphrase-1234');
+  await page.locator('#passwordConfirm').fill('very-strong-passphrase-1234');
+  await page.locator('#setPasswordSubmit').click();
+  await expect.poll(()=>page.evaluate(()=>window.__SOOQAK_AUTH_TEST_CALLS.some(x=>x.method==='update-password'))).toBe(true);
+  const payload=await page.evaluate(()=>window.__SOOQAK_AUTH_TEST_CALLS.find(x=>x.method==='update-password'));
+  expect(payload.value.password).toBe('very-strong-passphrase-1234');
 });
