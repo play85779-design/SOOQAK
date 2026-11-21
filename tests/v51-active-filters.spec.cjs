@@ -29,6 +29,8 @@ test('V51 invalid price boundaries provide useful error without claiming empty i
  await expect(page.locator('#listingGrid .listing-card')).toHaveCount(0);
  await expect(page.locator('#emptyState')).toContainText('عدّل حد السعر');
  await page.locator('#maxPrice').fill('99999');
+ // Make the corrected range include the test fixture's prices before expecting results.
+ await page.locator('#minPrice').fill('1000');
  await expect(page.locator('#resultsCount')).not.toContainText('أقل سعر');
  await expect(page.locator('#listingGrid .listing-card')).not.toHaveCount(0);
 });
