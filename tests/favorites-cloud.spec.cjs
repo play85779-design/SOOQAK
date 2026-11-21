@@ -3,7 +3,7 @@ const {test,expect}=require('@playwright/test');
 // Fully mocked Auth/Data API in the browser: never calls or mutates a real account or table.
 const userId='11111111-1111-4111-8111-111111111111';
 const sellerId='22222222-2222-4222-8222-222222222222';
-const mockedSdk=String.raw\`
+const mockedSdk=String.raw`
 const userId='11111111-1111-4111-8111-111111111111';
 const sellerId='22222222-2222-4222-8222-222222222222';
 const ids=Array.from({length:70},(_,i)=>'00000000-0000-4000-8000-'+String(i+1).padStart(12,'0'));
@@ -41,7 +41,7 @@ export function createClient(){
   storage:{from:()=>({getPublicUrl:path=>({data:{publicUrl:'https://example.invalid/'+path}})})}
  };
 }
-\`;
+`;
 async function installMock(page){
  await page.route('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm',r=>r.fulfill({status:200,contentType:'text/javascript',body:mockedSdk}));
  await page.route('https://zwbtiyqgrgjybwaguuyn.supabase.co/**',r=>r.abort());
