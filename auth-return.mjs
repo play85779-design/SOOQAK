@@ -8,7 +8,9 @@ export function sooqakAuthReturnURL(currentLocation = location.href) {
   if (current.protocol !== 'https:' && !local) {
     throw new Error('افتح سوقك من رابط HTTPS الرسمي للتجربة قبل طلب رسالة البريد.');
   }
-  const target = new URL('./index.html', current);
+  // The callback must be site-root relative, even when auth starts on a nested URL.
+  // './index.html' could incorrectly resolve to /nested/index.html and break email links.
+  const target = new URL('/index.html', current);
   target.search = '';
   target.hash = '';
   target.username = '';
