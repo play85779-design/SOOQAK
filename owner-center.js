@@ -29,10 +29,11 @@ async function initializeOwnerPanel() {
     deny('الدخول محظور: يلزم حساب موثّق وصلاحية مالك مؤكدة من الخادم.');
     return;
   }
+  activeUserId = user.id; // Enable session-change invalidation while permission check is pending.
   // No admin shortcut: the owner role must be approved separately and checked by a secure RPC.
   // If this RPC does not yet exist, or fails for any reason, deny by default.
   const permission = await api.rpc('sooqak_is_owner');
-  if (epoch !== requestEpoch) return;
+  if (epoch !== requestEpoch || activeUserId !== user.id) return;
   if (permission?.error || permission?.data !== true) {
     deny('الصفحة غير مفعّلة لحسابك: صلاحية المالك على الخادم غير متحقّق منها.');
     return;
