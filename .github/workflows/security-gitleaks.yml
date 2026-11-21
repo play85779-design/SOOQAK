@@ -35,13 +35,13 @@ jobs:
           URL="https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}"
           curl --fail --location --silent --show-error --retry 3 \
             "${URL}/gitleaks_${VERSION}_linux_x64.tar.gz" \
-            --output "${RUNNER_TEMP}/gitleaks.tar.gz"
+            --output "${RUNNER_TEMP}/gitleaks_${VERSION}_linux_x64.tar.gz"
           curl --fail --location --silent --show-error --retry 3 \
             "${URL}/gitleaks_${VERSION}_checksums.txt" \
             --output "${RUNNER_TEMP}/checksums.txt"
           cd "${RUNNER_TEMP}"
           grep -F "gitleaks_${VERSION}_linux_x64.tar.gz" checksums.txt | sha256sum --check --status
-          tar -xzf gitleaks.tar.gz gitleaks
+          tar -xzf "gitleaks_${VERSION}_linux_x64.tar.gz" gitleaks
           chmod +x gitleaks
           ./gitleaks version
 
