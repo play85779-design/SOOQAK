@@ -8,8 +8,8 @@ from pathlib import Path
 paths = subprocess.check_output(["git", "ls-files", "-z"]).decode().split("\0")
 patterns = {
     "private key": re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----"),
-    "service role key": re.compile(r"(?i)(?:service_role|supabase_service_role_key)\\s*[:=]\\s*['\\\"][A-Za-z0-9_.-]{24,}"),
-    "generic secret assignment": re.compile(r"(?i)(?:api_secret|client_secret|secret_key|access_token|private_token)\\s*[:=]\\s*['\\\"][A-Za-z0-9_./+=-]{24,}"),
+    "service role key": re.compile(r"(?i)(?:service_role|supabase_service_role_key)\s*[:=]\s*['\"][A-Za-z0-9_.-]{24,}"),
+    "generic secret assignment": re.compile(r"(?i)(?:api_secret|client_secret|secret_key|access_token|private_token)\s*[:=]\s*['\"][A-Za-z0-9_./+=-]{24,}"),
 }
 exclude = {".github/workflows/quality-smoke.yml", "scripts/check-secrets.py"}
 hits = []
