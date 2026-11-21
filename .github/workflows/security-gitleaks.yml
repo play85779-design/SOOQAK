@@ -48,6 +48,7 @@ jobs:
       - name: Scan full Git history AND current working files
         shell: bash
         run: |
+          set +e
           set -uo pipefail
           cd "${GITHUB_WORKSPACE}"
           GL="${RUNNER_TEMP}/gitleaks"
@@ -60,6 +61,7 @@ jobs:
           "${GL}" dir --redact=100 --no-banner --log-level=error \
             --report-format=json --report-path="${RUNNER_TEMP}/sooqak-files-scan.json" .
           files_exit=$?
+          set -e
           python3 - "${history_exit}" "${files_exit}" <<'PY'
           import json, os, pathlib, sys
           h_code, f_code = map(int, sys.argv[1:])
