@@ -203,7 +203,7 @@ function updateCategoryFilters(){
  if(!group||!select)return;
  const category=(window.SOOQAK_CATEGORY_TREE||[]).find(x=>x.name===parent);
  const previous=select.value;
- if(!category){group.hidden=true;select.innerHTML='<option value="">جميع الأنواع</option>';return;}
+ if(!category){group.hidden=true;select.innerHTML='<option value="">جميع الأنواع</option>';select.value='';return;}
  group.hidden=false;
  const label=marketLanguage==='en'?'All subcategories':'جميع الأنواع الفرعية';
  select.innerHTML='<option value="">'+esc(label)+'</option>'+category.subcategories.map(x=>'<option value="'+esc(x.ar)+'">'+esc(marketLanguage==='en'?x.en:x.ar)+'</option>').join('');
@@ -234,7 +234,7 @@ function handleClick(e){
   if(!Object.prototype.hasOwnProperty.call(map,field))return;
   const el=$(map[field]);if(!el)return;
   el.value=field==='sort'?'new':'';
-  if(field==='category')updateCategoryFilters();
+  if(field==='category'){updateCategoryFilters();$('subcategoryFilter').value='';}
   onlyFavorites=false;render();scheduleRemoteSearch();return;
  }
  const native=e.target.closest('[data-share-native]');if(native){shareViaDevice(native.dataset.shareNative);return;}
