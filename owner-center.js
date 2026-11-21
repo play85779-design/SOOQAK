@@ -17,7 +17,13 @@ async function initializeOwnerPanel() {
     {auth:{persistSession:true,detectSessionInUrl:false,autoRefreshToken:true}}
   );
   api.auth.onAuthStateChange?.((event, session) => {
-    if (activeUserId && (!session?.user || session.user.id !== activeUserId)) {
+    // Invalidate in-flight getUser() too: a sign-out or account switch can
+    // arrive before activeUserId has been set, otherwise stale async results
+    // could open a panel for a session that has already ended.
+    if (event === 'SIGNED_OUT' ||
+        (event === 'SIGNED_IN' && !activeUserId) ||
+        (activeUserId && (!session?.user || session.user.id !== activeUserId ||
+                          !session.user.email_confirmed_at))) {
       deny('تغيرت الجلسة. أعد فتح الصفحة بعد تسجيل الدخول بحساب المالك.');
     }
   });
