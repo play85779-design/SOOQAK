@@ -140,3 +140,6 @@ body.sooqak-search-active .market-section{scroll-margin-top:90px}
 
 /* V47 — selected upload order with mobile-accessible controls. */
 #newPhotoPreview{display:flex;flex-wrap:wrap;gap:9px}#newPhotoPreview .contact-note{flex-basis:100%;margin-top:4px}.sooqak-new-photo{display:flex;flex-direction:column;gap:5px;align-items:center;width:126px;padding:7px;border:1px solid #e0e6ef;border-radius:10px;background:#fff}.sooqak-new-photo img{width:104px;height:90px;object-fit:cover;border-radius:8px}.sooqak-new-photo-name{font-size:10px;max-width:110px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;direction:auto}.sooqak-new-photo-buttons{display:flex;gap:4px}.sooqak-new-photo-buttons button{padding:5px;font-size:10px}
+
+/* V48 draft autosave status */
+.sooqak-draft-status{display:block;flex-basis:100%;font-size:11px;color:#536879;line-height:1.6}
