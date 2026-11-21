@@ -91,8 +91,9 @@ function setupGlobalPreview(){const sel=$('globalCountry');sel.value=marketCount
 
 function notify(s){const el=$('toast');el.textContent=s;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3300)}
 let sooqakPhotoObjectUrls=[];function clearPhotoPreviewUrls(){sooqakPhotoObjectUrls.forEach(url=>URL.revokeObjectURL(url));sooqakPhotoObjectUrls=[];}
-function showModal(title,html){closeFilterDrawer(false);clearPhotoPreviewUrls();if($('modalBackdrop').hidden)sooqakPreviousFocus=document.activeElement;$('modalTitle').textContent=title;$('modalContent').innerHTML=html;$('modalBackdrop').hidden=false;document.body.style.overflow='hidden';$('modalClose').focus();}
-function closeModal(){clearTimeout(sooqakDraftAutoSaveTimer);sooqakActiveChatId=null;clearPhotoPreviewUrls();$('modalBackdrop').hidden=true;$('modalContent').innerHTML='';document.body.style.overflow='';modalId=null;if(sooqakPreviousFocus?.isConnected)sooqakPreviousFocus.focus();sooqakPreviousFocus=null;}
+let modalRevision=0;
+function showModal(title,html){++modalRevision;closeFilterDrawer(false);clearPhotoPreviewUrls();if($('modalBackdrop').hidden)sooqakPreviousFocus=document.activeElement;$('modalTitle').textContent=title;$('modalContent').innerHTML=html;$('modalBackdrop').hidden=false;document.body.style.overflow='hidden';$('modalClose').focus();}
+function closeModal(){++modalRevision;clearTimeout(sooqakDraftAutoSaveTimer);sooqakActiveChatId=null;clearPhotoPreviewUrls();$('modalBackdrop').hidden=true;$('modalContent').innerHTML='';document.body.style.overflow='';modalId=null;if(sooqakPreviousFocus?.isConnected)sooqakPreviousFocus.focus();sooqakPreviousFocus=null;}
 function cardPrice(ad){return ad.priceType==='تواصل للسعر'||ad.price===null?'تواصل للسعر':`${money(ad.price)} <small>ر.س</small>`}
 function cardMedia(ad){return ad.images?.[0]?`<img src="${esc(ad.images[0])}" alt="صورة ${esc(ad.title)}" loading="lazy" decoding="async"/>`:`<span class="item-emoji">${esc(ad.emoji||'📦')}</span>`}
 function card(ad){const favorite=state.favorites.includes(ad.id);const date=new Date(ad.createdAt).toLocaleDateString('ar-SA',{year:'numeric',month:'short',day:'numeric'});return `<article class="listing-card" data-open="${esc(ad.id)}" role="button" tabindex="0" aria-label="عرض ${esc(ad.title)}"><div class="listing-media" data-color="${esc(ad.color||'blue')}">${cardMedia(ad)}${ad.demo?'<span class="media-tag">إعلان تجريبي</span>':''}${ad.status==='مباع'?'<span class="sold-tag">تم البيع</span>':ad.status==='محجوز'?'<span class="sold-tag">محجوز مؤقتًا</span>':''}<button class="heart ${favorite?'active':''}" data-fav="${esc(ad.id)}" aria-label="${favorite?'إزالة من المفضلة':'إضافة للمفضلة'}" aria-pressed="${favorite?'true':'false'}">${favorite?'♥':'♡'}</button></div><div class="listing-body"><h3 class="listing-title">${esc(ad.title)}</h3><div class="listing-price">${cardPrice(ad)}</div><div class="listing-meta"><span>⌖ ${esc(ad.city)}</span><span>${esc(date)}</span></div></div></article>`}
@@ -860,11 +861,11 @@ async function refreshUnreadMessages(announce=false){
   return summary;
 }
 async function pollActiveCloudConversation(){
-  const id=sooqakActiveChatId;
-  if(!id||$('modalBackdrop').hidden||!$('modalTitle').textContent.startsWith('محادثة — '))return;
+  const id=sooqakActiveChatId,accountId=state.account?.id;
+  if(!accountId||!id||$('modalBackdrop').hidden||!$('modalTitle').textContent.startsWith('محادثة — '))return;
   const log=$('chatMessages');if(!log)return;
   const messages=await window.sooqakCloud.listMessages(id);
-  if(sooqakActiveChatId!==id||!$('chatMessages'))return;
+  if(state.account?.id!==accountId||sooqakActiveChatId!==id||$('chatMessages')!==log)return;
   const latest=messages.length?messages[messages.length-1].id:'';
   if(log.dataset.latestId===latest)return;
   const nearBottom=log.scrollTop+log.clientHeight+45>=log.scrollHeight;
@@ -905,6 +906,7 @@ function onCloudAuth(e){
   state.account=user?{id:user.id,email:user.email,name}:null;
   sooqakAuthResolved=true;
   if(changed){
+    if(sooqakActiveChatId || $('sooqakInboxSummary'))closeModal();
     sooqakOwnedAdCache.clear();sooqakSharedLinkCache.clear();
     state.ads=[];state.cloudPledgeAcceptedAt=null;state.favorites=[];
     sooqakUnreadBaseline=null;sooqakUnreadFetchSeq++;sooqakActiveChatId=null;setChatUnreadBadge(0);
@@ -1267,20 +1269,21 @@ async function openCloudConversation(adId) {
   const ad=byId(adId);
   if(!ad || ad.demo)return notify('هذا الإعلان غير متاح للمراسلة');
   if(mine(ad))return notify('لا يمكنك مراسلة نفسك');
+  const accountId=state.account.id, revision=modalRevision;
   try {
     const conversation=await window.sooqakCloud.openOrCreateConversation(adId);
-    await showCloudConversation(conversation);
+    if(state.account?.id===accountId && revision===modalRevision)await showCloudConversation(conversation);
   } catch(e) { cloudError(e); }
 }
 async function showCloudConversation(conversation) {
   if(!state.account)return openCloudLogin();
-  const expectedAccountId=state.account.id;
+  const expectedAccountId=state.account.id, request=++modalRevision;
   try {
     const service=window.sooqakCloud;
     const [messages,block,muted]=await Promise.all([
       service.listMessages(conversation.id),service.getConversationBlockStatus(conversation.id),service.isConversationMuted(conversation.id)
     ]);
-    if(state.account?.id!==expectedAccountId)return; // Never render a previous account's messages.
+    if(state.account?.id!==expectedAccountId||modalRevision!==request)return; // Never render a previous account's messages.
     const ad=byId(conversation.listing_id);
     const heading=ad?.title||'محادثة خاصة';
     const me=state.account.id;
@@ -1292,27 +1295,31 @@ async function showCloudConversation(conversation) {
     showModal('محادثة — '+heading,`${blockNotice}<div class="chat-log" id="chatMessages" aria-live="polite">${messages.length?messages.map(m=>`<div class="chat-bubble ${m.sender_id===me?'mine':''}">${esc(m.body)}<div class="chat-time">${esc(new Date(m.created_at).toLocaleString('ar-SA'))}</div></div>`).join(''):'<p class="muted">لا توجد رسائل بعد.</p>'}</div>${composer}<div class="button-row"><button type="button" class="btn btn-outline" id="sooqakRefreshMessages">↻ تحديث الرسائل</button><button type="button" class="btn btn-outline" id="sooqakBlockButton">${actionLabel}</button><button type="button" class="btn btn-outline" id="v12MuteChat">${muted?'إلغاء كتم المحادثة':'كتم تنبيهات المحادثة'}</button><button type="button" class="btn btn-subtle" id="sooqakInboxBack">جميع المحادثات</button></div>`);
     sooqakActiveChatId=conversation.id;
     const firstLog=$('chatMessages');if(firstLog)firstLog.dataset.latestId=messages.length?messages[messages.length-1].id:'';
-    try{await service.markConversationRead(conversation.id);await refreshUnreadMessages(false)}catch(e){console.warn('تعذر تأكيد قراءة المحادثة')};
+    const view=modalRevision;
+    const current=()=>state.account?.id===expectedAccountId && modalRevision===view;
     const form=$('sooqakCloudMessageForm');
     if(form)form.onsubmit=async e=>{
       e.preventDefault();const value=String(new FormData(form).get('message')||'').trim();
-      if(!value)return;
-      const button=form.querySelector('button[type="submit"]');button.disabled=true;
-      try {await service.sendMessage(conversation.id,value);await showCloudConversation(conversation)}
+      const button=form.querySelector('button[type="submit"]');
+      if(!current()||!value||button.disabled)return;
+      button.disabled=true;
+      try {await service.sendMessage(conversation.id,value);if(current())await showCloudConversation(conversation)}
       catch(err){cloudError(err);button.disabled=false;}
     };
     $('sooqakBlockButton').onclick=async()=>{
+      if(!current())return;
       const next=!block.blockedByMe;
       if(next&&!confirm('هل تريد حظر المستخدم؟ لن يستطيع أي طرف إرسال رسائل جديدة، وستبقى الرسائل السابقة محفوظة.'))return;
       const button=$('sooqakBlockButton');button.disabled=true;
-      try{await service.setConversationBlocked(conversation.id,next);await showCloudConversation(conversation);
+      try{await service.setConversationBlocked(conversation.id,next);if(!current())return;await showCloudConversation(conversation);
         notify(next?'تم حظر المستخدم ومنع الرسائل الجديدة':'أزلنا الحظر من جهتك. قد يبقى الإرسال متوقفًا إن كان الطرف الآخر حاظرك');}
       catch(err){button.disabled=false;cloudError(err)}
     };
-    $('v12MuteChat').onclick=async()=>{try{await service.setConversationMuted(conversation.id,!muted);await showCloudConversation(conversation);notify(muted?'تم إلغاء الكتم':'تم كتم المحادثة')}catch(e){cloudError(e)}};
+    $('v12MuteChat').onclick=async()=>{if(!current())return;try{await service.setConversationMuted(conversation.id,!muted);if(!current())return;await showCloudConversation(conversation);notify(muted?'تم إلغاء الكتم':'تم كتم المحادثة')}catch(e){cloudError(e)}};
     $('sooqakInboxBack').onclick=openCloudChats;
     $('sooqakRefreshMessages').onclick=async()=>{try{await pollActiveCloudConversation();await refreshUnreadMessages(false);notify('تم فحص الرسائل الجديدة')}catch(err){cloudError(err)}};
     const log=$('chatMessages');if(log)log.scrollTop=log.scrollHeight;
+    try{await service.markConversationRead(conversation.id);await refreshUnreadMessages(false)}catch(e){console.warn('تعذر تأكيد قراءة المحادثة')};
   }catch(e){cloudError(e)}
 }
 async function openCloudChats() {
