@@ -18,7 +18,8 @@ test('V49 preview shows current information but never publishes',async({page})=>
  await page.locator('#previewAdButton').click();
  await expect(page.locator('#sooqakAdPreview')).toBeVisible();
  await expect(page.locator('#sooqakAdPreview')).toContainText('سيارة تجريبية معاينة');
- await expect(page.locator('#sooqakAdPreview')).toContainText('27');
+ const expectedPrice=await page.evaluate(()=>money(27000));
+ await expect(page.locator('#sooqakAdPreview')).toContainText(expectedPrice);
  expect(await page.evaluate(()=>window.__V49_WRITES)).toBe(0);
  await expect(page.locator('#adForm')).toBeVisible();
 });
