@@ -1,0 +1,85 @@
+name: SOOQAK - Gitleaks Secret Scan (Free)
+on:
+  push:
+    branches: [develop/v38-recovery]
+  pull_request:
+    branches: [main, develop/v38-recovery]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sooqak-gitleaks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gitleaks:
+    # GitHub's standard Linux Actions runner is free for PUBLIC repositories.
+    # Do not execute automatically after switching the repository to private.
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout every commit for full-history scanning
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install pinned, free open-source Gitleaks CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION=8.30.1
+          URL="https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}"
+          curl --fail --location --silent --show-error --retry 3 \
+            "${URL}/gitleaks_${VERSION}_linux_x64.tar.gz" \
+            --output "${RUNNER_TEMP}/gitleaks.tar.gz"
+          curl --fail --location --silent --show-error --retry 3 \
+            "${URL}/gitleaks_${VERSION}_checksums.txt" \
+            --output "${RUNNER_TEMP}/checksums.txt"
+          cd "${RUNNER_TEMP}"
+          grep -F "gitleaks_${VERSION}_linux_x64.tar.gz" checksums.txt | sha256sum --check --status
+          tar -xzf gitleaks.tar.gz gitleaks
+          chmod +x gitleaks
+          ./gitleaks version
+
+      - name: Scan full Git history AND current working files
+        shell: bash
+        run: |
+          set -uo pipefail
+          cd "${GITHUB_WORKSPACE}"
+          GL="${RUNNER_TEMP}/gitleaks"
+          # Output reports remain in runner temporary storage and are never uploaded
+          # to public GitHub artifacts, printed, or copied to Google Drive.
+          "${GL}" git --redact=100 --no-banner --log-level=error \
+            --report-format=json --report-path="${RUNNER_TEMP}/sooqak-git-scan.json" \
+            --log-opts="--all" .
+          history_exit=$?
+          "${GL}" dir --redact=100 --no-banner --log-level=error \
+            --report-format=json --report-path="${RUNNER_TEMP}/sooqak-files-scan.json" .
+          files_exit=$?
+          python3 - "${history_exit}" "${files_exit}" <<'PY'
+          import json, os, pathlib, sys
+          h_code, f_code = map(int, sys.argv[1:])
+          def count(filename):
+              p = pathlib.Path(os.environ["RUNNER_TEMP"]) / filename
+              return len(json.loads(p.read_text())) if p.exists() else 0
+          old = count("sooqak-git-scan.json")
+          current = count("sooqak-files-scan.json")
+          summary = os.environ["GITHUB_STEP_SUMMARY"]
+          with open(summary, "a", encoding="utf8") as out:
+              out.write("## SOOQAK Gitleaks — safe summary\n")
+              out.write(f"- Full Git history: {old} potential secret matches\n")
+              out.write(f"- Current files: {current} potential secret matches\n")
+              out.write("- Secret values, paths, fingerprints, and detailed reports are NOT published.\n")
+          print(f"Gitleaks safe counts: history={old}; current_files={current}")
+          if h_code not in (0, 1) or f_code not in (0, 1):
+              print("One or more scanner invocations did not complete normally.")
+              sys.exit(2)
+          if old or current or h_code or f_code:
+              print("Potential secrets detected; review securely before dismissing.")
+              sys.exit(1)
+          print("PASS: no potential secrets detected by the configured rules.")
+          PY
