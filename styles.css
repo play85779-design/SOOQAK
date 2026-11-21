@@ -129,3 +129,6 @@ body.sooqak-search-active .main-content{padding-top:7px}
 body.sooqak-search-active .market-heading{margin-top:8px;margin-bottom:12px}
 body.sooqak-search-active .header-search{border-color:#b78b3c;box-shadow:0 0 0 2px rgba(214,166,83,.12)}
 body.sooqak-search-active .market-section{scroll-margin-top:90px}
+
+/* V41 — responsive subcategory navigation; existing categories remain canonical. */
+.subcategory-preview{margin-top:14px;padding:16px;border:1px solid #e5ebf1;border-radius:14px;background:#fff}.subcategory-title{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:12px;color:var(--navy)}.subcategory-title small{font-size:12px;color:var(--muted)}.subcategory-chips{display:flex;flex-wrap:wrap;gap:9px}.subcategory-chip{border:1px solid #d6e0e9;background:#f7f9fc;color:var(--navy);border-radius:999px;padding:9px 14px;font-weight:700}.subcategory-chip:hover,.subcategory-chip:focus-visible{border-color:var(--gold);background:#fff7e9;outline:2px solid transparent}@media(max-width:600px){.subcategory-preview{padding:12px}.subcategory-chips{gap:7px}.subcategory-chip{font-size:12px;padding:9px 11px}}
