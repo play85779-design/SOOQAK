@@ -202,11 +202,12 @@ if (window.SOOQAK_CLOUD_ENABLED) {
     }
     async function uploadPhotos(listingId,blobs) {
       if(!currentUser)throw new Error('يجب تسجيل الدخول لرفع الصور');
-if(!currentUser)throw new Error('يجب تسجيل الدخول لرفع الصور');
       if(!Array.isArray(blobs)||blobs.length>5)throw new Error('الحد الأقصى 5 صور');
       for (const blob of blobs) {
-        if(blob.type!=='image/jpeg'||blob.size>1572864||blob.size===0)
+        if(!blob || blob.type!=='image/jpeg'||blob.size>1572864||blob.size===0)
           throw new Error('الصورة المضغوطة يجب أن تكون JPEG وأقل من 1.5 ميجابايت');
+      }
+      for (const blob of blobs) {
         const registered=await supabase.from('sooqak_listing_photos')
           .insert({listing_id:listingId})
           .select('id,storage_path').single();
@@ -421,6 +422,7 @@ if(!currentUser)throw new Error('يجب تسجيل الدخول لرفع الص�
     async function savePrivateProfile(v){if(!currentUser)throw Error('سجّل الدخول أولًا');const {error}=await supabase.from('sooqak_private_profiles').upsert({user_id:currentUser.id,city:v.city,district:v.district,birth_year:v.birth_year,updated_at:new Date().toISOString()},{onConflict:'user_id'});errorIfAny({error});const r=await supabase.auth.updateUser({data:{full_name:v.display_name}});errorIfAny(r);if(r.data?.user)currentUser=r.data.user;const own=await supabase.from('sooqak_accounts').update({display_name:v.display_name}).eq('owner_id',currentUser.id);errorIfAny(own);window.dispatchEvent(new CustomEvent('sooqak:auth',{detail:{user:currentUser}}));return true;}
     window.sooqakCloud = Object.freeze({
       getUser:()=>currentUser,
+      ownerCommandSnapshot:()=>runRpc('sooqak_owner_command_snapshot',{}),
       loadPrivateProfile,savePrivateProfile,hasAcceptedPledge,acceptPledge,getContactPrefs,saveContactPrefs,listFavorites,setFavorite,listSavedSearches,addSavedSearch,deleteSavedSearch,
       ensureAccount,getPublicSellerProfile,savePublicSellerProfile,
       fetchListings,fetchFavoriteListings,fetchListingById,fetchMyListings,countMyListings,

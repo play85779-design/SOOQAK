@@ -69,3 +69,24 @@ DO $$ BEGIN IF (SELECT count(*) FROM public.sooqak_messages)<>20 THEN RAISE EXCE
 UPDATE public.sooqak_message_windows SET started_at=now()-interval '2 minutes';
 SET ROLE authenticated;
 INSERT INTO public.sooqak_messages(body) VALUES ('new interval');
+RESET ROLE;
+\ir ../../migrations/NOT_APPLIED_V91_OWNER_COMMAND.sql
+INSERT INTO sooqak_finance.readers VALUES ('00000000-0000-4000-8000-000000000001','growth');
+INSERT INTO sooqak_finance.metrics VALUES ('growth','registered',2,'fixture',now()),('finance','cash',10,'fixture',now());
+SET ROLE authenticated;
+SET fixture.uid='00000000-0000-4000-8000-000000000001';
+DO $$ DECLARE payload jsonb; BEGIN
+ payload:=public.sooqak_owner_command_snapshot();
+ IF jsonb_array_length(payload->'metrics')<>1 OR payload->'metrics'->0->>'scope'<>'growth' THEN RAISE EXCEPTION 'Scope mismatch'; END IF;
+ PERFORM public.sooqak_owner_command_snapshot();
+END $$;
+SET fixture.uid='00000000-0000-4000-8000-000000000002';
+DO $$ BEGIN
+ BEGIN PERFORM public.sooqak_owner_command_snapshot(); RAISE EXCEPTION 'Unexpected access';
+ EXCEPTION WHEN insufficient_privilege THEN NULL; END;
+END $$;
+RESET ROLE;
+DO $$ BEGIN
+ IF (SELECT count(*) FROM sooqak_finance.access_history)<>1 OR (SELECT count(*) FROM sooqak_finance.change_history)<>3 THEN RAISE EXCEPTION 'Audit mismatch'; END IF;
+ IF has_function_privilege('anon','public.sooqak_owner_command_snapshot()','execute') THEN RAISE EXCEPTION 'Unexpected anonymous privilege'; END IF;
+END $$;
