@@ -25,3 +25,5 @@ query="SELECT l.title || '/' || s.final_price FROM listings l JOIN sales s ON l.
 [[ "$(psql -XAt -d restored -c "$query")" == 'منتج تجريبي/375.50' ]]
 [[ "$(psql -XAt -d restored -c "SELECT count(*) FROM pg_constraint WHERE conrelid='sales'::regclass AND contype='f'")" == 1 ]]
 echo 'Verified restored fixture rows, amount and foreign key.'
+createdb policy_fixture
+psql -X -v ON_ERROR_STOP=1 -d policy_fixture -f tests/sql/store-and-decision-fixture.sql
