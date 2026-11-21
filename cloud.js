@@ -8,6 +8,11 @@ if (window.SOOQAK_CLOUD_ENABLED) {
       auth: { persistSession: true, detectSessionInUrl: true, autoRefreshToken: true }
     });
     let currentUser = null;
+    let nextEmailAttempt=0;
+    function reserveEmailAttempt(){
+      if(Date.now()<nextEmailAttempt)throw new Error('انتظر دقيقة قبل طلب بريد آخر.');
+      nextEmailAttempt=Date.now()+60000;
+    }
     const verified = u => Boolean(u?.email_confirmed_at);
     function errorIfAny({error}) { if (error) throw error; }
     async function refreshUser() {
@@ -455,6 +460,7 @@ if (window.SOOQAK_CLOUD_ENABLED) {
       resetPasswordEmail:async email=>{
         const normalized=String(email||'').trim().toLowerCase();
         if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)||normalized.length>254)throw new Error('البريد الإلكتروني غير صالح');
+        reserveEmailAttempt();
         const r=await supabase.auth.resetPasswordForEmail(normalized,{redirectTo:sooqakAuthReturnURL()});
         errorIfAny(r);
         return true;
@@ -462,6 +468,7 @@ if (window.SOOQAK_CLOUD_ENABLED) {
       signInEmail:async (email,{createAccount=false,displayName=''}={})=>{
         const options={emailRedirectTo:sooqakAuthReturnURL(),shouldCreateUser:Boolean(createAccount)};
         if(createAccount&&displayName)options.data={full_name:displayName.slice(0,60)};
+        reserveEmailAttempt();
         const r=await supabase.auth.signInWithOtp({email,options});
         errorIfAny(r);
       },
@@ -471,6 +478,7 @@ if (window.SOOQAK_CLOUD_ENABLED) {
         return Boolean(result.data?.session);
       },
       signUpPassword:async (email,password,displayName)=>{
+        reserveEmailAttempt();
         const result=await supabase.auth.signUp({
           email,password,
           options:{emailRedirectTo:sooqakAuthReturnURL(),data:{full_name:String(displayName).slice(0,60)}}
