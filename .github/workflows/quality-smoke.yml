@@ -24,6 +24,9 @@ jobs:
         shell: bash
         run: |
           python3 scripts/check-secrets.py
+      - name: Backup helper syntax only (no database connection)
+        shell: bash
+        run: bash -n scripts/backup-snapshot.sh
   playwright-smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 15
