@@ -17,6 +17,23 @@ test('auth return URL always points at this site index, without query or fragmen
     'http://127.0.0.1:4173/index.html'
   ]);
 });
+test('nested routes never produce a nested email callback or leak a token',async({page})=>{
+  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+  const actual=await page.evaluate(async()=>{
+    const {sooqakAuthReturnURL}=await import('/auth-return.mjs');
+    return [
+      sooqakAuthReturnURL('https://preview.example.org/category/vehicles?auth=signup#access_token=do-not-forward'),
+      sooqakAuthReturnURL('https://preview.example.org/services/workshops/detail.html?ref=partner'),
+      sooqakAuthReturnURL('http://127.0.0.1:4173/nested/other.html?redirect=elsewhere')
+    ];
+  });
+  expect(actual).toEqual([
+    'https://preview.example.org/index.html',
+    'https://preview.example.org/index.html',
+    'http://127.0.0.1:4173/index.html'
+  ]);
+});
+
 test('refuse insecure origins rather than email links pointing to wrong places',async({page})=>{
   await page.goto('/index.html',{waitUntil:'domcontentloaded'});
   const result=await page.evaluate(async()=>{
