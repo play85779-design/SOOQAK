@@ -1,0 +1,82 @@
+name: SOOQAK - Free Lighthouse Quality Audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [develop/v38-recovery]
+    paths:
+      - '*.html'
+      - '*.css'
+      - '*.js'
+      - 'assets/**'
+      - '.github/workflows/quality-lighthouse.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sooqak-lighthouse-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  local-page-audit:
+    # Safety: only free GitHub Actions runner usage on PUBLIC repositories.
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout development code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Node without project changes
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install pinned open-source Lighthouse CI
+        run: npm install --global --no-audit --no-fund @lhci/cli@0.16.1
+
+      - name: Audit local preview (no uploads, no real accounts)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --bind 127.0.0.1 > "${RUNNER_TEMP}/sooqak-http.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in $(seq 1 20); do
+            if curl --fail --silent http://127.0.0.1:4173/index.html >/dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail --silent --show-error http://127.0.0.1:4173/index.html >/dev/null
+
+          # "collect" stores results locally. No public LHCI server, upload, token or billing.
+          lhci collect \
+            --url=http://127.0.0.1:4173/index.html \
+            --url=http://127.0.0.1:4173/services.html \
+            --numberOfRuns=1 \
+            --settings.chromeFlags="--headless --no-sandbox --disable-dev-shm-usage"
+
+          python3 - <<'PY'
+          import json, os, pathlib, statistics, sys
+          files = list(pathlib.Path(".lighthouseci").glob("lhr-*.json"))
+          if not files:
+              print("Lighthouse: no local report files were created")
+              sys.exit(1)
+          rows = []
+          for file in files:
+              data = json.loads(file.read_text(encoding="utf-8"))
+              cats = data.get("categories", {})
+              url = data.get("finalUrl", "")
+              page = url.split("?")[0].rsplit("/", 1)[-1] or "index.html"
+              scores = {k: round(100*float(cats[k]["score"])) if cats.get(k,{}).get("score") is not None else None for k in ("performance","accessibility","best-practices","seo")}
+              rows.append((page,scores))
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
+              f.write("## SOOQAK Lighthouse — local baseline (0 SAR)\n")
+              f.write("| Page | Performance | Accessibility | Best Practices | SEO |\n|---|---:|---:|---:|---:|\n")
+              for page,scores in rows:
+                  f.write("| {} | {} | {} | {} | {} |\n".format(page,*[scores[k] if scores[k] is not None else "N/A" for k in ("performance","accessibility","best-practices","seo")]))
+              f.write("\nStatic localhost-only baseline. No users signed in and no report was uploaded externally. Scores can vary.\n")
+          for page,scores in rows:
+              print("Lighthouse metrics: page={} performance={} accessibility={} best_practices={} seo={}".format(page,*[scores[k] for k in ("performance","accessibility","best-practices","seo")]))
+          PY
