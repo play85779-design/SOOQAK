@@ -85,10 +85,16 @@ if (window.SOOQAK_CLOUD_ENABLED) {
           `title.ilike.%${word}%`,`description.ilike.%${word}%`,`category.ilike.%${word}%`
         ]).join(','));
       }
-      if(criteria.sort==='cheap')query=query.order('price',{ascending:true,nullsFirst:false});
-      else if(criteria.sort==='expensive')query=query.order('price',{ascending:false,nullsFirst:false});
-      else query=query.order('created_at',{ascending:false});
-      const {data,error} = await query.order('id',{ascending:false}).range(Math.max(0,offset),Math.max(0,offset)+Math.min(60,Math.max(1,pageSize))-1);
+      if(criteria.sort==='cheap'||criteria.sort==='expensive'){
+        query=query.order('price',{ascending:criteria.sort==='cheap',nullsFirst:false})
+                   .order('created_at',{ascending:false})
+                   .order('id',{ascending:false});
+      } else if(criteria.sort==='old') {
+        query=query.order('created_at',{ascending:true}).order('id',{ascending:true});
+      } else {
+        query=query.order('created_at',{ascending:false}).order('id',{ascending:false});
+      }
+      const {data,error} = await query.range(Math.max(0,offset),Math.max(0,offset)+Math.min(60,Math.max(1,pageSize))-1);
       if (error) throw error;
       return enrichListings(data);
     }
