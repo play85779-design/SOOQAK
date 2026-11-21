@@ -90,3 +90,44 @@ test('profile count includes old, sold and hidden own ads',async({page})=>{
  await page.locator('#profileButton').click();
  await expect(page.locator('#sooqakOwnListingCount')).toHaveText('45');
 });
+
+test('V83 seller can open a correction for an older sale outside the public feed',async({page})=>{
+ await start(page);
+ await page.locator('#profileButton').click();
+ await page.locator('[data-act="commissions"]').click();
+ await page.locator('[data-correct-sale]').click();
+ await expect(page.locator('#correctSaleForm [name="price"]')).toHaveValue('5000');
+});
+
+test('V84 switching accounts while fetching the ledger discards old sales',async({page})=>{
+ await page.route('**/cloud.js',r=>r.fulfill({contentType:'text/javascript',body:''}));
+ await page.goto('/index.html');
+ await page.evaluate(async()=>{
+  state.account={id:'old'};
+  let resolveSales;
+  window.sooqakCloud={getSales:()=>new Promise(resolve=>resolveSales=resolve),getSaleCorrections:async()=>[]};
+  const pending=openCloudCommissions();
+  state.account={id:'new'};
+  resolveSales([{id:'old-sale',final_price:1234,commission:12.34}]);
+  await pending;
+ });
+ await expect(page.locator('.commission-sale')).toHaveCount(0);
+});
+
+test('V81 repeated sale confirmation only submits one sale while pending',async({page})=>{
+ await page.route('**/cloud.js',r=>r.fulfill({contentType:'text/javascript',body:''}));
+ await page.goto('/index.html');
+ const sent=await page.evaluate(async()=>{
+  window.SOOQAK_CLOUD_ENABLED=true;
+  state.account={id:'seller'};state.ads=[{id:'one',ownerId:'seller',role:state.role,status:'متاح',price:150.50}];
+  let calls=0,release;
+  window.sooqakCloud={markSold:()=>{calls++;return new Promise(resolve=>release=resolve)}};
+  window.prompt=()=>'150.50';window.confirm=()=>true;
+  const first=sellCloud('one');
+  await sellCloud('one');
+  state.account=null;
+  release();await first;
+  return calls;
+ });
+ expect(sent).toBe(1);
+});
