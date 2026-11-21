@@ -52,6 +52,12 @@ async function loadPage(reset=false){
  render();feedback('');$('retryLoad').hidden=true;
  if(mineMode&&!user){busy=false;render();feedback('لإدارة أنشطتك، سجّل الدخول بالبريد أولًا.',true);return}
  const f=buildFilter(),start=page*pageSize;
+ $('clearFilters').hidden=!(f.q||f.city||f.sp);
+ const url=new URL(location.href);
+ for(const [key,value] of [['city',f.city],['specialty',f.sp]]){
+  if(value)url.searchParams.set(key,value);else url.searchParams.delete(key);
+ }
+ history.replaceState(null,'',url);
  let q=api.from('sooqak_service_directory').select(cols,{count:'exact'}).order('created_at',{ascending:false}).order('id',{ascending:false}).range(start,start+pageSize-1);
  if(mineMode)q=q.eq('owner_id',user.id);else q=q.eq('status','active').eq('moderation_state','approved');
  if(kind!=='all')q=q.eq('kind',kind);
@@ -83,6 +89,13 @@ async function init(){
  document.querySelectorAll('[data-kind]').forEach(a=>a.classList.toggle('active',a.dataset.kind===kind));$('sectionTitle').textContent=kind==='all'?'جميع الخدمات':labels[kind];$('addService').textContent=kind==='workshop'?'＋ أضف ورشتك':kind==='plumbing'?'＋ أضف محلك':kind==='delivery'?'＋ سجّل خدمة التوصيل':'＋ أضف نشاطك';
  cities.forEach(v=>$('cityFilterOptions').append(new Option(v,v)));
  [...new Set(kind==='all'?Object.values(specialties).flat():specialties[kind])].forEach(s=>$('specialty').append(new Option(s,s)));
+ $('city').value=(p.get('city')||'').slice(0,70);
+ $('specialty').value=p.get('specialty')||'';
+ $('clearFilters').onclick=()=>{
+  clearTimeout(filterTimer);
+  for(const key of ['search','city','specialty'])$(key).value='';
+  loadPage(true);
+ };
  ['search','city'].forEach(id=>$(id).addEventListener('input',debounceReload));$('specialty').addEventListener('change',()=>loadPage(true));
  $('addService').onclick=()=>openEditor();$('loadMore').onclick=()=>loadPage();$('retryLoad').onclick=()=>loadPage(true);
  $('mineButton').onclick=()=>{mineMode=!mineMode;const u=new URL(location.href);if(mineMode)u.searchParams.set('mine','1');else u.searchParams.delete('mine');history.replaceState(null,'',u);loadPage(true)};
