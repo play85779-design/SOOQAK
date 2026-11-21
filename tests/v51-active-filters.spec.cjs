@@ -11,6 +11,7 @@ test('V51 combination of filters is visible and chips remove only their own filt
  await setup(page);
  await page.locator('#cityFilter').selectOption('الجبيل');
  await page.locator('#minPrice').fill('1000');
+ await page.locator('#filterClose').click();
  await expect(page.locator('[data-remove-filter="city"]')).toContainText('الجبيل');
  await expect(page.locator('[data-remove-filter="min"]')).toContainText('1000');
  await page.locator('[data-remove-filter="city"]').click();
@@ -37,6 +38,7 @@ test('V51 choosing a subcategory shows removable parent and child filters',async
  await expect(page.locator('#subcategoryFilter')).toBeVisible();
  const sub=await page.locator('#subcategoryFilter option').nth(1).getAttribute('value');
  await page.locator('#subcategoryFilter').selectOption(sub);
+ await page.locator('#filterClose').click();
  await expect(page.locator('[data-remove-filter="category"]')).toContainText('سيارات');
  await expect(page.locator('[data-remove-filter="subcategory"]')).toContainText(sub);
  await page.locator('[data-remove-filter="category"]').click();
