@@ -1,0 +1,40 @@
+name: SOOQAK - Zero Cost Quality Checks
+on:
+  push:
+    branches: [develop/v38-recovery]
+  pull_request:
+    branches: [main, develop/v38-recovery]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  static-and-secret-patterns:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: JavaScript syntax checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' f; do
+            node --check "$f"
+          done < <(find . -type f -name '*.js' -not -path './node_modules/*' -print0)
+      - name: Basic tracked-file secret guard
+        shell: bash
+        run: |
+          python3 scripts/check-secrets.py
+  playwright-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install test runner (no app dependencies changed)
+        run: npm install --no-save --no-package-lock @playwright/test
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run local browser smoke tests
+        run: npx playwright test --config=playwright.config.cjs
