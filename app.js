@@ -1264,11 +1264,13 @@ async function openCloudConversation(adId) {
 }
 async function showCloudConversation(conversation) {
   if(!state.account)return openCloudLogin();
+  const expectedAccountId=state.account.id;
   try {
     const service=window.sooqakCloud;
     const [messages,block,muted]=await Promise.all([
       service.listMessages(conversation.id),service.getConversationBlockStatus(conversation.id),service.isConversationMuted(conversation.id)
     ]);
+    if(state.account?.id!==expectedAccountId)return; // Never render a previous account's messages.
     const ad=byId(conversation.listing_id);
     const heading=ad?.title||'محادثة خاصة';
     const me=state.account.id;
@@ -1305,10 +1307,19 @@ async function showCloudConversation(conversation) {
 }
 async function openCloudChats() {
   if(!state.account)return openCloudLogin();
+  const expectedAccountId=state.account.id;
   try {
     const [conversations,readSummary]=await Promise.all([window.sooqakCloud.listConversations(),window.sooqakCloud.unreadSummary()]);
-    const unreadBy=new Map((readSummary?.conversations||[]).map(c=>[c.id,Number(c.unread)||0]));
-    showModal('محادثاتي',`<p class="muted">المحادثات تخص أطراف الإعلانات فقط، ولا تظهر للآخرين. اضغط على أي محادثة لقراءة الرسائل. تُحدَّث المحادثات المفتوحة دوريًا.</p><button type="button" class="btn btn-outline" id="sooqakInboxRefresh">↻ تحديث صندوق الرسائل</button><div class="small-cards">${conversations.length?conversations.map(c=>`<div class="small-card"><div class="details"><strong>${esc(byId(c.listing_id)?.title||'إعلان سابق')}</strong><small>${c.buyer_id===state.account.id?'أنت المشتري':'أنت البائع'} — ${esc(new Date(c.created_at).toLocaleDateString('ar-SA'))}</small>${unreadBy.get(c.id)?`<span class="chat-unread-pill">${unreadBy.get(c.id)} جديد</span>`:''}</div><button type="button" data-chat-id="${esc(c.id)}">فتح</button></div>`).join(''):'<p>ما عندك محادثات حاليًا.</p>'}</div>`);
+    if(state.account?.id!==expectedAccountId)return; // Ignore stale inbox results after account switch.
+    const unreadBy=new Map((readSummary?.conversations||[]).map(c=>[c.id,Math.max(0,Number(c.unread)||0)]));
+    const unreadTotal=[...unreadBy.values()].reduce((sum,num)=>sum+num,0);
+    const orderedConversations=conversations.slice().sort((a,b)=>{
+      const ua=unreadBy.get(a.id)||0,ub=unreadBy.get(b.id)||0;
+      if(Boolean(ua)!==Boolean(ub))return ub?1:-1;
+      const ta=Date.parse(a.created_at)||0,tb=Date.parse(b.created_at)||0;
+      return tb-ta||String(a.id).localeCompare(String(b.id));
+    });
+    showModal('محادثاتي',`<p class="muted">المحادثات تخص أطراف الإعلانات فقط، ولا تظهر للآخرين. اضغط على أي محادثة لقراءة الرسائل. تُحدَّث المحادثات المفتوحة دوريًا. المحادثات غير المقروءة تظهر أولًا.</p><p id="sooqakInboxSummary" role="status" aria-live="polite">${unreadTotal?unreadTotal+' رسالة غير مقروءة':'لا توجد رسائل غير مقروءة'}</p><button type="button" class="btn btn-outline" id="sooqakInboxRefresh">↻ تحديث صندوق الرسائل</button><div class="small-cards" role="list" aria-label="قائمة المحادثات">${orderedConversations.length?orderedConversations.map(c=>`<div class="small-card" role="listitem"><div class="details"><strong>${esc(byId(c.listing_id)?.title||'إعلان سابق')}</strong><small>${c.buyer_id===state.account.id?'أنت المشتري':'أنت البائع'} — ${esc(new Date(c.created_at).toLocaleDateString('ar-SA'))}</small>${unreadBy.get(c.id)?`<span class="chat-unread-pill">${unreadBy.get(c.id)} جديد</span>`:''}</div><button type="button" data-chat-id="${esc(c.id)}" aria-label="فتح محادثة الإعلان">فتح</button></div>`).join(''):'<p>ما عندك محادثات حاليًا.</p>'}</div>`);
     $('sooqakInboxRefresh').onclick=()=>openCloudChats();
     $('modalContent').querySelectorAll('[data-chat-id]').forEach(button=>button.onclick=()=>{
       const c=conversations.find(row=>row.id===button.dataset.chatId);
