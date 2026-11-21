@@ -90,6 +90,19 @@ if (window.SOOQAK_CLOUD_ENABLED) {
       return all.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
     }
 
+    // Owner library is paged independently of the public feed (including sold/hidden ads).
+    async function fetchMyListings(offset=0,pageSize=40,kind='personal') {
+      if(!currentUser)throw new Error('سجّل الدخول إلى حسابك أولًا');
+      if(!['personal','business'].includes(kind))throw new Error('نوع الحساب غير صالح');
+      const start=Math.max(0,Number(offset)||0),count=Math.min(40,Math.max(1,Number(pageSize)||40));
+      const response=await supabase.from('sooqak_listings')
+        .select('id,account_id,seller_user_id,seller_display_name,seller_kind,title,description,category,city,district,listing_kind,price,price_mode,status,created_at,expires_at,bumped_at,reserved_until,hidden_at,renewed_at,renewal_count')
+        .eq('seller_user_id',currentUser.id).eq('seller_kind',kind)
+        .order('created_at',{ascending:false}).order('id',{ascending:false})
+        .range(start,start+count-1);
+      errorIfAny(response);
+      return enrichListings(response.data||[]);
+    }
     async function saveListing(payload, existingId=null) {
       if (!currentUser) throw new Error('سجّل الدخول أولًا');
       let response;
@@ -363,7 +376,7 @@ if(!currentUser)throw new Error('يجب تسجيل الدخول لرفع الص�
       getUser:()=>currentUser,
       loadPrivateProfile,savePrivateProfile,hasAcceptedPledge,acceptPledge,getContactPrefs,saveContactPrefs,listFavorites,setFavorite,listSavedSearches,addSavedSearch,deleteSavedSearch,
       ensureAccount,getPublicSellerProfile,savePublicSellerProfile,
-      fetchListings,fetchFavoriteListings,
+      fetchListings,fetchFavoriteListings,fetchMyListings,
       saveListing,saveListingContact,
       removeListing,
       uploadPhotos,

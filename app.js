@@ -26,7 +26,9 @@ const money=n=>new Intl.NumberFormat('ar-SA',{maximumFractionDigits:2}).format(N
 const save=()=>{try{const value=cloudEnabled()?{view:state.view,favorites:state.favorites,role:state.role,savedSearch:state.savedSearch}:state;localStorage.setItem(STORAGE_KEY,JSON.stringify(value))}catch(e){alert('امتلأ التخزين المحلي. جرّب استخدام صور أقل أو أصغر.') }};
 const allAds=()=>[...state.ads,...demos];
 const mine=ad=>!ad.demo&&state.account&&ad.role===state.role&&(cloudEnabled()?ad.ownerId===state.account.id:ad.owner===state.account.email);
-const byId=id=>allAds().find(a=>a.id===id);
+// Owner library is cached separately so old/hidden ads never pollute the public feed.
+const sooqakOwnedAdCache=new Map();
+const byId=id=>allAds().find(a=>a.id===id)||sooqakOwnedAdCache.get(String(id));
 const effectiveDate=ad=>ad.bumpAt||ad.createdAt;
 
 // Stage 9: optional market/language preview. Demo data remains strictly Saudi.
@@ -296,7 +298,37 @@ async function openNotificationSettings(){
 function updateContactField(form){const field=form.querySelector('[name="phone"]');const label=form.querySelector('#phoneLabel');const sa=form.querySelector('[name="phoneCountry"]').value==='SA';field.placeholder=sa?'05xxxxxxxx':'+971501234567';if(label)label.textContent=sa?'رقم الجوال السعودي (05xxxxxxxx)':'رقم الجوال مع مفتاح الدولة (+...)';}
 function pledgeMarkup(required){return required?`<section class="pledge-card" aria-label="ميثاق الأمانة والوفاء بالعهد"><h3>ميثاق الأمانة والوفاء بالعهد</h3><div class="ayah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br>﴿وَأَوْفُوا بِعَهْدِ اللَّهِ إِذَا عَاهَدْتُمْ وَلَا تَنْقُضُوا الْأَيْمَانَ بَعْدَ تَوْكِيدِهَا وَقَدْ جَعَلْتُمُ اللَّهَ عَلَيْكُمْ كَفِيلًا﴾<small>من سورة النحل، الآية 91</small></div><p>في سوقك، نؤمن أن الأمانة أساس البيع والشراء، وأن الوفاء بالحقوق سبب للبركة والثقة بين الناس.</p><p><strong>أتعهد بالصدق في إعلاناتي وتعاملاتي، وبسداد عمولة منصة سوقك البالغة 1% من قيمة البيع الفعلية عند إتمام عملية بيع خاضعة للعمولة، وفق شروط المنصة.</strong> وأعلم أن نشر الإعلان مجاني ضمن الحدود المعتمدة، وأن عمولة البيع لا تستحق خلال فترة الإعفاء الترويجي إن كان ساريًا.</p><label class="pledge-check"><input type="checkbox" name="pledgeAccept" value="yes" required><span>أوافق على ميثاق الأمانة وشروط العمولة.</span></label><p class="contact-note">يظهر هذا التعهد كاملًا عند أول إعلان فقط، ثم تذكير مختصر لاحقًا.</p></section>`:`<div class="info wide">تذكير بميثاق الأمانة الذي وافقت عليه: الإعلان يجب أن يكون صادقًا، وعمولة سوقك 1% من البيع الفعلي عند استحقاقها. <button type="button" class="btn btn-subtle" data-act="bank">تفاصيل العمولة والسداد</button></div>`;}
 
-function openMyAds(){if(!state.account)return openLogin();const ads=state.ads.filter(mine);showModal('إعلاناتي',`<div class="small-cards">${ads.length?ads.map(ad=>`<div class="small-card"><div class="details"><strong>${esc(ad.title)}</strong><small>${esc(ad.status)} — ${esc(ad.city)} — ${money(ad.price)} ر.س</small></div><button data-open="${esc(ad.id)}">إدارة</button></div>`).join(''):'<p>ما نشرت إعلانًا في هذا الحساب بعد.</p>'}</div><div class="line"></div><button class="btn btn-gold" data-act="post">أضف إعلان</button>`)}
+function ownAdCard(ad){return `<div class="small-card"><div class="details"><strong>${esc(ad.title)}</strong><small>${esc(ad.status)} — ${esc(ad.city)} — ${ad.price==null?'تواصل للسعر':money(ad.price)+' ر.س'}</small></div><button type="button" data-open="${esc(ad.id)}">إدارة</button></div>`}
+function openMyAds(){
+ if(!state.account)return openLogin();
+ if(cloudEnabled())return openCloudMyAds();
+ const ads=state.ads.filter(mine);
+ showModal('إعلاناتي',`<div class="small-cards">${ads.length?ads.map(ownAdCard).join(''):'<p>ما نشرت إعلانًا في هذا الحساب بعد.</p>'}</div><div class="line"></div><button class="btn btn-gold" data-act="post">أضف إعلان</button>`);
+}
+async function openCloudMyAds(){
+ if(!state.account||!window.sooqakCloud)return openLogin();
+ const kind=state.role==='متجر'?'business':'personal';
+ showModal('إعلاناتي','<p id="sooqakMyAdsStatus" class="muted" role="status">جاري تحميل إعلانات حسابك...</p><div id="sooqakMyAdsRows" class="small-cards"></div><button type="button" id="sooqakMyAdsMore" class="btn btn-outline" hidden>عرض 40 إعلانًا إضافيًا</button><div class="line"></div><button type="button" class="btn btn-gold" data-act="post">أضف إعلان</button>');
+ let offset=0,busy=false,finished=false;
+ const more=$('sooqakMyAdsMore'),holder=$('sooqakMyAdsRows'),status=$('sooqakMyAdsStatus');
+ const next=async()=>{
+  if(busy||finished||!holder.isConnected)return;
+  busy=true;more.disabled=true;status.textContent='جاري تحميل إعلانات حسابك...';
+  try{
+    const rows=await window.sooqakCloud.fetchMyListings(offset,40,kind);
+    if(!holder.isConnected)return;
+    const ads=rows.map(convertCloudAd);
+    for(const ad of ads)sooqakOwnedAdCache.set(String(ad.id),ad);
+    holder.insertAdjacentHTML('beforeend',ads.map(ownAdCard).join(''));
+    offset+=ads.length;finished=ads.length<40;
+    more.hidden=finished;
+    status.textContent=offset?`تم تحميل ${offset} إعلانًا من حسابك`:'ما نشرت إعلانًا في هذا الحساب بعد.';
+  }catch(err){if(holder.isConnected){status.textContent='تعذر تحميل إعلانات حسابك. جرّب مرة أخرى.';cloudError(err)}}
+  finally{busy=false;if(more.isConnected)more.disabled=false}
+ };
+ more.onclick=next;
+ await next();
+}
 // Normalize phone numbers for WhatsApp links without forcing Saudi users to type +966.
 function saudiPhoneDisplay(value){
   const digits=String(value||'').replace(/[^0-9]/g,'');
@@ -470,6 +502,7 @@ function onCloudAuth(e){
   state.account=user?{id:user.id,email:user.email,name}:null;
   sooqakAuthResolved=true;
   if(changed){
+    sooqakOwnedAdCache.clear();
     state.ads=[];state.cloudPledgeAcceptedAt=null;state.favorites=[];
     sooqakUnreadBaseline=null;sooqakActiveChatId=null;setChatUnreadBadge(0);
   }
@@ -741,7 +774,9 @@ async function openCloudCommissions(){
   try{
     const service=window.sooqakCloud;
     const [rows,corrections]=await Promise.all([service.getSales(),service.getSaleCorrections()]);
-    const mineRows=rows.filter(r=>state.ads.some(a=>a.id===r.listing_id&&mine(a)));
+    // sooqak_sales is already restricted by the server's owner RLS. Do not filter
+    // against the first 60 visible ads: old and sold listings must remain in the ledger.
+    const mineRows=rows;
     const history=corrections.filter(c=>mineRows.some(r=>r.id===c.sale_id));
     const total=mineRows.reduce((n,r)=>n+Number(r.commission),0);
     showModal('عمولتي — سجل إلكتروني تجريبي',`<div class="warning">هذه مبالغ محسوبة على مبيعات مُبلّغ عنها، وليست تأكيدًا بوجود حوالات. لم نفعّل استقبال التحويلات أو الإيصالات أو اعتماد السداد. لا تحول أي مبلغ بناءً على هذا النموذج.</div><button class="btn btn-outline" data-act="bank">تفاصيل العمولة وحالة الحساب البنكي</button><div class="count-card"><span>إجمالي العمولة المحتسبة (1%)</span><strong>${money(total)} ر.س</strong></div><h3>سجل المبيعات والتصحيحات</h3><div class="small-cards">${mineRows.length?mineRows.map(r=>{
