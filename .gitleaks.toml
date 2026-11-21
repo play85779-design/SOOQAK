@@ -1,0 +1,17 @@
+# SOOQAK: keep default Gitleaks rules and add narrowly-scoped Supabase protection.
+# sb_publishable_* is explicitly meant for client-side use; sb_secret_* is NOT.
+[extend]
+useDefault = true
+
+[[rules]]
+id = "generic-api-key"
+  [[rules.allowlists]]
+  description = "Supabase publishable (non-secret) browser keys only"
+  regexTarget = "secret"
+  regexes = ['''^sb_publishable_[A-Za-z0-9_-]{20,}$''']
+
+[[rules]]
+id = "sooqak-supabase-privileged-key"
+description = "Privileged Supabase secret keys must never appear in public source"
+regex = '''sb_secret_[A-Za-z0-9_-]{20,}'''
+keywords = ["sb_secret_"]
