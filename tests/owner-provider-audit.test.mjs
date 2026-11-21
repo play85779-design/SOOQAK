@@ -59,6 +59,12 @@ test('duplicate or invalid provider IDs and overlarge inventories are rejected',
   assert.throws(() => reviewProviderEvidence([{id:'../bad'}]),TypeError);
   assert.throws(() => reviewProviderEvidence(new Array(101).fill(null)),TypeError);
 });
+test('different invoice months cannot be added into one monthly figure', () => {
+  const r = reviewProviderEvidence([record('one',10),{...record('two',20),invoiceMonth:'2026-10'}]);
+  assert.equal(r.totalDocumentedInvoiceSar,null);
+  assert.equal(r.invoiceMonth,null);
+  assert.equal(r.allInvoicesDocumented,false);
+});
 test('results and nested evidence arrays are immutable', () => {
   const r=reviewProviderEvidence([record('one',2)]);
   assert.ok(Object.isFrozen(r));
