@@ -42,12 +42,16 @@ export function reviewProviderEvidence(providers = []) {
     });
   });
   const allInvoicesDocumented = rows.length > 0 && rows.every(r => r.invoiceDocumented);
-  const sum = allInvoicesDocumented ? rows.reduce((total,r) => total+r.invoiceSar,0) : null;
+  const periods = new Set(rows.filter(r => r.invoiceDocumented).map(r => r.invoiceMonth));
+  const sameInvoiceMonth = allInvoicesDocumented && periods.size === 1;
+  // Never sum October bills with November bills into a supposed monthly total.
+  const sum = sameInvoiceMonth ? rows.reduce((total,r) => total+r.invoiceSar,0) : null;
   const total = sum !== null && Number.isFinite(sum) ? round(sum) : null;
   return Object.freeze({
     providerCount: rows.length,
     rows: Object.freeze(rows),
     totalDocumentedInvoiceSar: total,
+    invoiceMonth: sameInvoiceMonth ? rows[0].invoiceMonth : null,
     allInvoicesDocumented: total !== null,
     allCapsDocumented: rows.length > 0 && rows.every(r => r.hardCapDocumented),
     allAlertsDocumented: rows.length > 0 && rows.every(r => r.alertDocumented),
