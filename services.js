@@ -8,7 +8,7 @@ const cities=['الرياض','جدة','الدمام','الخبر','الجبيل'
 const p=new URLSearchParams(location.search), kind=labels[p.get('kind')]?p.get('kind'):'all';
 const cols='id,owner_id,kind,name,city,district,specialty,description,phone_e164,phone_public,address_text,hours_text,map_url,status,moderation_state,created_at';
 const pageSize=24;
-let user=null,canWrite=false,entries=[],page=0,total=0,busy=false,requestId=0,mineMode=p.get('mine')==='1',filterTimer=null;
+let user=null,canWrite=false,entries=[],page=0,total=0,busy=false,requestId=0,mineMode=p.get('mine')==='1',filterTimer=null,loadFailed=false;
 const el=(tag,cls='',value)=>{let n=document.createElement(tag);if(cls)n.className=cls;if(value!==undefined)n.textContent=value;return n};
 function feedback(msg,error=false){$('feedback').textContent=msg;$('feedback').hidden=!msg;$('feedback').classList.toggle('error',error)}
 function toast(msg){const n=$('toast');n.textContent=msg;n.classList.add('show');setTimeout(()=>n.classList.remove('show'),3500)}
@@ -17,7 +17,7 @@ function safeSearch(raw){return String(raw||'').replace(/[,().*%_\\"']/g,' ').re
 function closeDialog(){$('dialog').hidden=true;$('modalBody').replaceChildren();document.body.style.overflow='';}
 function showDialog(title){$('modalTitle').textContent=title;$('modalBody').replaceChildren();$('dialog').hidden=false;document.body.style.overflow='hidden';$('close').focus()}
 function entryHref(d){return './service-detail.html?id='+encodeURIComponent(d.id)}
-function authLink(){const next='./services.html'+(kind==='all'?'':'?kind='+kind);try{sessionStorage.setItem('sooqak_return_to',next);sessionStorage.setItem('sooqak_return_at',String(Date.now()))}catch{}const u=new URL('./index.html',location.href);u.searchParams.set('auth','signup');return u.href}
+function authLink(){const params=new URLSearchParams();if(kind!=='all')params.set('kind',kind);if(mineMode)params.set('mine','1');const next='./services.html'+(params.size?'?'+params.toString():'');try{sessionStorage.setItem('sooqak_return_to',next);sessionStorage.setItem('sooqak_return_at',String(Date.now()))}catch{}const u=new URL('./index.html',location.href);u.searchParams.set('auth','signup');return u.href}
 function selectOptions(name){return name==='kind'?Object.keys(labels).map(k=>[k,labels[k]]):(specialties[name]||[]).map(s=>[s,s])}
 function allowedMapUrl(text){if(!text)return '';try{const u=new URL(text);const h=u.hostname.toLowerCase();return u.protocol==='https:'&&(h==='maps.app.goo.gl'||h==='goo.gl'&&u.pathname.startsWith('/maps/')||['maps.google.com','maps.google.com.sa'].includes(h)||['www.google.com','www.google.com.sa','google.com','google.com.sa'].includes(h)&&u.pathname.startsWith('/maps/'))?u.href:''}catch{return ''}}
 function buildFilter(){const q=$('search').value.trim(),city=$('city').value,sp=$('specialty').value;return{q,city,sp}}
@@ -37,20 +37,29 @@ function cardFor(d){
  return card;
 }
 function render(){
- $('cards').replaceChildren(...entries.map(cardFor));$('empty').hidden=entries.length>0||busy;
- const shown=entries.length;
- $('count').textContent=busy?'جاري التحميل…':`عرض ${shown} من ${total} نشاط${mineMode?' خاص بك':''}`;
- $('loadMore').hidden=shown>=total||busy;
+ $('cards').replaceChildren(...entries.map(cardFor));
+ const shown=entries.length,ownWithoutLogin=mineMode&&!user;
+ const showEmpty=shown===0&&!busy&&!loadFailed;
+ $('empty').hidden=!showEmpty;
+ if(showEmpty){
+  const f=buildFilter(),filtered=Boolean(f.q||f.city||f.sp||kind!=='all');
+  $('emptyTitle').textContent=ownWithoutLogin?'سجّل الدخول لإدارة أنشطتك':mineMode?'ما عندك أنشطة مضافة حاليًا':filtered?'ما لقينا أنشطة تطابق بحثك':'ما فيه أنشطة منشورة حاليًا';
+  $('emptyDescription').textContent=ownWithoutLogin?'بعد تسجيل الدخول تقدر تتابع أنشطتك المنشورة والمخفية والمنتظرة للمراجعة.':mineMode?'أضف نشاطك الأول، وبتلقى هنا حالة نشره ومراجعته.':filtered?'جرّب تغيير المدينة أو التخصص، أو اضغط مسح الفلاتر.':'كن أول من يضيف نشاطًا حقيقيًا إلى الدليل.';
+  $('emptyLogin').hidden=!ownWithoutLogin;
+  if(ownWithoutLogin)$('emptyLogin').href=authLink();
+ }
+ $('count').textContent=busy?'جاري التحميل…':ownWithoutLogin?'سجّل الدخول لعرض أنشطتك':`عرض ${shown} من ${total} نشاط${mineMode?' خاص بك':''}`;
+ $('loadMore').hidden=shown>=total||busy||ownWithoutLogin;
  $('loadMore').disabled=busy;
- $('mineButton').textContent=mineMode?'عرض جميع الأنشطة':'أنشطتي وإدارة المخفي';
+ $('mineButton').textContent=mineMode?'عرض جميع الأنشطة':'إدارة أنشطتي';
  $('mineButton').setAttribute('aria-pressed',String(mineMode));
 }
 async function loadPage(reset=false){
  if(busy&&!reset)return;
  const current=++requestId;busy=true;
  if(reset){entries=[];page=0;total=0;}
- render();feedback('');$('retryLoad').hidden=true;
- if(mineMode&&!user){busy=false;render();feedback('لإدارة أنشطتك، سجّل الدخول بالبريد أولًا.',true);return}
+ loadFailed=false;render();feedback('');$('retryLoad').hidden=true;
+ if(mineMode&&!user){busy=false;render();return}
  const f=buildFilter(),start=page*pageSize;
  $('clearFilters').hidden=!(f.q||f.city||f.sp);
  const url=new URL(location.href);
@@ -66,7 +75,7 @@ async function loadPage(reset=false){
  const search=safeSearch(f.q);
  if(search)q=q.or(`name.ilike.%${search}%,description.ilike.%${search}%,specialty.ilike.%${search}%,district.ilike.%${search}%`);
  try{const {data,count,error}=await q;if(error)throw error;if(current!==requestId)return;entries=reset?[...(data||[])]:entries.concat(data||[]);total=count??entries.length;page++;}
- catch(e){if(current!==requestId)return;feedback('تعذر تحميل النتائج. تحقق من الاتصال ثم اضغط إعادة المحاولة.',true);$('retryLoad').hidden=false;}
+ catch(e){if(current!==requestId)return;loadFailed=true;feedback('تعذر تحميل النتائج. تحقق من الاتصال ثم اضغط إعادة المحاولة.',true);$('retryLoad').hidden=false;}
  finally{if(current===requestId){busy=false;render();}}
 }
 function debounceReload(){clearTimeout(filterTimer);filterTimer=setTimeout(()=>loadPage(true),260)}
@@ -80,10 +89,10 @@ function openEditor(existing=null){
  if(!existing)refs.kind.onchange();
  const consent=el('label','full check'),check=el('input');check.type='checkbox';check.checked=Boolean(existing?.phone_public);consent.append(check,el('span','','أوافق على نشر رقم التواصل للعامة (غير موثّق من سوقك)'));f.append(consent);
  const row=el('div','row'),save=el('button','btn gold','حفظ النشاط');save.type='submit';row.append(save);f.append(row);
- f.onsubmit=async e=>{e.preventDefault();if(!f.reportValidity())return;const v=Object.fromEntries(new FormData(f).entries());const ph=v.phone_e164?validPhone(v.phone_e164):null;if(v.phone_e164&&!ph)return toast('رقم التواصل غير صالح');if(!v.name?.trim()||!v.city?.trim()||!v.specialty)return toast('الاسم والمدينة والتخصص مطلوبة');if(v.map_url&&!allowedMapUrl(v.map_url))return toast('أدخل رابط Google Maps صحيحًا يبدأ بـ https');const record={kind:existing?existing.kind:v.kind,name:v.name.trim(),city:v.city.trim(),district:v.district.trim(),specialty:v.specialty,description:v.description.trim(),phone_e164:ph&&check.checked?ph:null,phone_public:Boolean(ph&&check.checked),address_text:v.address_text.trim(),map_url:allowedMapUrl(v.map_url),hours_text:v.hours_text.trim(),updated_at:new Date().toISOString()};save.disabled=true;try{let request=existing?api.from('sooqak_service_directory').update(record).eq('id',existing.id).eq('owner_id',user.id).select('id').single():api.from('sooqak_service_directory').insert({...record,owner_id:user.id}).select('id').single();const {error}=await request;if(error)throw error;closeDialog();toast('تم حفظ النشاط وإرساله للمراجعة، ولن يظهر للزوار حتى الاعتماد');$('search').value='';$('specialty').value='';$('city').value='';await loadPage(true)}catch(error){toast('تعذر الحفظ: '+(error.message||'خطأ غير معروف'));save.disabled=false;}};
+ f.onsubmit=async e=>{e.preventDefault();if(!f.reportValidity())return;const v=Object.fromEntries(new FormData(f).entries());const ph=v.phone_e164?validPhone(v.phone_e164):null;if(v.phone_e164&&!ph)return toast('رقم التواصل غير صالح');if(!v.name?.trim()||!v.city?.trim()||!v.specialty)return toast('الاسم والمدينة والتخصص مطلوبة');if(v.map_url&&!allowedMapUrl(v.map_url))return toast('أدخل رابط Google Maps صحيحًا يبدأ بـ https');const record={kind:existing?existing.kind:v.kind,name:v.name.trim(),city:v.city.trim(),district:v.district.trim(),specialty:v.specialty,description:v.description.trim(),phone_e164:ph&&check.checked?ph:null,phone_public:Boolean(ph&&check.checked),address_text:v.address_text.trim(),map_url:allowedMapUrl(v.map_url),hours_text:v.hours_text.trim(),updated_at:new Date().toISOString()};save.disabled=true;try{let request=existing?api.from('sooqak_service_directory').update(record).eq('id',existing.id).eq('owner_id',user.id).select('id').single():api.from('sooqak_service_directory').insert({...record,owner_id:user.id}).select('id').single();const {error}=await request;if(error)throw error;closeDialog();if(!existing){mineMode=true;const u=new URL(location.href);u.searchParams.set('mine','1');history.replaceState(null,'',u)}toast(existing?'تم حفظ التعديلات. تابع حالة نشاطك من إدارة أنشطتي.':'تم حفظ نشاطك. تابعه من إدارة أنشطتي؛ ولن يظهر للزوار حتى المراجعة.');$('search').value='';$('specialty').value='';$('city').value='';await loadPage(true)}catch(error){toast('تعذر الحفظ: '+(error.message||'خطأ غير معروف'));save.disabled=false;}};
  $('modalBody').append(f);
 }
-async function toggleVisibility(d){if(!user||d.owner_id!==user.id||d.moderation_state==='suspended')return toast('هذا النشاط موقوف من الإدارة ولا يمكن نشره دون مراجعة');const status=d.status==='active'?'hidden':'active';if(status==='active'&&!confirm('إعادة إظهار النشاط للزوار؟'))return;const {error}=await api.from('sooqak_service_directory').update({status,updated_at:new Date().toISOString()}).eq('id',d.id).eq('owner_id',user.id).select('id').single();if(error)return toast('تعذر تغيير الحالة: '+error.message);toast(status==='hidden'?'تم إخفاء النشاط':(d.moderation_state==='pending'?'تم تفعيل طلبك؛ النشاط بانتظار الاعتماد':'أعدنا نشر النشاط')); await loadPage(true)}
+async function toggleVisibility(d){if(!user||d.owner_id!==user.id)return toast('يجب تسجيل الدخول بحساب صاحب النشاط لإدارته');if(d.moderation_state==='suspended')return toast('هذا النشاط موقوف من الإدارة ولا يمكن نشره دون مراجعة');const status=d.status==='active'?'hidden':'active';if(status==='active'&&!confirm('إعادة إظهار النشاط للزوار؟'))return;const {error}=await api.from('sooqak_service_directory').update({status,updated_at:new Date().toISOString()}).eq('id',d.id).eq('owner_id',user.id).select('id').single();if(error)return toast('تعذر تغيير الحالة: '+error.message);toast(status==='hidden'?'تم إخفاء نشاطك عن الزوار':(d.moderation_state==='pending'?'تم تفعيل النشاط في حسابك، وسيبقى غير ظاهر للزوار حتى الاعتماد':'تمت إعادة إظهار نشاطك')); await loadPage(true)}
 function openReport(d){if(!user)return toast('تسجيل الدخول مطلوب للإبلاغ');showDialog('إبلاغ عن نشاط');const f=el('form','form-grid');const reason=el('select');reason.name='reason';['معلومات غير صحيحة','احتيال محتمل','محتوى غير مناسب','سبب آخر'].forEach(s=>reason.append(new Option(s,s)));const info=el('textarea');info.maxLength=500;info.placeholder='اشرح المشكلة بدون معلومات شخصية';const labelR=el('label','full');labelR.append(el('span','','سبب البلاغ'),reason);const labelI=el('label','full');labelI.append(el('span','','التفاصيل (اختيارية)'),info);const save=el('button','btn gold','إرسال البلاغ');save.type='submit';f.append(labelR,labelI,save);f.onsubmit=async e=>{e.preventDefault();save.disabled=true;const {error}=await api.from('sooqak_service_reports').insert({service_id:d.id,reporter_id:user.id,reason:reason.value,details:info.value.trim()});if(error){toast(error.code==='23505'?'لديك بلاغ مفتوح عن هذا النشاط؛ لا تحتاج إلى إرسال بلاغ آخر.':'تعذر إرسال البلاغ');save.disabled=false}else{closeDialog();toast('تم استلام البلاغ للمراجعة')}};$('modalBody').append(f)}
 async function init(){
  document.querySelectorAll('[data-kind]').forEach(a=>a.classList.toggle('active',a.dataset.kind===kind));$('sectionTitle').textContent=kind==='all'?'جميع الخدمات':labels[kind];$('addService').textContent=kind==='workshop'?'＋ أضف ورشتك':kind==='plumbing'?'＋ أضف محلك':kind==='delivery'?'＋ سجّل خدمة التوصيل':'＋ أضف نشاطك';
