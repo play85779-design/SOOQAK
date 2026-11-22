@@ -1,4 +1,5 @@
 // B09: safe review-only owner page. Never embed billing or banking data in public JS.
+import {initOwnerWorkers} from './owner-workers.mjs';
 const status = document.getElementById('ownerStatus');
 const panel = document.getElementById('ownerPanel');
 let activeUserId = null;
@@ -47,6 +48,8 @@ async function initializeOwnerPanel() {
   activeUserId = user.id;
   panel.hidden = false;
   status.textContent = 'تم التحقق من صلاحية المالك. مؤشرات النسخة التجريبية غير متصلة بمصادر مالية مؤكدة.';
+  // Only after owner RPC authorization: no worker RPC or rendered panel for visitors.
+  initOwnerWorkers(api, () => requestEpoch === epoch && activeUserId === user.id && !panel.hidden);
 }
 initializeOwnerPanel().catch(() => {
   deny('تعذر التحقق من صلاحيات المالك. لم تُعرض أي بيانات خاصة.');
