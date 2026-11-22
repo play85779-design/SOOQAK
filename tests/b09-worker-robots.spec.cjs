@@ -5,7 +5,7 @@ async function mockClient(page,{user=owner,allow=true,activity=[],error=false}={
     'export function createClient(){',
     ' window.__workerRpcCalls=[];let cb=()=>{};',
     ' return {auth:{getUser:async()=>({data:{user:'+JSON.stringify(user)+'},error:null}),',
-    ' onAuthStateChange:(fn)=>{cb=fn;return {data:{subscription:{unsubscribe(){}}}}}},',
+    ' onAuthStateChange:(fn)=>{cb=fn;return {data:{subscription:{unsubscribe(){}}}};}},',
     ' rpc:async(name)=>{window.__workerRpcCalls.push(name);',
     ' if(name==="sooqak_is_owner")return {data:'+JSON.stringify(allow)+',error:null};',
     ' if(name==="sooqak_owner_worker_status")return {data:'+JSON.stringify(activity)+',error:'+JSON.stringify(error?{message:'not connected'}:null)+'};',
