@@ -98,3 +98,51 @@ for(const published of [true,false]){
   }else await expect(request).toHaveCount(0);
  });
 }
+
+test('service manager asks signed-out visitors to sign in, without claiming no businesses exist',async({page})=>{
+ await start(page,'/services.html');
+ await expect(page.locator('#cards .card')).toHaveCount(2);
+ await expect(page.locator('#mineButton')).toHaveText('إدارة أنشطتي');
+ await page.locator('#mineButton').click();
+ await expect(page.locator('#emptyTitle')).toHaveText('سجّل الدخول لإدارة أنشطتك');
+ await expect(page.locator('#emptyLogin')).toBeVisible();
+ await expect(page.locator('#mineButton')).toHaveText('عرض جميع الأنشطة');
+ await expect(page).toHaveURL(/mine=1/);
+ await page.locator('#emptyLogin').click();
+ await expect(page).toHaveURL(/auth=signup/);
+ expect(await page.evaluate(()=>sessionStorage.getItem('sooqak_return_to'))).toContain('mine=1');
+});
+
+test('signed-in owner manager includes entries pending moderation',async({page})=>{
+ await start(page,'/services.html',true);
+ await expect(page.locator('#cards .card')).toHaveCount(2);
+ await page.locator('#mineButton').click();
+ await expect(page.locator('#cards .card')).toHaveCount(3);
+ await expect(page.locator('#cards')).toContainText('محل غير معتمد');
+ await expect(page.locator('#cards')).toContainText('النشاط بانتظار مراجعة الإدارة');
+ await expect(page.locator('#mineButton')).toHaveText('عرض جميع الأنشطة');
+ await expect(page.locator('#mineButton')).toHaveAttribute('aria-pressed','true');
+});
+
+test('no public matches shows filter-specific help rather than claiming the directory has no businesses',async({page})=>{
+ await start(page,'/services.html?kind=plumbing');
+ await expect(page.locator('#cards .card')).toHaveCount(0);
+ await expect(page.locator('#emptyTitle')).toHaveText('ما لقينا أنشطة تطابق بحثك');
+ await expect(page.locator('#emptyLogin')).toBeHidden();
+});
+
+test('new service returns owner to management view so pending submission can be followed',async({page})=>{
+ await start(page,'/services.html?kind=workshop',true);
+ await expect(page.locator('#cards')).toContainText('ورشة الجبيل التجريبية');
+ await page.locator('#addService').click();
+ await page.locator('#serviceForm [name="name"]').fill('نشاط تجريبي جديد');
+ await page.locator('#serviceForm [name="city"]').fill('الجبيل');
+ await page.locator('#serviceForm button[type="submit"]').click();
+ await expect.poll(()=>page.evaluate(()=>window.__SOOQAK_SERVICE_INSERTS.length)).toBe(1);
+ await expect(page).toHaveURL(/mine=1/);
+ await expect(page.locator('#mineButton')).toHaveText('عرض جميع الأنشطة');
+ await expect(page.locator('#toast')).toContainText('تابعه من إدارة أنشطتي');
+ const payload=await page.evaluate(()=>window.__SOOQAK_SERVICE_INSERTS[0]);
+ expect(payload.moderation_state).toBeUndefined();
+ expect(payload.status).toBeUndefined();
+});

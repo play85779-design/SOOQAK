@@ -3,3 +3,7 @@
 
 .paging{display:flex;justify-content:center;gap:12px;padding:0 0 24px}.tools>.actions{display:flex;gap:8px;flex-wrap:wrap}.service-title{color:#153650;text-decoration:none}.service-title:hover{text-decoration:underline}.card .actions{margin:12px 0;display:flex;gap:8px;flex-wrap:wrap}#retryLoad[hidden]{display:none}.muted{color:#53697e}
 [hidden]{display:none!important}
+
+/* Keep owner actions readable on narrow mobile screens. */
+.empty p{margin:7px 0 12px}.empty .btn{max-width:100%;margin-top:8px}
+@media(max-width:520px){.tools>.actions{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.tools>.actions .btn{min-width:0;text-align:center;min-height:44px}.filters input,.filters select{flex:1 1 100%}}
