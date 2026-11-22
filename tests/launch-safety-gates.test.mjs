@@ -80,3 +80,14 @@ test('owner preview does not assert unverifiable financial amounts', () => {
   assert.equal((html.match(/data-financial-value>غير متحقق منه/g) || []).length, 4);
   assert.ok(!html.includes('sb_secret_'));
 });
+
+
+test('unapproved preview stays excluded from indexing until a separate launch decision', () => {
+  assert.match(read('robots.txt'), /^User-agent:\s*\*\s*\nDisallow:\s*\/$/m);
+  for (const name of ['index.html', 'services.html', 'owner-center.html']) {
+    const html = read(name);
+    const robots = [...html.matchAll(/<meta\s+name=["']robots["'][^>]*>/gi)];
+    assert.equal(robots.length, 1, 'expected exactly one robots declaration in ' + name);
+    assert.match(robots[0][0], /content=["']noindex,nofollow,noarchive["']/i);
+  }
+});
