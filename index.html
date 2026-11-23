@@ -66,6 +66,14 @@ window.SOOQAK_CLOUD_ENABLED = Boolean(
 </script>
   <script src="./category-tree.js"></script>
   <script src="./category-fields.js"></script>
+  <script>
+  // Recovery intents are inferred from the link type only; never read/store its token.
+  try {
+    const h=new URLSearchParams(location.hash.replace(/^#/,''));
+    const q=new URLSearchParams(location.search);
+    if(h.get('type')==='recovery'||q.get('type')==='recovery')window.sooqakPasswordRecoveryPending=true;
+  } catch(_e){}
+  </script>
   <script src="./app.js"></script>
   <script src="./search-assist.js"></script>
   <script src="./location-filters.js"></script>
