@@ -312,7 +312,20 @@ document.addEventListener('change',e=>{
   state.selectedImages.forEach(url=>URL.revokeObjectURL(url));
   state.selectedImages=files.map(f=>URL.createObjectURL(f));
   const frame=$('#image-preview');
-  if(frame)frame.innerHTML=state.selectedImages.length?'<img src="'+state.selectedImages[0]+'" alt="معاينة صورة الإعلان">':'<div class="upload-placeholder">📷</div>';
+  if(frame){
+   frame.replaceChildren();
+   if(state.selectedImages.length){
+    const img=document.createElement('img');
+    img.src=state.selectedImages[0];
+    img.alt='معاينة صورة الإعلان';
+    frame.appendChild(img);
+   }else{
+    const placeholder=document.createElement('div');
+    placeholder.className='upload-placeholder';
+    placeholder.textContent='📷';
+    frame.appendChild(placeholder);
+   }
+  }
   notify('تم اختيار '+files.length+' صورة للمعاينة المحلية');
  }
 });
