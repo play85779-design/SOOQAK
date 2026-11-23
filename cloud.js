@@ -334,6 +334,13 @@ if(!currentUser)throw new Error('يجب تسجيل الدخول لرفع الص�
       const response=await supabase.rpc('sooqak_is_admin');
       errorIfAny(response);return response.data===true;
     }
+    async function isOwner() {
+      if(!currentUser)return false;
+      // The owner RPC is not installed in the connected live database yet.
+      // Never infer owner privileges from email, local storage or user metadata.
+      const {data,error}=await supabase.rpc('sooqak_is_owner');
+      return !error&&data===true;
+    }
     async function getAdminDashboard(status='pending') {
       if (!currentUser) throw new Error('يلزم تسجيل الدخول');
       if (!['pending','reviewing','closed','all'].includes(status)) throw new Error('حالة غير صالحة');
@@ -443,7 +450,7 @@ if(!currentUser)throw new Error('يجب تسجيل الدخول لرفع الص�
       getConversationBlockStatus,
       setConversationBlocked,
       submitReport,
-      isAdmin,
+      isAdmin,isOwner,
       getAdminDashboard,
       adminReviewReport,
       adminHideReportedListing,
