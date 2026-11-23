@@ -5,10 +5,10 @@ test('Arabic interface ignores a saved old English preference and stays RTL',asy
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('html')).toHaveAttribute('lang','ar');
  await expect(page.locator('html')).toHaveAttribute('dir','rtl');
- await expect(page.locator('#sooqakHeroTitle')).toContainText('وافتح متجرك في سوقك');
+ await expect(page.locator('#sooqakHeroTitle')).toContainText('بيع واشتري بكل سهولة');
  await expect(page.locator('#globalLanguage')).toHaveText('العربية');
  await expect(page.locator('#searchButton')).toHaveText('بحث');
- await expect(page.locator('#sooqakCreateStore')).toContainText('أنشئ متجرك');
+ await expect(page.locator('#sooqakCreateStore')).toContainText('افتح متجرك');
  await expect(page.locator('body')).not.toContainText('One marketplace for everyone');
 });
 test('Arabic stays selected when browsing and reloading without an English toggle',async({page})=>{
