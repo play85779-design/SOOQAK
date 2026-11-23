@@ -1,1 +1,1 @@
-{"name": "سوقك | SOOQAK", "short_name": "سوقك", "lang": "ar", "start_url": "/", "display": "standalone", "background_color": "#f7f9fc", "theme_color": "#122c4b", "icons": [{"src": "/assets/icon.svg", "sizes": "any", "type": "image/svg+xml"}]}
+{"name": "سوقك", "short_name": "سوقك", "lang": "ar", "start_url": "/", "display": "standalone", "background_color": "#f7f9fc", "theme_color": "#08663f", "icons": [{"src": "/assets/icon.svg", "sizes": "any", "type": "image/svg+xml"}]}
