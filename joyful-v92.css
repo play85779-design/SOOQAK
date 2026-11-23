@@ -432,3 +432,25 @@ body>.bar+main .cards>*{border-radius:19px;box-shadow:0 5px 16px #0f693414}
  body .detail-photos img{max-width:calc(50% - 5px);max-height:160px}
  body>.bar+main .hero{padding:18px;border-radius:20px}
 }
+
+/* V92 integration fixes: preserve tested search and category-reset behavior. */
+body.sooqak-search-active .main-content>.hero.sooqak-hero-v68,
+body.sooqak-search-active .main-content>.categories-section,
+body.sooqak-search-active .main-content>.marketplace-quicktabs,
+body.sooqak-search-active .main-content>.global-strip,
+body.sooqak-search-active .main-content>.sooqak-shops,
+body.sooqak-search-active .main-content>.service-callout,
+body.sooqak-search-active .main-content>.trust-row{display:none!important}
+body.sooqak-search-active .main-content>.market-section{order:1;margin-top:2px}
+body.sooqak-search-active .market-heading{margin:5px 0 8px}
+.categories-section .section-head{
+ display:flex;align-items:center;justify-content:space-between;
+ min-height:29px;margin:1px 0 6px;padding:0 2px
+}
+.categories-section .section-head h2{font-family:var(--v92-heading);font-size:18px;color:#1a6040}
+.categories-section .section-head .eyebrow{display:none}
+.categories-section .section-head .text-button{font-size:11px;min-height:28px;padding:4px 8px;border-radius:10px;color:#12844b}
+@media(max-width:759px){
+ .categories-section .section-head{margin:8px 0 9px}
+ .categories-section .section-head h2{font-size:22px}
+}
