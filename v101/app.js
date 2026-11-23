@@ -122,7 +122,7 @@ document.addEventListener('change',e=>{
  if(e.target.id==='country'){state.country=e.target.value;state.region='كل المناطق';state.city='كل المدن';render(true);toast('تم اختيار '+state.country+' — بيانات المعاينة محلية فقط');return}
  if(e.target.id==='region'){state.region=e.target.value;state.city='كل المدن';render(true);toast('المنطقة: '+state.region);return}
   if(e.target.id==='city'){state.city=e.target.value;render(true);toast('الموقع: '+state.city);return}
- if(e.target.id==='post-region'){const city=$('#post-city');if(city){const options=(locationMap['السعودية'][e.target.value]||[]);city.innerHTML='<option value="">المدينة اختيارية</option>'+options.map(x=>'<option value="'+x+'">'+x+'</option>').join('');}return}
+ if(e.target.id==='post-region'){const city=$('#post-city');if(city){const options=(locationMap['السعودية'][e.target.value]||[]);city.replaceChildren(new Option('المدينة اختيارية',''),...options.map(x=>new Option(x,x)));}return}
   if(e.target.id==='preview-images'){const files=Array.from(e.target.files||[]);if(files.length+state.photoUrls.length>10){toast('الحد الأقصى 10 صور');e.target.value='';return}if(files.some(f=>!f.type.startsWith('image/')||f.size>8*1024*1024)){toast('الصور يجب أن تكون أقل من 8 ميجابايت');e.target.value='';return}for(const f of files)state.photoUrls.push({url:URL.createObjectURL(f),name:f.name});const frame=$('#upload-previews');if(frame)frame.innerHTML=photoGallery();const label=$('#upload-label');if(label)label.textContent=state.photoUrls.length?'تم اختيار '+state.photoUrls.length+' صور — يمكنك إضافة المزيد':'أضف صور الإعلان';e.target.value='';return}
 });
 document.addEventListener('submit',e=>{
