@@ -71,3 +71,14 @@ test('B09 robots: working animation expires on an open tab without another backe
   await expect(page.locator('[data-worker-id="W1"] [data-worker-state-label]')).toHaveText('غير متصل');
   expect(await page.evaluate(()=>window.__workerRpcCalls.filter(x=>x==='sooqak_owner_worker_status').length)).toBe(1);
 });
+
+test('B09 robots: worker state unit suite is exercised in existing CI',async()=>{
+  const {execFileSync}=require('node:child_process');
+  const path=require('node:path');
+  const report=execFileSync(process.execPath,['--test','tests/owner-workers.test.mjs'],{
+    cwd:path.resolve(__dirname,'..'),encoding:'utf8',timeout:10000
+  });
+  expect(report).toMatch(/# tests 6/);
+  expect(report).toMatch(/# pass 6/);
+  expect(report).toMatch(/# fail 0/);
+});
