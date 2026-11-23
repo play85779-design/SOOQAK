@@ -262,3 +262,41 @@ body>.bar+main .hero h1{font-family:'Readex Pro',sans-serif;color:#096e3f}
 body>.bar+main .tag.active,body>.bar+main .btn.gold{background:#0a7d45;color:#fff}
 body>.bar+main .btn.gold{background:linear-gradient(180deg,#ffab30,#fb7e0b)}
 body>.bar+main .cards>*{border-radius:17px;border-color:#e6ece5}
+
+
+/* V91 refinement: match reference row density on Fold and desktop.
+   Scroll categories rather than hiding any genuine category. */
+@media(min-width:760px) and (max-width:1100px){
+ .categories{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:calc((100% - 6*10px)/7);overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity}
+ .categories::-webkit-scrollbar{display:none}
+ .category-card{scroll-snap-align:start}
+ .listing-grid:not(.list-view){grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+ .listing-title{font-size:12px}
+ .listing-price{font-size:15px}
+}
+@media(min-width:1300px){
+ .listing-grid:not(.list-view){grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:759px){
+ .sooqak-hero-v68 .hero-copy{width:66%;max-width:66%}
+ .sooqak-store-art{width:35%;background-size:158% auto}
+}
+@media(max-width:375px){
+ .sooqak-hero-v68 .hero-copy{width:70%;max-width:70%}
+ .sooqak-store-art{width:32%;background-size:185% auto}
+}
+/* Existing real account and posting dialogs receive the same readable typography. */
+.modal .form-grid input,.modal .form-grid select,.modal .form-grid textarea{
+ border-radius:12px;border-color:#dfebe1;background:#fff;color:#153e2b;
+ padding-inline:13px;
+}
+.modal .form-grid input:focus,.modal .form-grid select:focus,.modal .form-grid textarea:focus{
+ border-color:#179e5e;box-shadow:0 0 0 3px #129b5c17;
+}
+.modal .form-grid label,.modal .account-tabs button{color:#234d38;font-weight:700}
+.modal .account-tabs button{border-radius:13px}
+.modal .account-tabs button.active{background:#08874b;color:#fff;border-color:#08874b}
+.modal .warning{border:1px solid #f5dcb3;background:#fff8e9;color:#785621}
+.modal .info{background:#eef8f1;color:#155f3b}
+.modal .btn-outline{border-color:#cfe8d5;color:#08683c}
+.modal .btn-subtle{background:#eff7ef;color:#0e683c}
