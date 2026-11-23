@@ -20,7 +20,7 @@ async function stubOwnerRpc(page) {
     '    }',
     '  };',
     '}'
-  ].join('\\n');
+  ].join('\n');
   await page.route('https://cdn.jsdelivr.net/**', route =>
     route.fulfill({ contentType: 'text/javascript', body: source }));
 }
