@@ -42,6 +42,8 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Run local browser smoke tests
+        env:
+          SOOQAK_V92_CAPTURE: '1'
         run: npx playwright test --config=playwright.config.cjs
   backup-restore-fixture:
     runs-on: ubuntu-latest
