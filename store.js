@@ -41,22 +41,27 @@ async function load(){
    .in('status',['active','reserved']).is('hidden_at',null).gt('expires_at',new Date().toISOString())
    .order('created_at',{ascending:false}).order('id',{ascending:false}).range(offset,offset+size-1);
   if(error)throw error;
-  const images=await photoByListing(data||[]);
+  const visualByListing=new Map();
   for(const row of (data||[])){
    if(shown.has(row.id))continue;shown.add(row.id);
    const card=document.createElement('article');card.className='sooqak-store-item';
-   const visual=document.createElement('div');visual.className='sooqak-store-item-visual';visual.textContent=visualFor(row.category);
-   const photoUrl=images.get(row.id);
-   if(photoUrl){
-    const img=document.createElement('img');img.src=photoUrl;img.loading='lazy';img.decoding='async';img.alt='صورة المنتج: '+String(row.title||'').slice(0,120);
-    img.onerror=()=>{img.remove();visual.textContent=visualFor(row.category)};
-    visual.replaceChildren(img);
-   }else visual.setAttribute('aria-hidden','true');
+   const visual=document.createElement('div');visual.className='sooqak-store-item-visual';visual.textContent=visualFor(row.category);visual.setAttribute('aria-hidden','true');
+   visualByListing.set(row.id,{visual,row});
    const link=document.createElement('a');link.href='./listing.html?id='+encodeURIComponent(row.id);link.textContent=row.title;
    const meta=document.createElement('p');meta.className='sooqak-store-item-meta';meta.textContent=[row.city,row.status==='reserved'?'محجوز':'متاح'].filter(Boolean).join(' · ');
    const price=document.createElement('strong');price.className='sooqak-store-item-price';price.textContent=Number.isFinite(Number(row.price))&&row.price!==null?Number(row.price).toLocaleString('ar-SA')+' ر.س':'استفسر عن السعر';
    card.append(visual,link,meta,price);products.append(card);
   }
+  // Render listing cards immediately; public photo hydration must never block the store.
+  if(visualByListing.size)void photoByListing(data||[]).then(images=>{
+   for(const [listingId,details] of visualByListing){
+    const photoUrl=images.get(listingId);if(!photoUrl)continue;
+    const {visual,row}=details;
+    const img=document.createElement('img');img.src=photoUrl;img.loading='lazy';img.decoding='async';img.alt='صورة المنتج: '+String(row.title||'').slice(0,120);
+    img.onerror=()=>{img.remove();visual.textContent=visualFor(row.category);visual.setAttribute('aria-hidden','true')};
+    visual.replaceChildren(img);visual.removeAttribute('aria-hidden');
+   }
+  }).catch(()=>{});
   if(!offset && (data||[]).length){document.getElementById('storeName').textContent=data[0].seller_display_name||'منتجات المتجر';document.title=document.getElementById('storeName').textContent+' | سوقك SOOQAK';}
   offset+=(data||[]).length;
   summary.textContent=count?'عرض '+shown.size+' من '+count+' إعلان بيع للمتجر':'لا توجد إعلانات بيع منشورة لهذا المتجر.';
