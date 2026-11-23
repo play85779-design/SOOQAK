@@ -10,7 +10,7 @@ async function openMock(page,{event='PASSWORD_RECOVERY',url='/reset-password.htm
     return {auth:{
       onAuthStateChange:cb=>{
         window.__v57Fire=cb;
-        setTimeout(()=>cb(window.__v57Event,{user:window.__v57User,access_token:'synthetic-never-a-real-token'}),15);
+        setTimeout(()=>cb(window.__v57Event,{user:window.__v57User,access_token:'fixture'}),15);
         return {data:{subscription:{unsubscribe(){}}}};
       },
       getUser:async()=>({data:{user:window.__v57User},error:null}),
