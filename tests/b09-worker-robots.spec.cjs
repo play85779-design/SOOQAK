@@ -55,3 +55,19 @@ test('B09 robots: malformed activity or unverified data cannot claim success',as
   await expect(page.locator('[data-worker-id="W1"]')).toHaveAttribute('data-worker-state','unknown');
   await expect(page.locator('[data-worker-id="W1"] [data-worker-proof]')).toBeHidden();
 });
+
+test('B09 robots: working animation expires on an open tab without another backend call',async({page})=>{
+  await page.clock.install();
+  const now=Date.now(),iso=v=>new Date(v).toISOString();
+  await mockClient(page,{activity:[{
+    id:'W1',source:'automations_verified',server_verified:true,status:'in_progress',
+    updated_at:iso(now-2000),started_at:iso(now-50000),
+    heartbeat_at:iso(now-10000),task:'فحص جارٍ'
+  }]});
+  await page.goto('/owner-center.html');
+  await expect(page.locator('[data-worker-id="W1"]')).toHaveAttribute('data-worker-state','running');
+  await page.clock.fastForward(140000);
+  await expect(page.locator('[data-worker-id="W1"]')).toHaveAttribute('data-worker-state','unknown');
+  await expect(page.locator('[data-worker-id="W1"] [data-worker-state-label]')).toHaveText('غير متصل');
+  expect(await page.evaluate(()=>window.__workerRpcCalls.filter(x=>x==='sooqak_owner_worker_status').length)).toBe(1);
+});
