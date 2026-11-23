@@ -65,7 +65,7 @@ const saved=()=>{try{return new Set(JSON.parse(sessionStorage.getItem('sooqak-v1
 const state={route:'home',country:'السعودية',region:'كل المناطق',city:'كل المدن',filter:'الكل',term:'',favorites:saved(),item:'car',form:{},searchFocus:false,photoUrls:[]};
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const brand=(className='')=>'<button class="brand '+className+'" data-go="home" aria-label="سوقك الرئيسية"><img class="brand-mark" src="./assets/bag.svg" alt=""><span class="wordmark"><span class="wordmark-ar">سوقك</span><span class="wordmark-en">SOOQAK</span></span></button>';
-const countryOpts=()=>Object.keys(countries).map(x=>'<option value="'+x+'" '+(x===state.country?'selected':'')+'>'+({السعودية:'🇸🇦',البحرين:'🇧🇭',الإمارات:'🇦🇪'}[x]||'')+' '+x+'</option>').join('');
+const countryOpts=()=>Object.keys(countries).map(x=>'<option value="'+x+'" '+(x===state.country?'selected':'')+'>'+esc(x)+'</option>').join('');
 
 const cityForRegion=()=>state.region==='كل المناطق'?[]:((locationMap[state.country]||{})[state.region]||[]);
 
