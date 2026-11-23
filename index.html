@@ -16,6 +16,7 @@
   
   <link rel="stylesheet" href="./styles.css">
   <link rel="stylesheet" href="./marketplace-refresh.css">
+  <link rel="stylesheet" href="./poster-ui.css">
   <title>سوقك | للبيع والشراء وإنشاء المتاجر — معاينة خاصة</title>
 <link rel="icon" type="image/svg+xml" href="./assets/icon.svg" />
 <link rel="manifest" href="./manifest.webmanifest" />
@@ -25,7 +26,7 @@
   <div class="demo-banner" role="status">🧪 اختبار محدود متصل بقاعدة البيانات: إعلانات الأمثلة غير حقيقية؛ النشر الفعلي متاح بعد تأكيد البريد، وقد تكون الإعلانات والصور المنشورة مرئية للجميع. لا تدخل بيانات حساسة أو تحول أموالًا. هذه ليست منصة تجارية عامة.</div>
   <header class="topbar">
     <div class="container header-inner">
-      <div class="brand"><button id="brandAccountButton" class="brand-mark" type="button" title="افتح حسابي وإعداداتي" aria-label="حسابي وإعداداتي"><span class="brand-glyph">س</span><span class="brand-account-caption">حسابي</span></button><a href="#" class="brand-label" id="homeLink" aria-label="العودة إلى الرئيسية">سوقك <small>منصتك للبيع والشراء</small></a></div>
+      <div class="brand"><button id="brandAccountButton" class="brand-mark" type="button" title="افتح حسابي وإعداداتي" aria-label="حسابي وإعداداتي"><span class="brand-glyph" aria-hidden="true">س</span><span class="brand-account-caption">حسابي</span></button><a href="#" class="brand-label" id="homeLink" aria-label="العودة إلى الرئيسية">سوقك <small>SOOQAK</small></a></div>
       <div class="header-search"><span>⌕</span><input id="searchInput" type="search" placeholder="وش تدور عليه اليوم؟ سيارة، جوال، عقار..." autocomplete="off" aria-label="ابحث في الإعلانات"/><button id="searchButton" class="search-action" type="button">بحث</button></div>
       <div class="header-actions"><button id="favButton" class="icon-button" title="المفضلة" aria-label="المفضلة">♡ <span id="favBadge" class="badge-count" hidden>0</span></button><button id="chatButton" class="icon-button" title="المحادثات" aria-label="المحادثات">✉ <span id="chatUnreadBadge" class="badge-count" aria-label="عدد الرسائل غير المقروءة" hidden>0</span></button><button id="signupButton" type="button" class="btn btn-gold auth-top-signup">إنشاء حساب جديد</button><button id="loginButton" type="button" class="profile-button auth-top-login" hidden>دخول / حساب جديد</button><span id="authBusy" class="auth-busy" role="status" aria-live="polite">جاري التحقق من الحساب…</span><button id="profileButton" type="button" class="profile-button profile-signed-in" aria-label="افتح حسابي" hidden><span id="profileLabel">حسابي</span></button><button id="postButton" class="btn btn-gold"><span>＋</span> أضف إعلان</button></div>
     </div>
@@ -45,9 +46,9 @@
     </nav>
     <section class="hero sooqak-hero-v68" aria-labelledby="sooqakHeroTitle">
       <div class="hero-copy">
-        <div class="hero-tag">سوق واحد، وفرص للجميع</div>
-        <h1 id="sooqakHeroTitle">بيع واشتري… <span>وافتح متجرك في سوقك</span></h1>
-        <p>إعلانات الأفراد ومتاجر التجار في منصة واحدة. ابدأ البيع والشراء بحساب واحد، وفعّل حساب المتجر متى احتجته.</p>
+        <div class="hero-tag">منصتك المتكاملة للبيع والشراء</div>
+        <h1 id="sooqakHeroTitle">كل ما تحتاجه في مكان واحد… <span>وافتح متجرك في سوقك</span></h1>
+        <p>تصفّح الإعلانات والمتاجر والخدمات، وبِع واشترِ بسهولة من حساب واحد.</p>
         <div class="hero-points" aria-label="مميزات تجربة سوقك"><span>✓ حساب واحد</span><span>✓ إعلانات الأفراد</span><span>✓ متجر مستقل للتاجر</span></div>
         <div class="sooqak-hero-actions">
           <button id="sooqakCreateStore" class="btn btn-gold btn-large" type="button">🏪 أنشئ متجرك</button>
