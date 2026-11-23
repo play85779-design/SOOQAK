@@ -249,3 +249,18 @@ button,input,select,textarea{touch-action:manipulation}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}button,img{transition:none!important}}
 
 .visually-hidden{position:absolute!important;width:1px!important;height:1px!important;margin:-1px!important;padding:0!important;border:0!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important}
+
+@media(max-width:359px){
+ .top-inner{padding-inline:8px;gap:3px}
+ .brand{gap:4px}
+ .brand-mark{width:31px;height:37px}
+ .wordmark-ar{font-size:24px}
+ .wordmark-en{font-size:10px}
+ .top-actions{gap:1px;min-width:0;flex-shrink:1}
+ .locale{gap:2px;min-width:0}
+ .locale-field,.locale-field.country{min-width:0;max-width:none;height:31px;font-size:9px;padding:3px 2px}
+ .locale-field.country{width:68px}
+ .locale-field:not(.country){width:74px}
+ .round-btn{width:29px;height:30px}
+}
+html{overflow-x:clip}
