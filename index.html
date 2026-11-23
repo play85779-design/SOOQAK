@@ -71,7 +71,13 @@ window.SOOQAK_CLOUD_ENABLED = Boolean(
   try {
     const h=new URLSearchParams(location.hash.replace(/^#/,''));
     const q=new URLSearchParams(location.search);
-    if(h.get('type')==='recovery'||q.get('type')==='recovery')window.sooqakPasswordRecoveryPending=true;
+    if(h.get('type')==='recovery'||q.get('type')==='recovery'){
+      // Keep the already-allowlisted /index.html callback working for older emails.
+      // Move the full recovery callback straight to a separate Arabic screen
+      // before loading the marketplace app; never read or store URL tokens here.
+      window.sooqakPasswordRecoveryPending=true;
+      location.replace(new URL('/reset-password.html'+location.search+location.hash,location.origin).href);
+    }
   } catch(_e){}
   </script>
   <script src="./app.js"></script>
