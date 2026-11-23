@@ -370,7 +370,12 @@ if(!currentUser)throw new Error('يجب تسجيل الدخول لرفع الص�
     }
     async function setFavorite(listingId,active){
       if(!currentUser)throw new Error('تسجيل الدخول مطلوب للمفضلة');
-      if(active){const {error}=await supabase.from('sooqak_favorites').upsert({user_id:currentUser.id,listing_id:listingId},{onConflict:'user_id,listing_id'});if(error)throw error}
+      if(active){
+        // INSERT + SELECT + DELETE are granted; UPDATE is intentionally not.
+        // Supabase upsert requires UPDATE and surfaced permission-denied errors.
+        const {error}=await supabase.from('sooqak_favorites').insert({user_id:currentUser.id,listing_id:listingId});
+        if(error && String(error.code)!=='23505')throw error; // already saved = idempotent
+      }
       else{const {error}=await supabase.from('sooqak_favorites').delete().eq('user_id',currentUser.id).eq('listing_id',listingId);if(error)throw error}
       return true;
     }
