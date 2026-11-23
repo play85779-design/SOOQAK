@@ -31,6 +31,7 @@ test('V101 users can actually change country and city',async({page})=>{
  await expect(page.locator('#city')).toHaveValue('كل المدن');
  await expect(page.locator('.card')).toHaveCount(0);
  await page.locator('#country').selectOption('السعودية');
+ await page.locator('#region').selectOption('المنطقة الشرقية');
  await page.locator('#city').selectOption('الخبر');
  await expect(page.locator('.card')).toHaveCount(1);
  await expect(page.locator('.card')).toContainText('كنب بيج');
@@ -51,6 +52,7 @@ test('V101 search and editable local listing review',async({page})=>{
  await page.locator('button[data-go="post"]:visible').first().click();
  await page.locator('#post-title').fill('سيارة توضيحية للتجربة');
  await page.locator('#post-price').fill('65000');
+ await page.locator('#post-region').selectOption('المنطقة الشرقية');
  await page.locator('#post-form').getByRole('button',{name:/مراجعة الإعلان/}).click();
  await expect(page.getByRole('dialog')).toContainText('لم يُنشر الإعلان');
 });
