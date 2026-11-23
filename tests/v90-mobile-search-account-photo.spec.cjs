@@ -79,7 +79,7 @@ test('legacy recovery callback goes directly to dedicated Arabic password-reset 
   // Existing emailed callbacks target /index.html. Their fragments must survive
   // the same-origin redirect until the Auth SDK on the reset page can consume them.
   await openOffline(page,'/index.html#type=recovery&access_token=DO_NOT_USE');
-  await expect(page).toHaveURL(/\\/reset-password\\.html#type=recovery&access_token=DO_NOT_USE/);
+  await expect.poll(()=>page.url()).toContain('/reset-password.html#type=recovery&access_token=DO_NOT_USE');
   await expect(page.locator('h1')).toHaveText('تعيين كلمة مرور جديدة');
   await expect(page.locator('#recoveryForm')).toBeHidden();
 });
