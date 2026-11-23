@@ -4,18 +4,20 @@
   <!-- SOOQAK staging V38; accounts require provider configuration and live testing -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#122C4B" />
+  <meta name="theme-color" content="#08663f" />
   <meta name="robots" content="noindex,nofollow,noarchive" />
   <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="سوقك | SOOQAK" />
-  <meta property="og:title" content="سوقك | SOOQAK — كل ما تبحث عنه" />
+  <meta property="og:site_name" content="سوقك" />
+  <meta property="og:title" content="سوقك — كل ما تبحث عنه" />
   <meta property="og:description" content="بيع واشتر بسهولة واستكشف الإعلانات على سوقك. هذه نسخة خاصة للمعاينة فقط." />
   <meta name="twitter:card" content="summary" />
-  <meta name="description" content="سوقك SOOQAK — سوق سعودي بنظرة عالمية. معاينة مقيدة للتصميم، وليست منصة تجارية عاملة." />
+  <meta name="description" content="سوقك — سوق سعودي بنظرة عالمية. معاينة مقيدة للتصميم، وليست منصة تجارية عاملة." />
   
   
   <link rel="stylesheet" href="./styles.css">
-  <title>سوقك | إعلانات البيع والشراء في السعودية — معاينة V38</title>
+  <link rel="stylesheet" href="./marketplace-refresh.css">
+  <link rel="stylesheet" href="./poster-ui.css">
+  <title>سوقك | للبيع والشراء وإنشاء المتاجر — معاينة خاصة</title>
 <link rel="icon" type="image/svg+xml" href="./assets/icon.svg" />
 <link rel="manifest" href="./manifest.webmanifest" />
 </head>
@@ -24,7 +26,7 @@
   <div class="demo-banner" role="status">🧪 اختبار محدود متصل بقاعدة البيانات: إعلانات الأمثلة غير حقيقية؛ النشر الفعلي متاح بعد تأكيد البريد، وقد تكون الإعلانات والصور المنشورة مرئية للجميع. لا تدخل بيانات حساسة أو تحول أموالًا. هذه ليست منصة تجارية عامة.</div>
   <header class="topbar">
     <div class="container header-inner">
-      <div class="brand"><button id="brandAccountButton" class="brand-mark" type="button" title="افتح حسابي وإعداداتي" aria-label="حسابي وإعداداتي"><span class="brand-glyph">س</span><span class="brand-account-caption">حسابي</span></button><a href="#" class="brand-label" id="homeLink" aria-label="العودة إلى الرئيسية">سوقك <small>SOOQAK</small></a></div>
+      <div class="brand"><button id="brandAccountButton" class="brand-mark" type="button" title="افتح حسابي وإعداداتي" aria-label="حسابي وإعداداتي"><span class="brand-glyph" aria-hidden="true">س</span><span class="brand-account-caption">حسابي</span></button><a href="#" class="brand-label" id="homeLink" aria-label="العودة إلى الرئيسية">سوقك <small>SOOQAK</small></a></div>
       <div class="header-search"><span>⌕</span><input id="searchInput" type="search" placeholder="وش تدور عليه اليوم؟ سيارة، جوال، عقار..." autocomplete="off" aria-label="ابحث في الإعلانات"/><button id="searchButton" class="search-action" type="button">بحث</button></div>
       <div class="header-actions"><button id="favButton" class="icon-button" title="المفضلة" aria-label="المفضلة">♡ <span id="favBadge" class="badge-count" hidden>0</span></button><button id="chatButton" class="icon-button" title="المحادثات" aria-label="المحادثات">✉ <span id="chatUnreadBadge" class="badge-count" aria-label="عدد الرسائل غير المقروءة" hidden>0</span></button><button id="signupButton" type="button" class="btn btn-gold auth-top-signup">إنشاء حساب جديد</button><button id="loginButton" type="button" class="profile-button auth-top-login" hidden>دخول / حساب جديد</button><span id="authBusy" class="auth-busy" role="status" aria-live="polite">جاري التحقق من الحساب…</span><button id="profileButton" type="button" class="profile-button profile-signed-in" aria-label="افتح حسابي" hidden><span id="profileLabel">حسابي</span></button><button id="postButton" class="btn btn-gold"><span>＋</span> أضف إعلان</button></div>
     </div>
@@ -32,22 +34,51 @@
   <main class="container main-content">
     <section class="global-strip" aria-label="خطط التوسع الدولي لسوقك">
       <div class="global-intro"><span class="global-globe" aria-hidden="true">🌍</span><div><strong id="globalTitle">سوقك يبدأ من السعودية... ويتطلع للعالم</strong><small id="globalSubtitle">استكشف أسواق الخليج القادمة؛ النسخة الحالية تعرض أمثلة من السعودية فقط.</small></div></div>
-      <div class="global-actions"><label class="global-country"><span id="globalCountryLabel">الدولة</span><select id="globalCountry" aria-label="اختيار دولة المعاينة"><option value="SA">🇸🇦 السعودية</option><option value="AE">🇦🇪 الإمارات</option><option value="KW">🇰🇼 الكويت</option><option value="QA">🇶🇦 قطر</option><option value="BH">🇧🇭 البحرين</option><option value="OM">🇴🇲 عُمان</option></select></label><button id="globalLanguage" class="global-lang" type="button" aria-label="تغيير لغة المعاينة">English</button></div>
+      <div class="global-actions"><label class="global-country"><span id="globalCountryLabel">الدولة</span><select id="globalCountry" aria-label="اختيار دولة المعاينة"><option value="SA">🇸🇦 السعودية</option><option value="AE">🇦🇪 الإمارات</option><option value="KW">🇰🇼 الكويت</option><option value="QA">🇶🇦 قطر</option><option value="BH">🇧🇭 البحرين</option><option value="OM">🇴🇲 عُمان</option></select></label><span id="globalLanguage" class="global-lang" aria-label="لغة الواجهة">العربية</span></div>
     </section>
     <div id="globalCountryNotice" class="global-note" role="status" aria-live="polite" hidden></div>
 
-    <section class="hero"><div class="hero-copy"><div class="hero-tag">السوق لك... والفرصة لك</div><h1>كل اللي تحتاجه، <span>في سوقك</span></h1><p>بيع واشتري وتواصل بشكل مباشر. إعلانك مجانًا، وعمولتنا فقط عند إتمام البيع.</p><div class="hero-points"><span>◉ نشر مجاني</span><span>◉ تواصل مباشر</span><span>◉ عمولة 1% بعد البيع</span></div><button id="heroPost" class="btn btn-gold btn-large">اعرض سلعتك مجانًا ←</button></div><div class="hero-art" aria-hidden="true"><span class="orbit orbit-a">🚗</span><span class="orbit orbit-b">📱</span><span class="orbit orbit-c">🏠</span><span class="orbit orbit-d">🛋️</span><div class="hero-center">سوقك<br/><small>SOOQAK</small></div></div></section>
+
+    <nav class="marketplace-quicktabs" aria-label="استكشف سوقك">
+      <a href="#sooqakListings">🏷️ إعلانات البيع والشراء</a>
+      <a href="#sooqakStores">🏪 متاجر التجار</a>
+      <a href="#sooqakServices">🛠️ دليل الخدمات</a>
+    </nav>
+    <section class="hero sooqak-hero-v68" aria-labelledby="sooqakHeroTitle">
+      <div class="hero-copy">
+        <div class="hero-tag">منصتك المتكاملة للبيع والشراء</div>
+        <h1 id="sooqakHeroTitle">كل ما تحتاجه في مكان واحد… <span>وافتح متجرك في سوقك</span></h1>
+        <p>تصفّح الإعلانات والمتاجر والخدمات، وبِع واشترِ بسهولة من حساب واحد.</p>
+        <div class="hero-points" aria-label="مميزات تجربة سوقك"><span>✓ حساب واحد</span><span>✓ إعلانات الأفراد</span><span>✓ متجر مستقل للتاجر</span></div>
+        <div class="sooqak-hero-actions">
+          <button id="sooqakCreateStore" class="btn btn-gold btn-large" type="button">🏪 أنشئ متجرك</button>
+          <button id="heroPost" class="btn btn-outline btn-large sooqak-hero-secondary" type="button">＋ أضف إعلانًا</button>
+        </div>
+        <small class="sooqak-hero-disclaimer">نسخة تطوير؛ إنشاء الحسابات والخدمات يتبع حالة التفعيل وصلاحياتها الفعلية.</small>
+      </div>
+      <div class="hero-art sooqak-store-art" aria-hidden="true">
+        <div class="sooqak-art-orbit"></div><div class="sooqak-art-shop"><div class="sooqak-art-awning"><i></i><i></i><i></i><i></i><i></i></div><div class="sooqak-art-window">🛍️</div><div class="sooqak-art-door"></div></div>
+        <span class="sooqak-art-bag">🛍️</span><span class="sooqak-art-box">📦</span>
+      </div>
+    </section>
     <section class="categories-section"><div class="section-head"><div><div class="eyebrow">تصفح على راحتك</div><h2>أقسام سوقك</h2></div><button class="text-button" id="showAllCats">جميع الأقسام ←</button></div><div class="categories" id="categoryCards"></div><div id="subcategoryPreview" class="subcategory-preview" hidden></div></section>
-<section class="service-callout" aria-labelledby="serviceCalloutTitle"><div><span class="eyebrow">جديد في سوقك</span><h2 id="serviceCalloutTitle">ورش ومحلات وخدمات في مدينتك</h2><p>دليل مستقل للورش ومحلات السباكة ومناديب التوصيل — تصفح الأنشطة أو أضف نشاطك.</p></div><div class="service-callout-actions"><a href="./services.html?kind=workshop">🔧 الورش</a><a href="./services.html?kind=plumbing">🚰 محلات السباكة</a><a href="./services.html?kind=delivery">🚚 التوصيل</a><a class="service-all" href="./services.html">جميع الخدمات ←</a></div></section>
-    <section class="market-section"><div class="section-head market-heading"><div><div class="eyebrow">آخر المعروض</div><h2 id="resultsTitle">أحدث الإعلانات</h2><p id="resultsCount" class="secondary" role="status" aria-live="polite" aria-atomic="true"></p></div><div class="market-controls"><button class="filter-open-button" id="filterToggle" type="button" aria-controls="filterDrawer" aria-expanded="false">☷ الفلاتر <span id="activeFilterCount" hidden></span></button><div class="view-switch"><button data-view="grid" class="view-btn active" title="شبكة">▦</button><button data-view="list" class="view-btn" title="قائمة">☰</button></div></div></div>
+
+    <section id="sooqakStores" class="sooqak-shops" aria-labelledby="sooqakStoresHeading">
+      <div class="section-head"><div><div class="eyebrow">تسوّق من التجار</div><h2 id="sooqakStoresHeading">متاجر سوقك</h2></div><a class="text-button" href="#sooqakListings">استكشف الإعلانات ←</a></div>
+      <p class="sooqak-shop-intro">متاجر مرتبطة بإعلانات بيع منشورة فعلًا، وليست أسماء أو تقييمات افتراضية. افتح المتجر لتشاهد منتجاته.</p>
+      <div class="sooqak-shop-grid" id="sooqakShopsGrid" aria-live="polite" aria-busy="true"><p class="sooqak-shop-state">جاري التحقق من المتاجر المنشورة…</p></div>
+      <div class="sooqak-shop-create"><span aria-hidden="true">🏪</span><div><strong>عندك نشاط تجاري؟</strong><small>يمكنك استخدام حسابك نفسه للوصول إلى حساب المتجر وإدارة إعلاناته.</small></div><button type="button" id="sooqakCreateStoreSecondary" class="btn btn-gold">افتح حساب المتجر</button><a class="btn btn-outline sooqak-manage-link" href="./merchant-dashboard.html">لوحة متجري</a></div>
+    </section>
+<section id="sooqakServices" class="service-callout" aria-labelledby="serviceCalloutTitle"><div><span class="eyebrow">جديد في سوقك</span><h2 id="serviceCalloutTitle">ورش ومحلات وخدمات في مدينتك</h2><p>دليل مستقل للورش ومحلات السباكة ومناديب التوصيل — تصفح الأنشطة أو أضف نشاطك.</p></div><div class="service-callout-actions"><a href="./services.html?kind=workshop">🔧 الورش</a><a href="./services.html?kind=plumbing">🚰 محلات السباكة</a><a href="./services.html?kind=delivery">🚚 التوصيل</a><a class="service-all" href="./services.html">جميع الخدمات ←</a></div></section>
+    <section id="sooqakListings" class="market-section"><div class="section-head market-heading"><div><div class="eyebrow">آخر المعروض</div><h2 id="resultsTitle">أحدث الإعلانات</h2><p id="resultsCount" class="secondary" role="status" aria-live="polite" aria-atomic="true"></p></div><div class="market-controls"><button class="filter-open-button" id="filterToggle" type="button" aria-controls="filterDrawer" aria-expanded="false">☷ الفلاتر <span id="activeFilterCount" hidden></span></button><div class="view-switch"><button data-view="grid" class="view-btn active" title="شبكة">▦</button><button data-view="list" class="view-btn" title="قائمة">☰</button></div></div></div>
       <div class="filter-overlay" id="filterOverlay" hidden></div><div class="market-layout"><aside class="filters" id="filterDrawer" role="dialog" aria-modal="true" aria-label="فلاتر البحث" aria-hidden="true" tabindex="-1"><div class="filter-head"><h3>تصفية النتائج</h3><button type="button" id="filterClose" class="filter-close" aria-label="إغلاق الفلاتر">×</button></div><label>القسم<select id="categoryFilter"></select></label><label id="subcategoryFilterGroup" hidden><span class="subcategory-filter-label">القسم الفرعي</span><select id="subcategoryFilter" aria-label="القسم الفرعي"></select></label><label>المدينة<select id="cityFilter"><option value="">كل السعودية</option><option>الرياض</option><option>جدة</option><option>الدمام</option><option>الجبيل</option><option>الأحساء</option><option>مكة</option><option>المدينة</option><option>الخبر</option><option>أبها</option></select></label><label>الحي (اختياري)<input id="districtFilter" maxlength="70" placeholder="ابحث في الحي" autocomplete="off"/></label><label>نوع الإعلان<select id="typeFilter"><option value="">بيع ومطلوب</option><option value="بيع">للبيع</option><option value="مطلوب">مطلوب</option></select></label><div class="price-row"><label>من (ر.س)<input type="number" id="minPrice" min="0" placeholder="0" /></label><label>إلى (ر.س)<input type="number" id="maxPrice" min="0" placeholder="بدون حد" /></label></div><label>الترتيب<select id="sortFilter"><option value="new">الأحدث أولًا</option><option value="old">الأقدم أولًا</option><option value="cheap">الأرخص أولًا</option><option value="expensive">الأغلى أولًا</option></select></label><button id="resetFilters" class="btn btn-subtle btn-block">مسح الفلاتر</button><button id="manageSellerMutes" type="button" class="btn btn-outline btn-block">إدارة البائعين المخفيين</button><button id="filterApply" type="button" class="btn btn-gold btn-block">عرض النتائج</button><div class="filter-note">🔒 لا نطلب موقعك الدقيق. اختيار المدينة اختياري في البحث.</div></aside>
       <div class="feed-wrap"><div class="feed-bar"><span id="feedLabel">تصفح الإعلانات</span><span class="feed-note">أمثلة تجريبية واضحة إلى حين نشر إعلانات حقيقية</span><div class="search-actions"><button type="button" id="saveSearchButton" class="btn btn-outline btn-mini">☆ حفظ البحث</button><button type="button" id="savedSearchesButton" class="btn btn-subtle btn-mini">بحوثي المحفوظة</button></div></div><div id="activeSearchFilters" class="sooqak-active-filters" role="group" aria-label="الفلاتر المطبقة" hidden></div><div class="listing-grid" id="listingGrid"></div><div id="sooqakMoreArea" hidden style="text-align:center;margin:21px auto 10px"><button class="btn btn-outline" id="sooqakMoreListings" type="button">عرض إعلانات إضافية</button><p class="muted" style="font-size:11px">يتم تحميل دفعات إضافية حسب الحاجة</p></div><div id="emptyState" class="empty-state" hidden><div class="empty-icon">⌕</div><h3>ما لقينا إعلانات مطابقة</h3><p>جرّب تغير المدينة أو القسم أو نطاق السعر.</p><button class="btn btn-outline" id="emptyReset">عرض جميع الإعلانات</button></div></div></div>
     </section>
     <section class="trust-row"><div><span>♧</span><strong>خصوصيتك أولًا</strong><small>بيانات اتصال البائع لا تظهر إلا باختياره.</small></div><div><span>◎</span><strong>تواصل مباشر</strong><small>الاتفاق والبيع بين البائع والمشتري.</small></div><div><span>♜</span><strong>منصة منظمة</strong><small>الإبلاغ عن الإعلانات وإدارة البلاغات.</small></div></section>
   <section aria-labelledby="v14Safe" style="padding:15px 18px;margin:22px 0;background:#fff7e7;border:1px solid #e9d8a9;border-radius:14px;color:#593e12;line-height:1.8"><h2 id="v14Safe" style="font-size:17px;margin:0 0 7px">نصيحة قبل أي عملية شراء</h2><p style="margin:0">تأكد من السلعة وهوية الطرف الآخر، ولا ترسل عربونًا أو بيانات بنكية حساسة لحساب غير موثوق. سوقك حاليًا تجريبي ولا يستلم أموالًا ولا يتحقق من أرقام الجوال.</p></section></main>
-  <footer><div class="container footer-inner"><div class="footer-brand">سوقك <small>SOOQAK</small><p>بداية بسيطة لسوق كبير.</p></div><div>معاينة تجريبية خاصة — 2026</div><button id="aboutButton">عن تجربة سوقك</button><button type="button" data-act="bank">سجل العمولة التجريبي</button><a href="./pricing.html" target="_blank" rel="noopener noreferrer" style="color:#d6a653;text-decoration:underline;font-weight:700">خطط الاشتراكات</a><a href="./roadmap.html" target="_blank" rel="noopener noreferrer" style="color:#d6a653;text-decoration:underline;font-weight:700">خطة تطوير سوقك</a><a href="./status-100.html" target="_blank" rel="noopener noreferrer" style="color:#d6a653;text-decoration:underline;font-weight:700">المهام المئة وحالتها</a></div><a href="./v14-changes.html" target="_blank" rel="noopener noreferrer" style="color:#d6a653;text-decoration:underline;font-weight:700">ملخص التحديثات السابقة</a></footer>
+  <footer><div class="container footer-inner"><div class="footer-brand">سوقك <small>منصتك للبيع والشراء</small><p>بداية بسيطة لسوق كبير.</p></div><div>معاينة تجريبية خاصة — 2026</div><button id="aboutButton">عن تجربة سوقك</button><button type="button" data-act="bank">سجل العمولة التجريبي</button><a href="./pricing.html" target="_blank" rel="noopener noreferrer" style="color:#d6a653;text-decoration:underline;font-weight:700">خطط الاشتراكات</a><a href="./roadmap.html" target="_blank" rel="noopener noreferrer" style="color:#d6a653;text-decoration:underline;font-weight:700">خطة تطوير سوقك</a><a href="./status-100.html" target="_blank" rel="noopener noreferrer" style="color:#d6a653;text-decoration:underline;font-weight:700">المهام المئة وحالتها</a></div><a href="./v14-changes.html" target="_blank" rel="noopener noreferrer" style="color:#d6a653;text-decoration:underline;font-weight:700">ملخص التحديثات السابقة</a></footer>
   <nav class="mobile-nav" aria-label="التنقل الرئيسي"><button data-nav="home" class="active"><span>⌂</span>الرئيسية</button><button data-nav="search"><span>⌕</span>بحث</button><button data-nav="post" class="nav-post"><span>＋</span>إعلان</button><button data-nav="favorites"><span>♡</span>المفضلة</button><button data-nav="account"><span>♙</span>حسابي</button></nav>
-  <div id="modalBackdrop" class="modal-backdrop" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-head"><div class="modal-heading"><span class="sooqak-modal-brand" aria-hidden="true">سوقك <small>SOOQAK</small></span><h2 id="modalTitle"></h2></div><button id="modalClose" class="close-button" aria-label="إغلاق">×</button></div><div id="modalContent" class="modal-content"></div></div></div>
+  <div id="modalBackdrop" class="modal-backdrop" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-head"><div class="modal-heading"><span class="sooqak-modal-brand" aria-hidden="true">سوقك <small>منصتك للبيع والشراء</small></span><h2 id="modalTitle"></h2></div><button id="modalClose" class="close-button" aria-label="إغلاق">×</button></div><div id="modalContent" class="modal-content"></div></div></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script>/* إعداد عام فقط. اكتب رابط المشروع والمفتاح publishable بعد إنشاء مشروع Supabase المجاني.
  * لا تضع service_role أو sb_secret_* هنا أبدًا.
@@ -75,6 +106,7 @@ window.SOOQAK_CLOUD_ENABLED = Boolean(
   } catch(_e){}
   </script>
   <script src="./app.js"></script>
+  <script src="./marketplace-refresh.js" defer></script>
   <script src="./search-assist.js"></script>
   <script src="./location-filters.js"></script>
   <script src="./inbox-local-tools.js"></script>

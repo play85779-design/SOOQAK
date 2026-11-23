@@ -2,8 +2,7 @@ const {test,expect}=require('@playwright/test');
 test('shared store page requests only public sale listings for the addressed business',async({page})=>{
  const id='55555555-5555-4555-8555-555555555555';
  await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'text/javascript',body:`
- export function createClient(){return {from:()=>{
-  window.calls=[];
+ export function createClient(){window.calls=[];return {from:()=>{
   const q=new Proxy({},{get:(_,k)=>(...args)=>{
    window.calls.push([k,...args]);
    if(k==='range')return Promise.resolve({data:[{id:'item',title:'منتج متجر',seller_display_name:'متجر تجريبي',status:'active'}],count:1});
