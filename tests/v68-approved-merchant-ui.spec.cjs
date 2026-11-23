@@ -52,6 +52,6 @@ test('storefront uses the first confirmed public image without inventing product
  await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({status:200,contentType:'text/javascript',body:sdk}));
  await page.route('https://zwbtiyqgrgjybwaguuyn.supabase.co/storage/v1/object/public/**',r=>r.fulfill({status:200,contentType:'image/png',body:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4//8/AwAI/AL+XVLgNwAAAABJRU5ErkJggg==','base64')}));
  await page.goto('/store.html?id='+uuid);
- await expect(page.locator('.sooqak-store-item-visual img')).toHaveAttribute('src',/safe/photo.jpg/);
+ await expect(page.locator('.sooqak-store-item-visual img')).toHaveAttribute('src','https://zwbtiyqgrgjybwaguuyn.supabase.co/storage/v1/object/public/sooqak-listing-photos/safe/photo.jpg');
  await expect(page.locator('.sooqak-store-item-visual img')).toHaveAttribute('alt',/منتج حقيقي/);
 });
