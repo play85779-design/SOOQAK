@@ -57,8 +57,8 @@ for(const v of sizes){
 test('preview safety remains accessible after compacting the warning',async({page})=>{
  await isolate(page);
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
- const banner=page.locator('body > .demo-banner');
- const toggle=page.locator('body > .demo-banner .v92-notice-toggle');
+ const banner=page.locator('body > .demo-banner:visible');
+ const toggle=page.locator('body > .demo-banner:visible .v92-notice-toggle');
  await expect(toggle).toBeVisible();
  await expect(banner).toContainText('غير حقيقية');
  const before=await banner.evaluate(el=>el.getBoundingClientRect().height);
