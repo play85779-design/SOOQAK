@@ -3,7 +3,7 @@ const uuid='44444444-4444-4444-8444-444444444444';
 test('approved design keeps original marketplace functions, adds individual and merchant routes',async({page})=>{
  await page.route('https://zwbtiyqgrgjybwaguuyn.supabase.co/**',r=>r.abort());
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
- await expect(page.locator('#sooqakHeroTitle')).toContainText('متجرك');
+ await expect(page.locator('#sooqakHeroTitle')).toContainText('في سوقك');
  await expect(page.locator('#heroPost')).toBeVisible();
  await expect(page.locator('#sooqakCreateStore')).toBeVisible();
  await expect(page.locator('#sooqakShopsGrid')).toBeVisible();
