@@ -360,3 +360,47 @@ input[readonly]{background:#f8faf8}
  .mobile-header{grid-row:1}
  .main-content{grid-row:2;align-self:start}
 }
+
+/* Cropped source assets from the EXACT owner poster; never position the whole montage behind cards. */
+.brand-crop{display:block;background:transparent;overflow:hidden}
+.brand-crop img,.poster-photo img,.poster-art img,.shop-crop img,.promo-art img,[class*="crop-"] img{
+ position:relative!important;inset:auto!important;top:auto!important;left:auto!important;right:auto!important;
+ display:block!important;width:100%!important;height:100%!important;max-width:100%!important;
+ transform:none!important;object-fit:cover;object-position:center;
+}
+.brand-crop img{object-fit:contain!important}
+.poster-photo,.poster-art,.shop-crop,.banner-art{width:100%;height:100%;overflow:hidden;position:relative}
+.shop-crop img{object-fit:cover!important}
+.promo-art .poster-photo img,.promo-art img{object-fit:contain!important}
+.promo-store .store-art img{object-fit:contain!important}
+.gallery .poster-photo img{object-fit:contain!important;background:#f6f9f6}
+.hero-banner .banner-art{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+.hero-banner .poster-art{position:relative!important;inset:auto!important;width:100%!important;height:100%!important}
+.hero-banner .poster-art img{object-fit:cover!important;object-position:center}
+.hero-banner .banner-hit{z-index:3}
+.hero-banner .banner-extra{display:none}
+.desktop-side .brand-crop{width:146px;height:75px;transform:none!important;margin:auto}
+.desktop-side .brand-crop img{object-fit:contain!important}
+.hero-banner .banner-caption{display:none}
+@media(min-width:700px){
+ .hero-banner{
+  background:linear-gradient(118deg,#7f35d8,#a943e3);border-color:#d1a4e9;
+  box-shadow:0 9px 24px #853b9f1d;
+ }
+ .hero-banner .banner-art{left:0;right:auto;width:54%;height:100%}
+ .hero-banner .poster-art img{object-fit:cover!important}
+ .hero-banner .banner-extra{
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
+  position:absolute;inset-block:0;right:0;width:46%;height:100%;padding:18px clamp(15px,3vw,36px);
+  color:white;text-align:right;gap:11px;z-index:2;
+  background:radial-gradient(circle at 18% 0%,#f4aaff40,transparent 37%);
+ }
+ .hero-banner .banner-extra h2{font-family:var(--heading);color:#fff5c8;line-height:1.3;font-size:clamp(21px,2.5vw,31px)}
+ .hero-banner .banner-extra p{font-size:clamp(12px,1.35vw,16px);line-height:1.6;color:#fff}
+ .hero-banner .banner-extra .btn-orange{box-shadow:0 5px 12px #6417ae3a;font-size:13px}
+}
+@media(min-width:1080px){
+ .hero-banner .banner-art{width:56%}
+ .hero-banner .banner-extra{width:44%}
+ .hero-banner .banner-extra h2{font-size:27px}
+}
