@@ -30,6 +30,38 @@
     [hidden]{display:none!important}
     @media(max-width:800px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.sections{grid-template-columns:1fr}}
     @media(max-width:420px){.metrics{grid-template-columns:1fr}}
+
+    .worker-hub{margin:24px 0;background:linear-gradient(140deg,#142d4b,#2b526f);color:white;border-radius:22px;padding:24px}
+    .worker-hub h2{color:white;margin:0 0 6px}.worker-hub p{line-height:1.8}
+    .worker-header{display:flex;gap:15px;flex-wrap:wrap;justify-content:space-between;align-items:start}
+    .worker-header p,.worker-note{color:#e1e9f1;font-size:13px;margin:5px 0 12px}
+    .worker-header button{border:1px solid #e7c983;background:#f9e8bd;color:#122c4b;padding:12px 16px;border-radius:12px;cursor:pointer;font:inherit;font-weight:700}
+    .worker-header button:disabled{opacity:.55;cursor:wait}
+    .worker-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-top:18px}
+    .worker-card{border:1px solid #dce4ed;background:white;color:#142d4b;border-radius:18px;padding:20px 12px;text-align:center;min-width:0}
+    .worker-card h3{font-size:15px;margin:7px 0}.worker-card p{color:#566879;font-size:12px;margin:7px 0}
+    .worker-card [data-worker-time]{border-top:1px solid #e4e9ef;margin-top:10px;padding-top:8px}
+    .worker-card a{font-size:12px;color:#127491}
+    .worker-label{display:inline-block;background:#edf1f6;color:#4e5e6d;padding:5px 12px;border-radius:20px;font-size:12px}
+    .worker-card[data-worker-state="running"]{border-color:#69cfa4;box-shadow:0 0 0 2px #bff1d9}
+    .worker-card[data-worker-state="running"] .worker-label,.worker-card[data-worker-state="complete"] .worker-label{background:#e4f9f0;color:#197450}
+    .worker-card[data-worker-state="blocked"] .worker-label{background:#ffebec;color:#a43737}
+    .robot{position:relative;width:78px;height:91px;margin:0 auto 12px}
+    .robot .antenna{position:absolute;top:0;left:36px;width:5px;height:16px;border-radius:4px;background:#bd9b51}
+    .robot .antenna:after{content:"";position:absolute;top:-5px;left:-3px;width:11px;height:11px;background:#e0bf69;border-radius:50%}
+    .robot .face{position:absolute;top:15px;left:8px;width:62px;height:48px;background:#e5edf4;border:3px solid #315779;border-radius:17px;box-shadow:inset 0 -5px #bdcddd}
+    .robot .eyes{display:block;color:#28758d;letter-spacing:3px;font-size:17px;margin-top:5px}
+    .robot .smile{font-size:12px;display:block;color:#718da4;line-height:11px}
+    .robot .body{position:absolute;top:64px;left:20px;background:#8ea9be;border:3px solid #315779;border-radius:8px;width:38px;height:24px}
+    .robot .arm{position:absolute;top:52px;right:0;transform-origin:10% 90%;font-size:23px}
+    .robot .feet{position:absolute;top:87px;left:27px;width:9px;height:5px;background:#315779;box-shadow:16px 0 #315779}
+    .worker-card[data-worker-state="running"] .robot .arm{animation:robot-repair .65s ease-in-out infinite alternate}
+    .worker-card[data-worker-state="running"] .robot .antenna:after{animation:robot-glow 1s ease infinite alternate}
+    @keyframes robot-repair{from{transform:rotate(-30deg)}to{transform:rotate(26deg)}}
+    @keyframes robot-glow{to{background:#2aba90}}
+    .worker-hub a{color:#f5deac}
+    @media(max-width:800px){.worker-grid{grid-template-columns:1fr}.worker-hub{padding:18px}}
+    @media(prefers-reduced-motion:reduce){.worker-card[data-worker-state="running"] .robot .arm,.worker-card[data-worker-state="running"] .robot .antenna:after{animation:none}}
   </style>
 </head>
 <body>
@@ -47,6 +79,39 @@
         <article class="metric"><h2>المستخدمون النشطون</h2><strong data-financial-value>غير متحقق منه</strong><small>المصدر: لم يُربط بعد</small></article>
         <article class="metric"><h2>الصفقات المثبتة</h2><strong data-financial-value>غير متحقق منه</strong><small>المصدر: لم يُربط بعد</small></article>
       </div>
+
+      <section id="ownerWorkers" class="worker-hub" aria-labelledby="workerHubTitle">
+        <div class="worker-header"><div><h2 id="workerHubTitle">🤖 ورشة عمال سوقك</h2><p>الروبوت لا يتحرك إلا إذا وصل دليل تشغيل حديث ومؤكد.</p></div><button type="button" id="refreshWorkerStatus">تحديث الحالات</button></div>
+        <div class="worker-grid">
+        <article class="worker-card" data-worker-id="W1" data-worker-state="unknown">
+          <div class="robot" aria-hidden="true"><i class="antenna"></i><div class="face"><span class="eyes">●　●</span><span class="smile">▰</span></div><div class="body"></div><div class="arm">🔧</div><div class="feet"></div></div>
+          <h3>الواجهات والأداء</h3><strong class="worker-label" data-worker-state-label aria-live="polite">غير متصل</strong>
+          <p>كل ساعة، الدقيقة 05</p><p data-worker-task>مراجعة الواجهة وسرعتها</p>
+          <p data-worker-detail>لا توجد إشارة تشغيل موثوقة</p>
+          <p data-worker-time>آخر تنفيذ مؤكد: غير متوفر</p>
+          <a data-worker-proof hidden target="_blank" rel="noopener noreferrer">عرض دليل التنفيذ</a>
+        </article>
+
+        <article class="worker-card" data-worker-id="W2" data-worker-state="unknown">
+          <div class="robot" aria-hidden="true"><i class="antenna"></i><div class="face"><span class="eyes">●　●</span><span class="smile">▰</span></div><div class="body"></div><div class="arm">🔧</div><div class="feet"></div></div>
+          <h3>الوظائف والتكامل</h3><strong class="worker-label" data-worker-state-label aria-live="polite">غير متصل</strong>
+          <p>كل ساعة، الدقيقة 25</p><p data-worker-task>فحص الوظائف والاختبارات</p>
+          <p data-worker-detail>لا توجد إشارة تشغيل موثوقة</p>
+          <p data-worker-time>آخر تنفيذ مؤكد: غير متوفر</p>
+          <a data-worker-proof hidden target="_blank" rel="noopener noreferrer">عرض دليل التنفيذ</a>
+        </article>
+
+        <article class="worker-card" data-worker-id="W3" data-worker-state="unknown">
+          <div class="robot" aria-hidden="true"><i class="antenna"></i><div class="face"><span class="eyes">●　●</span><span class="smile">▰</span></div><div class="body"></div><div class="arm">🔧</div><div class="feet"></div></div>
+          <h3>الأمان والمراجعة</h3><strong class="worker-label" data-worker-state-label aria-live="polite">غير متصل</strong>
+          <p>يوميًا نحو 3:11 عصرًا</p><p data-worker-task>فحص الأمان والصلاحيات</p>
+          <p data-worker-detail>لا توجد إشارة تشغيل موثوقة</p>
+          <p data-worker-time>آخر تنفيذ مؤكد: غير متوفر</p>
+          <a data-worker-proof hidden target="_blank" rel="noopener noreferrer">عرض دليل التنفيذ</a>
+        </article></div>
+        <p id="workerConnectionNote" class="worker-note" role="status" aria-live="polite">غير متصل بمصدر حالة مباشر حتى الآن.</p>
+        <p class="worker-note"><a href="https://docs.google.com/spreadsheets/d/1iKb33MQAjhxOt-TiM1iqQjBGaCs9dz_clAF-afLEKtY/edit#gid=1368190621" target="_blank" rel="noopener noreferrer">افتح سجل العمال في Google Drive</a> · وقت الجدولة ليس إثباتًا على العمل.</p>
+      </section>
       <div class="sections">
         <section class="section"><h2>الرقابة المالية</h2><ul><li>تنبيهات 50% و80% و100% بعد التحقق من بيانات الإنفاق</li><li>احتياطي تشغيل ستة أشهر بعد مطابقة الالتزامات</li><li>نقطة التعادل والسيولة بدون أرقام تخمينية</li></ul></section>
         <section class="section"><h2>مراجعة الجاهزية</h2><ul><li>التحقق من المالك على الخادم — مطلوب</li><li>مصادر مالية وتاريخ تحديثها — غير مربوطة</li><li>اختبار حسابات وصلاحيات في بيئة معزولة — معلق</li></ul></section>
