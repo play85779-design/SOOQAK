@@ -46,16 +46,16 @@ const CITIES_EN={'الرياض':'Riyadh','جدة':'Jeddah','الدمام':'Damma
 const DEMOS_EN={'demo-1':'Family sedan — demo listing','demo-2':'Apartment for rent — demo listing','demo-3':'Modern smartphone — demo listing','demo-4':'Living room sofa set — demo listing','demo-5':'Workshop equipment wanted — demo listing','demo-6':'Animal care accessories — demo listing'};
 const GLOBAL_STORAGE='sooqak:global-preview:v1';
 let marketCountry='SA',marketLanguage='ar';
-try{const p=JSON.parse(localStorage.getItem(GLOBAL_STORAGE)||'{}');if(Object.hasOwn(GCOUNTRIES,p.country))marketCountry=p.country;if(['ar','en'].includes(p.language))marketLanguage=p.language}catch(e){}
+try{const p=JSON.parse(localStorage.getItem(GLOBAL_STORAGE)||'{}');if(Object.hasOwn(GCOUNTRIES,p.country))marketCountry=p.country;/* Arabic-first launch: do not restore old English preference from this browser. */}catch(e){}
 function storeGlobalPreview(){try{localStorage.setItem(GLOBAL_STORAGE,JSON.stringify({country:marketCountry,language:marketLanguage}))}catch(e){}}
 function setDirectText(selector,value){const el=document.querySelector(selector);if(el)el.textContent=value}
 function setLabelText(el,value){if(!el)return;const n=Array.from(el.childNodes).find(n=>n.nodeType===Node.TEXT_NODE);if(n)n.textContent=value}
 function refreshGlobalUI(){
- const en=marketLanguage==='en';document.documentElement.lang=en?'en':'ar';document.documentElement.dir=en?'ltr':'rtl';
+ const en=false;document.documentElement.lang='ar';document.documentElement.dir='rtl';
  if($('globalCountry'))$('globalCountry').value=marketCountry;
  setDirectText('#globalTitle',en?'SOOQAK starts in Saudi Arabia — with a global vision':'سوقك يبدأ من السعودية... ويتطلع للعالم');
  setDirectText('#globalSubtitle',en?'Explore future Gulf markets. Only Saudi sample listings are available for this preview.':'استكشف أسواق الخليج القادمة؛ النسخة الحالية تعرض أمثلة من السعودية فقط.');
- setDirectText('#globalCountryLabel',en?'Country':'الدولة');setDirectText('#globalLanguage',en?'العربية':'English');
+ setDirectText('#globalCountryLabel',en?'Country':'الدولة');setDirectText('#globalLanguage','العربية');
  document.querySelectorAll('#globalCountry option').forEach(o=>{if(GCOUNTRIES[o.value])o.textContent=GCOUNTRIES[o.value][en?1:0]});
  const note=$('globalCountryNotice');if(note){note.hidden=marketCountry==='SA';if(!note.hidden)note.textContent=en?`${GCOUNTRIES[marketCountry][1]} is a future expansion market, not a live marketplace. No listings or verified sellers are available there yet. Select Saudi Arabia to explore sample ads.`:`${GCOUNTRIES[marketCountry][0]} ضمن خطة التوسع المستقبلية، وليست سوقًا مفتوحة حاليًا. لا توجد إعلانات أو بائعون موثقون لهذه الدولة. اختر السعودية لاستعراض الإعلانات التجريبية.`;}
  $('cityFilter').disabled=marketCountry!=='SA';
@@ -89,7 +89,7 @@ function refreshGlobalUI(){
  const nav=document.querySelectorAll('.mobile-nav button');const texts=en?['Home','Search','Post','Favorites','Account']:['الرئيسية','بحث','إعلان','المفضلة','حسابي'];nav.forEach((el,i)=>{const nodes=Array.from(el.childNodes).filter(x=>x.nodeType===Node.TEXT_NODE);if(nodes.length)nodes[nodes.length-1].textContent=texts[i]});
 }
 function setDirectTextIn(el,selector,value){const x=el.querySelector(selector);if(x)x.textContent=value}
-function setupGlobalPreview(){const sel=$('globalCountry');sel.value=marketCountry;sel.addEventListener('change',()=>{if(!Object.hasOwn(GCOUNTRIES,sel.value))return;marketCountry=sel.value;$('cityFilter').value='';storeGlobalPreview();render()});$('globalLanguage').addEventListener('click',()=>{marketLanguage=marketLanguage==='en'?'ar':'en';storeGlobalPreview();render()});}
+function setupGlobalPreview(){const sel=$('globalCountry');sel.value=marketCountry;sel.addEventListener('change',()=>{if(!Object.hasOwn(GCOUNTRIES,sel.value))return;marketCountry=sel.value;$('cityFilter').value='';storeGlobalPreview();render()});/* Language switch intentionally paused: Arabic is the sole customer language for this preview. */}
 
 function notify(s){const el=$('toast');el.textContent=s;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3300)}
 let sooqakPhotoObjectUrls=[];function clearPhotoPreviewUrls(){sooqakPhotoObjectUrls.forEach(url=>URL.revokeObjectURL(url));sooqakPhotoObjectUrls=[];}
@@ -863,7 +863,7 @@ function unmuteSellerAds(index){
 }
 
 function openReport(id){if(cloudEnabled())return openCloudReport(id);if(!state.account)return openLogin();const ad=byId(id);if(!ad||ad.demo)return notify('لا يمكن الإبلاغ عن إعلان تجريبي');if(mine(ad))return notify('لا يمكنك الإبلاغ عن إعلانك');showModal('الإبلاغ عن إعلان',`<div class="info">لا تُرسل البلاغات إلى إدارة حقيقية الآن؛ ستُحفظ على هذا الجهاز لاختبار التدفق.</div><form id="reportForm" class="form-grid"><label class="wide">سبب البلاغ<select name="reason"><option>إعلان مخالف</option><option>احتيال محتمل</option><option>إعلان مكرر</option><option>محتوى غير مناسب</option><option>سبب آخر</option></select></label><label class="wide">تفاصيل إضافية (اختياري)<textarea name="details" maxlength="1000"></textarea></label><button class="btn btn-gold" type="submit">حفظ البلاغ التجريبي</button></form>`);$('reportForm').onsubmit=e=>{e.preventDefault();const d=new FormData(e.target);const reason=String(d.get('reason')||'').slice(0,80),email=String(state.account?.email||'');if(state.reports.some(r=>r.adId===id&&r.accountEmail===email&&r.reason===reason)){return notify('هذا البلاغ بنفس السبب محفوظ مسبقًا على جهازك')};state.reports.push({adId:id,accountEmail:email,reason,details:String(d.get('details')||'').slice(0,1000),at:new Date().toISOString()});save();closeModal();notify('حُفظ البلاغ محليًا، ولم يصل إلى إدارة حقيقية')}}
-function about(){showModal('عن سوقك',`<p><strong>سوقك | SOOQAK</strong> مشروع منصة إعلانات مبوبة سعودية. هذه نسخة واجهات وسلوك محلي للتجربة وليست خدمة عامة.</p><div class="info"><strong>المتاح للتجربة:</strong> البحث والأقسام والفلاتر والمفضلة ونشر إعلان محلي ومسوّدة وعرض الإعلانات وإدارة بعض الحالات وحساب عمولة 1%.</div><div class="warning"><strong>غير متاح بعد:</strong> توثيق Google لم يُفعّل بعد، ولا توجد لوحة مشرف أو إيصالات بنكية أو اختبار أمان شامل أو إطلاق عام. الإعلانات والصور والمحادثات متصلة بقاعدة بيانات سوقك عند تهيئة تسجيل الدخول؛ لم يتم اختبارها بحسابين فعليين. لا تستخدم بيانات شخصية حساسة.</div><p>خطتنا: إكمال الخدمات الآمنة واختبارها، ثم إطلاق مغلق، وبعدها 100 إعلان حقيقي و1000 مستخدم.</p>`)}
+function about(){showModal('عن سوقك',`<p><strong>سوقك</strong> مشروع منصة إعلانات مبوبة سعودية. هذه نسخة واجهات وسلوك محلي للتجربة وليست خدمة عامة.</p><div class="info"><strong>المتاح للتجربة:</strong> البحث والأقسام والفلاتر والمفضلة ونشر إعلان محلي ومسوّدة وعرض الإعلانات وإدارة بعض الحالات وحساب عمولة 1%.</div><div class="warning"><strong>غير متاح بعد:</strong> توثيق Google لم يُفعّل بعد، ولا توجد لوحة مشرف أو إيصالات بنكية أو اختبار أمان شامل أو إطلاق عام. الإعلانات والصور والمحادثات متصلة بقاعدة بيانات سوقك عند تهيئة تسجيل الدخول؛ لم يتم اختبارها بحسابين فعليين. لا تستخدم بيانات شخصية حساسة.</div><p>خطتنا: إكمال الخدمات الآمنة واختبارها، ثم إطلاق مغلق، وبعدها 100 إعلان حقيقي و1000 مستخدم.</p>`)}
 
 // === V11: private chat read receipts and lightweight 30-second inbox refresh ===
 let sooqakActiveChatId=null,sooqakUnreadBaseline=null,sooqakUnreadFetchSeq=0,sooqakHeartbeatStarted=false,sooqakHeartbeatBusy=false;
@@ -1024,7 +1024,7 @@ function refreshAuthEntry(){
   }
 }
 // SOOQAK brand signature for user-facing authentication only.
-const sooqakAuthWordmark='<span class="sooqak-auth-wordmark" aria-label="سوقك | SOOQAK"><span lang="ar">سوقك</span><span class="sooqak-auth-bar" aria-hidden="true">|</span><span lang="en" dir="ltr">SOOQAK</span></span>';
+const sooqakAuthWordmark='<span class="sooqak-auth-wordmark" aria-label="سوقك"><span lang="ar">سوقك</span></span>';
 const sooqakAuthLogo=()=>'<div class="sooqak-auth-wordmark-block">'+sooqakAuthWordmark+'</div>';
 function openCloudLogin(mode='login',method='password',emailPreset=''){
   mode=mode==='signup'?'signup':'login';
@@ -1499,7 +1499,7 @@ async function openV12BrowserAlerts(){const supported=('Notification' in window)
  $('v12AlertsDisable').onclick=()=>{v12AlertsEnabled=false;localStorage.setItem(V12_ALERT_KEY,'no');openV12BrowserAlerts();notify('تم إيقاف تنبيهات المتصفح')};
 }
 function v12NotifyUnread(count){if(!v12AlertsEnabled||!('Notification' in window)||Notification.permission!=='granted')return;
- try{new Notification('رسالة جديدة في سوقك | SOOQAK',{body:count===1?'وصلتك رسالة جديدة':'وصلتك رسائل جديدة في سوقك',tag:'sooqak-unread'})}catch(_e){}
+ try{new Notification('رسالة جديدة في سوقك',{body:count===1?'وصلتك رسالة جديدة':'وصلتك رسائل جديدة في سوقك',tag:'sooqak-unread'})}catch(_e){}
 }
 function initV12(){const more=$('sooqakMoreListings');if(more)more.addEventListener('click',loadV12MoreListings);
  window.addEventListener('offline',v12SetOnlineStatus);window.addEventListener('online',v12SetOnlineStatus);v12SetOnlineStatus();

@@ -62,7 +62,7 @@ async function load(){
     visual.replaceChildren(img);visual.removeAttribute('aria-hidden');
    }
   }).catch(()=>{});
-  if(!offset && (data||[]).length){document.getElementById('storeName').textContent=data[0].seller_display_name||'منتجات المتجر';document.title=document.getElementById('storeName').textContent+' | سوقك SOOQAK';}
+  if(!offset && (data||[]).length){document.getElementById('storeName').textContent=data[0].seller_display_name||'منتجات المتجر';document.title=document.getElementById('storeName').textContent+' | سوقك';}
   offset+=(data||[]).length;
   summary.textContent=count?'عرض '+shown.size+' من '+count+' إعلان بيع للمتجر':'لا توجد إعلانات بيع منشورة لهذا المتجر.';
   more.textContent='عرض المزيد';more.hidden=(data||[]).length<size||offset>=count;
