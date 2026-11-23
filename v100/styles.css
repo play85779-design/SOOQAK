@@ -347,3 +347,16 @@ input[readonly]{background:#f8faf8}
  .hero-banner .poster-art{--scale:1.21}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}button,.product-card{transition:none!important}}
+
+/* Screenshot-QA corrections: RTL static-position anchoring was leaving source crop blank. */
+.brand-crop{display:block;position:relative;overflow:hidden;isolation:isolate}
+.brand-crop img{position:absolute!important;top:0!important;left:0!important;right:auto!important;max-width:none!important}
+[class*="crop-"]{display:block;position:relative;width:100%;height:100%;overflow:hidden;isolation:isolate}
+[class*="crop-"] img{position:absolute!important;top:0!important;left:0!important;right:auto!important;max-width:none!important}
+.shop-crop img{width:var(--scaled-width)!important;height:var(--scaled-height)!important;transform:translate(var(--tx),var(--ty))!important}
+@media(min-width:1080px){
+ .main-layout{grid-template-rows:auto minmax(0,1fr)}
+ .desktop-side{grid-row:1 / span 2}
+ .mobile-header{grid-row:1}
+ .main-content{grid-row:2;align-self:start}
+}
