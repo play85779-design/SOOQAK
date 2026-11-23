@@ -1,0 +1,264 @@
+/* SOOQAK approved poster visual system, 23 Nov 2026.
+   Styling only: all listing/search/account/store behaviors remain implemented by the existing app.
+   Design reference: approved green/orange SOOQAK screens, never invented product data. */
+@import url('https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600;700&family=Tajawal:wght@400;500;600;700;800&display=swap');
+:root{
+  --navy:#006638; --navy2:#0b8b51; --gold:#ff8c19; --gold-light:#fff2df;
+  --ink:#183b2b; --muted:#657969; --line:#e3ebe5; --bg:#fbfcfa;
+  --shadow:0 12px 32px rgba(7,76,42,.09); --poster-green:#04773d;
+  --poster-orange:#ff8917; --poster-soft:#eff9ef;
+  font-family:'Tajawal',Tahoma,Arial,sans-serif;
+}
+html{direction:rtl;scroll-padding-top:112px}
+body{font-family:'Tajawal',Tahoma,Arial,sans-serif;background:#fbfcfa;color:#163b2b}
+button,input,select,textarea{font-family:inherit}
+button,a,input,select,textarea{ -webkit-tap-highlight-color:transparent }
+:focus-visible{outline:3px solid #ffad3d!important;outline-offset:3px}
+.brand-label,.section-head h2,.sooqak-hero-v68 h1,.sooqak-store-brand,
+.sooqak-store-heading h1,.sooqak-store-headline h2,.so-dashboard h1,
+#resultsTitle,.sooqak-shop-create strong{font-family:'Readex Pro','Tajawal',Tahoma,sans-serif}
+.container{max-width:1420px;padding-inline:clamp(14px,3.1vw,42px)}
+.demo-banner{font-family:'Tajawal',sans-serif;background:#fff7e9;color:#775324;border-bottom:1px solid #ffe7b8;padding:6px 13px;font-size:11px;line-height:1.45}
+.topbar{background:rgba(255,255,255,.97);border-bottom:1px solid #edf0eb;box-shadow:0 4px 18px rgba(0,50,20,.035)}
+.header-inner{height:76px;gap:22px}
+.brand{gap:9px;align-items:center}
+.brand-mark{border:0;background:#fff url('./assets/sooqak-bag.svg') center / 100% 100% no-repeat!important;box-shadow:none!important;width:56px;height:56px;border-radius:14px;flex:none;overflow:hidden}
+.brand-mark .brand-glyph,.brand-mark .brand-account-caption{opacity:0;font-size:0}
+.brand-label{font-size:31px;letter-spacing:-1.2px;line-height:1.13;color:var(--poster-green);font-weight:700}
+.brand-label small{display:block;font-family:'Readex Pro',sans-serif;letter-spacing:.5px;color:#fb7e09;margin-top:3px;font-size:11px;text-align:right}
+.header-search{border:1px solid #e1e9e1;background:#fbfcfb;border-radius:999px;height:45px;box-shadow:0 3px 12px rgba(12,61,29,.035)}
+.header-search:focus-within{border-color:#15935e;box-shadow:0 0 0 3px #1aa36718}
+.header-search input{font-family:'Tajawal',sans-serif;font-size:14px}
+.search-action{background:linear-gradient(135deg,#06904c,#00683b);color:#fff;border-radius:50px;padding-inline:23px;min-height:36px}
+.header-actions{gap:8px}
+.header-actions .icon-button{color:#0b6842;min-width:37px}
+.btn,.profile-button,.filter-open-button{font-family:'Tajawal',sans-serif;font-weight:800}
+.btn-gold,.sooqak-store-more,.btn.gold{background:linear-gradient(180deg,#ffaf2c,#ff8310);color:#fff;border:0;border-radius:13px;box-shadow:0 6px 12px #fa86172b}
+.btn-gold:hover,.sooqak-store-more:hover{background:linear-gradient(180deg,#ffa11d,#ef7300)}
+.main-content{display:flex;flex-direction:column;padding-top:12px;gap:0}
+.main-content>.global-strip{order:0;margin:0 0 8px auto;padding:0;border:0;background:transparent;box-shadow:none;min-height:32px;display:flex;align-items:center;max-width:100%}
+.global-intro{display:none}
+.global-actions{gap:8px}
+.global-country{color:#32583b;font-size:11px}
+.global-country select{min-width:0;max-width:160px;border:1px solid #dfebdf;background:#fff;padding:5px 11px;border-radius:999px;font-weight:700;color:#17673e}
+.global-lang{padding:5px 10px;border-radius:999px;color:#16663e;border-color:#e7efe7;background:#fff;font-size:11px}
+.main-content>#globalCountryNotice{order:0}
+.main-content>.marketplace-quicktabs{order:1}
+.marketplace-quicktabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:9px;padding:2px 0 10px;margin:0}
+.marketplace-quicktabs::-webkit-scrollbar{display:none}
+.marketplace-quicktabs a{background:#fff;border:1px solid #e6eae4;color:#1d6544;border-radius:16px;white-space:nowrap;min-height:41px;padding:9px 18px;box-shadow:0 4px 10px #053d220b;font-size:13px}
+.marketplace-quicktabs a:first-child{color:#fff;background:linear-gradient(135deg,#0c9850,#006939);border-color:#087e46}
+.main-content>.hero{order:2}
+.main-content>.categories-section{order:3}
+.main-content>.market-section{order:4}
+.main-content>.sooqak-shops{order:5}
+.main-content>.service-callout{order:6}
+.main-content>.trust-row{order:7}
+.main-content>section[aria-labelledby="v14Safe"]{order:8}
+.main-content>.sooqak-hero-v68{
+  min-height:254px;border:1px solid #d5efdc;border-radius:22px;margin:3px 0 3px;
+  background:radial-gradient(circle at 22% 46%,#6bd08955 0,transparent 30%),
+             radial-gradient(circle at 90% 12%,#4fd07d33 0,transparent 29%),
+             linear-gradient(110deg,#ecffef 0%,#d9f4df 40%,#0a8e4f 100%);
+  box-shadow:0 11px 27px #077e4324;overflow:hidden;color:#075c37;
+}
+.sooqak-hero-v68:before{background:linear-gradient(100deg,transparent 0%,#fff6 52%,transparent 100%);opacity:.25}
+.sooqak-hero-v68 .hero-copy{width:67%;padding:28px 40px;max-width:850px}
+.sooqak-hero-v68 .hero-tag{background:#ffffffdd;border:1px solid #fff;color:#067c46;border-radius:99px;padding:5px 13px;font-family:'Tajawal',sans-serif;font-size:12px}
+.sooqak-hero-v68 h1{font-size:clamp(26px,3.1vw,46px);line-height:1.38;letter-spacing:-.7px;color:#075b34;font-weight:700;margin:4px 0 8px;text-shadow:0 1px 0 #fff6}
+.sooqak-hero-v68 h1 span{display:block;color:#fa7c0a}
+.sooqak-hero-v68 p{font-size:14px;color:#246548;line-height:1.7;margin:0 0 10px}
+.sooqak-hero-v68 .hero-points{gap:8px;margin:9px 0 12px;color:#136d3e}
+.sooqak-hero-v68 .hero-points span{padding:5px 9px;background:#fff9;border-radius:10px;font-weight:700}
+.sooqak-hero-actions{gap:10px;flex-wrap:wrap}
+.sooqak-hero-actions .btn{border-radius:999px;min-height:42px;padding:11px 22px;box-shadow:0 6px 13px #07653321}
+.sooqak-hero-actions .sooqak-hero-secondary{border:1px solid #c3e5ca;color:#075d37;background:#fff}
+.sooqak-hero-disclaimer{font-size:10px;color:#47785e;line-height:1.5;margin-top:9px}
+.sooqak-store-art{
+ display:block;position:absolute;inset-inline-start:0;inset-block:0;width:39%;min-width:0;
+ background:url('./assets/sooqak-market.svg') left bottom / contain no-repeat;
+ filter:drop-shadow(0 9px 13px #064d2628);
+}
+.sooqak-store-art>*{display:none!important}
+.section-head{margin:19px 0 12px;align-items:center}
+.section-head h2,.sooqak-store-headline h2{font-size:clamp(19px,2.1vw,25px);color:#17392b;letter-spacing:-.4px;font-weight:650;margin:0}
+.section-head .eyebrow{color:#ee7c07;font-size:11px;letter-spacing:0}
+.text-button{color:#006d3c;font-weight:800;text-decoration:none;font-size:13px}
+.text-button:hover{text-decoration:underline}
+.categories{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:10px}
+.category-card{min-width:0;min-height:92px;border:1px solid #e6ece5;border-radius:15px;box-shadow:0 5px 13px #0a5d240b;background:white;gap:6px;line-height:1.35;font-size:12px;color:#1a472f;padding:8px 3px}
+.category-card .cat-icon{width:49px;height:49px;background:linear-gradient(155deg,#e8f8ec,#fff1df);border-radius:15px;font-size:26px}
+.category-card:nth-child(3n) .cat-icon{background:#f1eaff}
+.category-card:nth-child(3n+1) .cat-icon{background:#eaf7ed}
+.category-card:nth-child(3n+2) .cat-icon{background:#fff0e4}
+.category-card:hover,.category-card:focus-visible{border-color:#ff9b28;box-shadow:0 10px 22px #ff960f2a}
+.market-heading{margin-top:13px}
+.market-heading .eyebrow{color:#f38313}
+.market-controls{gap:7px}
+.filter-open-button{border-radius:12px;border-color:#e4ece5;color:#086d3f}
+.listing-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.listing-grid.list-view{grid-template-columns:1fr}
+.listing-card{border:1px solid #e5ebe5;background:#fff;box-shadow:0 4px 14px #0a603314;border-radius:17px;overflow:hidden;transition:box-shadow .16s,transform .16s}
+.listing-card:hover{transform:translateY(-2px);box-shadow:0 10px 25px #075e382b}
+.listing-card:focus-visible{outline-offset:3px}
+.listing-media{height:auto;aspect-ratio:1.34/1;background:linear-gradient(145deg,#e9f5ef,#fdfcf7)}
+.listing-media img{width:100%;height:100%;object-fit:cover}
+.listing-media[data-color="peach"]{background:linear-gradient(135deg,#ffe8d5,#fff8f0)}
+.listing-media[data-color="mint"]{background:linear-gradient(135deg,#d4f3e4,#fbfffd)}
+.listing-media[data-color="blue"]{background:linear-gradient(135deg,#d8f0f4,#f3faff)}
+.listing-media[data-color="lavender"]{background:linear-gradient(135deg,#e9e4fc,#faf9ff)}
+.listing-media[data-color="sand"]{background:linear-gradient(135deg,#fff0cf,#fffbef)}
+.item-emoji{font-size:clamp(54px,6vw,96px);filter:drop-shadow(0 10px 6px #135e3326)}
+.media-tag{background:#fffbf2;color:#775521;border:1px solid #ffe0a5;border-radius:9px;font-size:10px;top:9px;right:9px;z-index:1}
+.heart{background:#fffffff2;color:#df3448;border:1px solid #edebea;font-size:22px;box-shadow:0 2px 8px #00000012;left:8px;top:8px;bottom:auto;width:34px;height:34px}
+.heart.active{color:#e6313a}
+.listing-body{padding:11px 13px 13px}
+.listing-title{font-family:'Tajawal',sans-serif;font-size:14px;line-height:1.55;font-weight:800;min-height:43px;margin:0 0 4px;color:#193b2c}
+.listing-price,.sooqak-store-item-price{font-family:'Readex Pro','Tajawal',sans-serif;color:#037a3e;font-size:19px;font-weight:700;letter-spacing:-.4px;unicode-bidi:plaintext}
+.listing-price small{font-family:'Tajawal',sans-serif;font-size:11px;color:#0c8745;font-weight:700}
+.listing-meta{border:0;padding-top:5px;margin-top:6px;color:#789080;font-size:11px}
+.feed-bar{margin-bottom:10px}
+.feed-note{color:#8c9c8c}
+.sooqak-shops{margin-top:13px}
+.sooqak-shop-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.sooqak-shop-card{background:white;border-radius:17px;box-shadow:0 5px 17px #0b68380d}
+.sooqak-shop-icon{background:#e9f6eb;border-radius:15px}
+.sooqak-shop-create{background:linear-gradient(105deg,#fff1de,#f8fff7);border:1px solid #ffe5c3;padding:18px}
+.sooqak-shop-create strong{color:#076d3f}
+.service-callout{border:1px solid #dfeddf;border-radius:20px;margin:20px 0;padding:20px;background:linear-gradient(135deg,#effaf0,#fffaf0)}
+.service-callout h2{color:#176b40;font-family:'Readex Pro',sans-serif}
+.trust-row{margin:20px 0;gap:12px}
+.trust-row>div{border-radius:15px;background:#eefaee}
+.mobile-nav{background:#fff;border-top:1px solid #dfe8e0;box-shadow:0 -7px 22px #073c2015}
+.mobile-nav button{font-family:'Tajawal',sans-serif;color:#607666}
+.mobile-nav button.active{color:#00793c}
+.mobile-nav .nav-post{color:#09843f;font-weight:800}
+.mobile-nav .nav-post span{background:linear-gradient(135deg,#14a460,#006638);border-radius:50%;color:white;display:grid;place-items:center;width:40px;height:40px;margin:0 auto 2px;font-size:25px;box-shadow:0 5px 10px #1e8d5633}
+.modal,.sooqak-store-heading,.so-dash-products{border:1px solid #e5ebe5;border-radius:19px}
+.modal-head h2{font-family:'Readex Pro',sans-serif;color:#07673d}
+.sooqak-store-bar{border-bottom-color:#e4ede5;box-shadow:0 3px 14px #06452512}
+.sooqak-store-brand{display:flex;align-items:center;gap:8px;color:#047642}
+.sooqak-store-brand:before{content:'';display:inline-block;width:40px;height:40px;background:url('./assets/sooqak-bag.svg') center / contain no-repeat;flex:none}
+.sooqak-store-brand small{font-family:'Readex Pro',sans-serif;font-size:10px;letter-spacing:.4px;color:#f78d17}
+.sooqak-store-back{background:#eaf7ec;border-radius:14px}
+.sooqak-store-wrap{max-width:1280px}
+.sooqak-store-banner{background:linear-gradient(110deg,#087b45,#035b36);border-radius:22px}
+.sooqak-store-banner:after{content:'';width:150px;height:150px;background:url('./assets/sooqak-market.svg') center / contain no-repeat;opacity:.95;left:20px;top:3px}
+.sooqak-store-heading{box-shadow:0 12px 26px #115b301a}
+.sooqak-store-name-row h1{font-family:'Readex Pro',sans-serif;font-weight:650}
+.sooqak-store-item{box-shadow:0 5px 14px #0b60330f}
+.sooqak-store-item-visual{background:#ecf8ed}
+.sooqak-store-item-price{font-size:17px}
+.sooqak-store-more{font-family:'Tajawal',sans-serif;font-weight:800}
+.so-dash-hero{background:linear-gradient(110deg,#0b8649,#035b36)}
+.so-dash-actions a,.so-dash-stat{border-color:#e5eee5}
+.so-dash-stat strong{color:#008448}
+@media(min-width:1300px){
+ .listing-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+ .sooqak-hero-v68 .hero-copy{padding:33px 50px}
+}
+@media(min-width:760px) and (max-width:1100px){
+ .header-inner{height:auto;min-height:82px;display:grid;grid-template-columns:max-content minmax(180px,1fr) auto;gap:10px;padding-block:8px}
+ .brand-label{font-size:25px}
+ .brand-mark{width:46px;height:46px}
+ .header-search{min-width:0}
+ .header-actions{gap:2px}
+ .auth-top-signup{display:none}
+ .categories{grid-template-columns:repeat(6,minmax(0,1fr))}
+ .listing-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .sooqak-hero-v68 .hero-copy{width:66%;padding:23px}
+ .sooqak-store-art{width:39%}
+ .sooqak-shop-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:759px){
+ .topbar{position:sticky;top:0}
+ .header-inner{height:auto;min-height:107px;padding-block:8px 10px;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:43px 41px;gap:7px 9px}
+ .brand{grid-column:1;grid-row:1;justify-self:start;min-width:0}
+ .brand-mark{width:38px;height:38px;min-width:38px}
+ .brand-label{font-size:23px;letter-spacing:-.3px}
+ .brand-label small{font-size:9px;margin-top:0}
+ .header-actions{grid-column:2;grid-row:1;align-self:center;gap:3px}
+ .header-actions .icon-button{display:none}
+ .header-actions .auth-top-signup,.header-actions #postButton{display:none}
+ .header-actions .profile-button{display:none}
+ .header-search{grid-column:1/-1;grid-row:2;height:40px;min-width:0;width:100%;border-radius:40px}
+ .header-search input{font-size:12px;width:100%;min-width:0}
+ .search-action{display:block;font-size:11px;padding:6px 12px;min-height:29px}
+ .main-content{padding-top:5px}
+ .main-content>.global-strip{margin:0 0 6px auto}
+ .global-country span,.global-lang{display:none}
+ .global-country select{font-size:10px;padding:4px 7px;min-height:25px}
+ .marketplace-quicktabs{gap:7px;padding-bottom:9px}
+ .marketplace-quicktabs a{font-size:11px;min-height:34px;padding:7px 11px;border-radius:12px}
+ .main-content>.sooqak-hero-v68{min-height:205px;border-radius:17px;box-shadow:0 6px 16px #086d3c20}
+ .sooqak-hero-v68 .hero-copy{width:70%;max-width:70%;padding:15px 12px}
+ .sooqak-hero-v68 .hero-tag{font-size:9px;padding:3px 8px;margin-bottom:3px}
+ .sooqak-hero-v68 h1{font-size:clamp(18px,5vw,24px);line-height:1.4;letter-spacing:-.2px;margin:2px 0 5px}
+ .sooqak-hero-v68 p{font-size:10px;line-height:1.55;margin:0 0 8px;max-width:100%}
+ .sooqak-hero-v68 .hero-points{display:none}
+ .sooqak-hero-v68 .sooqak-hero-actions{gap:5px}
+ .sooqak-hero-actions .btn{padding:6px 10px;min-height:32px;font-size:10px;box-shadow:none}
+ .sooqak-hero-disclaimer{font-size:8px;line-height:1.35;margin-top:5px}
+ .sooqak-store-art{display:block!important;width:38%;min-width:0;background-position:left center;background-size:150% auto}
+ .section-head{margin:15px 0 9px}
+ .section-head h2{font-size:18px}
+ .section-head .eyebrow{font-size:10px}
+ .categories{display:grid;grid-auto-flow:column;grid-auto-columns:82px;grid-template-columns:none;overflow-x:auto;gap:8px;padding:2px 1px 11px;scroll-snap-type:x proximity;scrollbar-width:none}
+ .categories::-webkit-scrollbar{display:none}
+ .category-card{width:82px;min-height:78px;padding:5px 2px;scroll-snap-align:start;font-size:10px}
+ .category-card .cat-icon{width:38px;height:38px;font-size:23px;border-radius:12px}
+ .market-heading{margin-top:10px}
+ .listing-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .listing-media{height:auto;aspect-ratio:1.15/1}
+ .item-emoji{font-size:57px}
+ .listing-body{padding:9px}
+ .listing-title{font-size:12px;line-height:1.45;min-height:37px}
+ .listing-price{font-size:14px}
+ .listing-price small{font-size:10px}
+ .listing-meta{font-size:10px;gap:5px}
+ .heart{width:29px;height:29px;font-size:20px}
+ .sooqak-shop-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .sooqak-shops .section-head{margin-bottom:8px}
+ .sooqak-shop-create{padding:11px;gap:8px}
+ .sooqak-store-wrap{padding:15px 12px}
+ .sooqak-store-banner{min-height:124px}
+ .sooqak-store-banner:after{width:105px;height:108px;left:9px;top:12px}
+ .sooqak-store-item-visual img{height:150px}
+ .sooqak-store-products{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .mobile-nav{padding:5px 5px calc(5px + env(safe-area-inset-bottom))}
+ .mobile-nav button{font-size:10px;min-width:0;flex:1}
+ .mobile-nav button span{font-size:21px}
+ .mobile-nav .nav-post span{font-size:24px}
+ .listing-grid.list-view{grid-template-columns:1fr}
+ .listing-grid.list-view .listing-media{min-width:110px;width:38%;height:auto;aspect-ratio:1/1}
+ .listing-grid.list-view .listing-title{min-height:unset}
+ body{padding-bottom:calc(67px + env(safe-area-inset-bottom))}
+}
+@media(max-width:375px){
+ .main-content>.sooqak-hero-v68{min-height:188px}
+ .sooqak-hero-v68 .hero-copy{width:73%;max-width:73%;padding:13px 9px}
+ .sooqak-hero-v68 h1{font-size:17px}
+ .sooqak-hero-v68 p{font-size:10px}
+ .sooqak-store-art{width:34%;background-size:180% auto}
+ .sooqak-hero-actions .btn{padding-inline:8px}
+ .header-inner{grid-template-columns:minmax(0,1fr) auto}
+ .brand-label{font-size:21px}
+ .categories{grid-auto-columns:74px}
+ .category-card{width:74px}
+ .listing-price{font-size:13px}
+}
+@media(prefers-reduced-motion:reduce){
+ .listing-card,.btn,.category-card{transition:none!important}
+ .listing-card:hover,.category-card:hover{transform:none!important}
+}
+/* Services page keeps its own application JS and CSS; only its visual language is unified. */
+body:has(> .bar){background:#fbfcfa;color:#153b29;font-family:'Tajawal',Tahoma,sans-serif}
+body>.bar{background:white;color:#06723d;border-bottom:1px solid #e5ece4;box-shadow:0 3px 13px #07643d11}
+body>.bar .brand{font-family:'Readex Pro','Tajawal',sans-serif;color:#006c3f}
+body>.bar .brand:before{content:'';display:inline-block;vertical-align:middle;width:34px;height:34px;margin-left:8px;background:url('./assets/sooqak-bag.svg') center / contain no-repeat}
+body>.bar .btn{background:#fff3e8;color:#0a653c;border-color:#ffe0be}
+body>.bar+main .hero{border-radius:19px;background:linear-gradient(120deg,#eaf8ed,#fff8e9);padding:25px}
+body>.bar+main .hero h1{font-family:'Readex Pro',sans-serif;color:#096e3f}
+body>.bar+main .tag.active,body>.bar+main .btn.gold{background:#0a7d45;color:#fff}
+body>.bar+main .btn.gold{background:linear-gradient(180deg,#ffab30,#fb7e0b)}
+body>.bar+main .cards>*{border-radius:17px;border-color:#e6ece5}
