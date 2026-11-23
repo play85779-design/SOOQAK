@@ -19,8 +19,8 @@ test('create-store uses existing single-account gate instead of fake merchant re
 });
 test('public merchant directory displays only real returned business listings and no invented certification',async({page})=>{
  await page.route('https://cdn.jsdelivr.net/**',r=>r.abort());
- await page.route('https://zwbtiyqgrgjybwaguuyn.supabase.co/rest/v1/sooqak_listings**',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify([{account_id:uuid,seller_display_name:'متجر التجربة',city:'الجبيل'},{account_id:uuid,seller_display_name:'متجر التجربة',city:'الجبيل'}])}));
  await page.route('https://zwbtiyqgrgjybwaguuyn.supabase.co/**',r=>r.abort());
+ await page.route('https://zwbtiyqgrgjybwaguuyn.supabase.co/rest/v1/sooqak_listings**',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify([{account_id:uuid,seller_display_name:'متجر التجربة',city:'الجبيل'},{account_id:uuid,seller_display_name:'متجر التجربة',city:'الجبيل'}])}));
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.sooqak-shop-card')).toHaveCount(1);
  await expect(page.locator('.sooqak-shop-card')).toHaveAttribute('href','./store.html?id='+uuid);
@@ -31,7 +31,7 @@ test('public store interface presents product price without fabricated order cou
  await page.route('https://cdn.jsdelivr.net/**',r=>r.fulfill({contentType:'text/javascript',body:String.raw`export function createClient(){return {from:()=>{const q=new Proxy({},{get:(_,k)=>(...a)=>k==='range'?Promise.resolve({data:[{id:'item',title:'لابتوب تجريبي',seller_display_name:'التقنية',city:'الجبيل',price:2599,status:'active',category:'إلكترونيات'}],count:1}):q});return q}}}`}));
  await page.goto('/store.html?id='+uuid);
  await expect(page.locator('#storeName')).toHaveText('التقنية');
- await expect(page.locator('.sooqak-store-item-price')).toContainText('2');
+ await expect(page.locator('.sooqak-store-item-price')).toContainText('ر.س');
  await expect(page.locator('#products a')).toHaveAttribute('href','./listing.html?id=item');
  await expect(page.locator('.sooqak-store-heading')).not.toContainText('4.9');
 });
