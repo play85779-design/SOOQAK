@@ -56,7 +56,7 @@ test('V100 listings have real filters, safe sample numbers and favorites',async(
  await expect(page.locator('.product-card')).toContainText('45,000');
  await page.locator('.favorite-heart').first().click();
  await expect(page.locator('.favorite-heart').first()).toHaveAttribute('aria-pressed','true');
- await page.locator('.nav-item[data-go="favorites"]').click();
+ await page.locator('button[data-go="favorites"]:visible').first().click();
  await expect(page.locator('.product-card')).toHaveCount(1);
 });
 test('V100 search flows to results without backend',async({page})=>{
