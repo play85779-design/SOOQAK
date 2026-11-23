@@ -5,7 +5,7 @@
 'use strict';
 const $=selector=>document.querySelector(selector);
 function mountNoticeToggle(){
- const notice=document.querySelector('body > .demo-banner');
+ const notice=document.querySelector('body > .demo-banner:not(#v12OfflineBanner)');
  if(!notice||notice.querySelector('.v92-notice-toggle'))return;
  const button=document.createElement('button');
  button.type='button';
@@ -47,7 +47,7 @@ function init(){
  upgradeNav();
  upgradeCategories();
  mountNoticeToggle();
- const banner=document.querySelector('body > .demo-banner');
+ const banner=document.querySelector('body > .demo-banner:not(#v12OfflineBanner)');
  if(banner){
   // The existing app occasionally refreshes the safety banner text after login.
   const observer=new MutationObserver(()=>mountNoticeToggle());
