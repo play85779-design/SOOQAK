@@ -1161,6 +1161,11 @@ function openCloudProfile(){
     const area=$('modalContent').querySelector('.button-row');
     if(area && !area.querySelector('[data-act="admin"]'))area.insertAdjacentHTML('beforeend','<button class="btn btn-outline" data-act="admin">لوحة مراجعة البلاغات</button>');
   }).catch(()=>{});
+  window.sooqakCloud?.isOwner?.().then(allowed=>{
+    if(!allowed||state.account?.id!==accountId||$('modalBackdrop').hidden||$('modalTitle').textContent!=='حسابي')return;
+    const area=$('modalContent').querySelector('.button-row');
+    if(area&&!area.querySelector('[data-act="ownercenter"]'))area.insertAdjacentHTML('afterbegin','<button class="btn btn-gold" data-act="ownercenter">⚙️ لوحة تحكم المالك</button>');
+  }).catch(()=>{});
 }
 
 async function requirePrivateCity(){
