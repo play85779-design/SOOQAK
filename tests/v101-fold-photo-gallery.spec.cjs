@@ -26,11 +26,13 @@ test('V101 photo previews appear for each selected image and can be removed',asy
  await expect(page.locator('.upload-thumb')).toHaveCount(2);
  await expect(page.locator('#upload-label')).toContainText('2 صور');
 });
-test('V101 country options show national flags while keeping working values',async({page})=>{
+test('V102 shows single national flag next to selected country',async({page})=>{
  await page.goto('/v101/index.html#home',{waitUntil:'domcontentloaded'});
- await expect(page.locator('#country option[value="السعودية"]')).toContainText('🇸🇦');
- await expect(page.locator('#country option[value="البحرين"]')).toContainText('🇧🇭');
- await expect(page.locator('#country option[value="الإمارات"]')).toContainText('🇦🇪');
+ await expect(page.locator('.country-flag')).toContainText('🇸🇦');
+ await expect(page.locator('#country')).toHaveValue('السعودية');
+ await page.locator('#country').selectOption('البحرين');
+ await expect(page.locator('.country-flag')).toContainText('🇧🇭');
  await page.locator('#country').selectOption('الإمارات');
+ await expect(page.locator('.country-flag')).toContainText('🇦🇪');
  await expect(page.locator('#country')).toHaveValue('الإمارات');
 });
