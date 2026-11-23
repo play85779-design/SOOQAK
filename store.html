@@ -1,17 +1,32 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
- <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
- <meta name="robots" content="noindex,nofollow,noarchive"><title>المتجر | سوقك</title>
- <link rel="stylesheet" href="./services.css"><link rel="icon" href="./assets/icon.svg">
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+ <meta name="theme-color" content="#08663f"><meta name="robots" content="noindex,nofollow,noarchive">
+ <meta name="description" content="منتجات أحد متاجر سوقك المنشورة — معاينة تطويرية">
+ <title>متجر التاجر | سوقك SOOQAK</title>
+ <link rel="icon" href="./assets/icon.svg">
+ <link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./marketplace-refresh.css">
 </head>
-<body>
- <header class="bar"><nav class="wrap"><a class="brand" href="./index.html">سوقك <small>SOOQAK</small></a></nav></header>
- <main class="wrap">
-  <section class="hero"><h1 id="storeName">منتجات المتجر</h1></section>
-  <p id="summary" role="status">جاري تحميل الإعلانات…</p>
-  <div id="products" class="cards"></div>
-  <button class="btn" id="more" type="button" hidden>عرض المزيد</button>
+<body class="sooqak-store-body">
+ <header class="sooqak-store-bar"><nav class="sooqak-store-bar-inner" aria-label="روابط المتجر">
+ <a class="sooqak-store-brand" href="./index.html">سوقك <small>SOOQAK</small></a>
+ <a class="sooqak-store-back" href="./index.html#sooqakStores">العودة إلى سوقك ←</a>
+ </nav></header>
+ <main class="sooqak-store-wrap">
+  <div class="sooqak-store-banner" aria-hidden="true"><strong>متاجر سوقك</strong><p>متجر مستقل داخل منصتك للشراء والبيع</p></div>
+  <section class="sooqak-store-heading" aria-labelledby="storeName">
+   <div class="sooqak-store-name-row"><div class="sooqak-store-avatar" aria-hidden="true">🏪</div>
+    <div><h1 id="storeName">منتجات المتجر</h1><p id="storeDetail">إعلانات بيع منشورة من هذا المتجر</p></div></div>
+   <div class="sooqak-store-chips"><span>منتجات منشورة</span><span>التواصل عبر صفحة الإعلان</span></div>
+  </section>
+  <section aria-labelledby="storeProductsHeading">
+   <div class="sooqak-store-headline"><h2 id="storeProductsHeading">منتجات المتجر</h2><p class="sooqak-store-status" id="summary" role="status" aria-live="polite">جاري تحميل الإعلانات…</p></div>
+   <div id="products" class="sooqak-store-products"></div>
+   <button class="sooqak-store-more" id="more" type="button" hidden>عرض المزيد</button>
+  </section>
+  <p class="sooqak-store-note">هذه صفحة متجر تجريبية. لا نعرض توثيقًا أو تقييمًا أو عدد طلبات إلا بعد تفعيل بيانات موثوقة لها. اتفق مع البائع عبر صفحة الإعلان وتحقق من السلعة قبل الدفع.</p>
  </main>
  <script type="module" src="./store.js"></script>
-</body></html>
+</body>
+</html>
