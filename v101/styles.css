@@ -392,3 +392,59 @@ body{background:#fafcf9;color:#193727;font-weight:600}
 }
 @media(min-width:700px){.location-picker{max-width:600px}.notice{margin-top:2px}.shop-figure{height:146px}}
 @media(min-width:1050px){.location-picker{max-width:760px}.shop-figure{height:165px}}
+
+/* V102 — poster-first welcome, role selection and sample merchant storefront. */
+.site.onboarding{display:block;min-height:100vh;background:radial-gradient(circle at 20% 5%,#c6fac4 0%,transparent 28%),linear-gradient(160deg,#e9ffe7 0%,#fff 55%,#fff0d7 100%)}
+.site.onboarding .top,.site.onboarding .side,.site.onboarding .bottom{display:none}
+.site.onboarding .main{width:100%}
+.onboard-wrap{min-height:100vh;max-width:680px;padding:22px 18px 40px;margin:auto;display:flex;flex-direction:column;gap:17px;justify-content:center}
+.onboard-brand{display:flex;align-items:center;justify-content:center;gap:9px}
+.onboard-brand img{width:66px;height:78px;object-fit:contain}
+.onboard-brand div{display:flex;flex-direction:column}
+.onboard-brand strong{font:800 46px/.94 var(--round);color:#088140}
+.onboard-brand small{font:800 17px 'Readex Pro',sans-serif;color:#ed7d00}
+.onboard-card{background:white;border:1px solid #dce9d9;box-shadow:0 18px 40px #0b783026;border-radius:30px;padding:26px 23px;display:flex;flex-direction:column;align-items:stretch;gap:14px;text-align:center}
+.onboard-kicker{font:800 12px var(--round);color:#e58a00;background:#fff6df;border-radius:30px;padding:5px 12px;align-self:center}
+.onboard-card h1{font:800 clamp(25px,5vw,42px)/1.2 var(--round);color:#153627}
+.onboard-card p{font-size:15px;color:#42684d;font-weight:800}
+.onboard-scene{background:radial-gradient(circle at 60% 80%,#c4f59c 0%,#fff4e3 56%,transparent 70%);display:grid;place-items:center;min-height:220px;overflow:hidden}
+.onboard-scene img{width:100%;max-width:330px;max-height:270px;object-fit:contain;filter:drop-shadow(0 12px 13px #226b183d)}
+.onboard-card>.cta{width:100%;font-size:20px;min-height:51px}
+.onboard-disclaimer{display:block;color:#6f866f;font-size:11px;font-weight:800}
+.role-choice{border:2px solid #e2eee4;background:linear-gradient(120deg,#fbfffa,#fff);border-radius:19px;padding:16px 14px;display:flex;text-align:right;align-items:center;gap:13px;box-shadow:0 4px 10px #125b2512}
+.role-choice:focus-visible,.role-choice:hover{border-color:#23a763;background:#f3fff5}
+.role-choice>span:nth-child(2){display:flex;flex:1;flex-direction:column;gap:3px;min-width:0}
+.role-choice b{font:800 20px var(--round);color:#14432a}
+.role-choice small{font:700 12px var(--font);color:#65826b}
+.role-choice svg{height:23px;width:23px;color:#098347}
+.role-icon{width:50px;height:50px;border-radius:16px;background:#e6faec;display:grid;place-items:center;color:#07904a;flex:none}
+.role-icon.orange{background:#fff0d7;color:#ef8600}
+.role-icon.orange svg{color:#ef8600}
+.store-cover{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:215px;border-radius:24px;padding:24px;background:radial-gradient(circle at 90% 20%,#fcd0a6 0%,transparent 35%),linear-gradient(120deg,#056c39,#17a85c);box-shadow:0 8px 23px #0b6b362a;color:#fff;overflow:hidden}
+.store-cover>div{flex:1}
+.store-cover span{display:inline-flex;background:#ffffff38;border:1px solid #ffffff66;border-radius:25px;padding:4px 11px;font:800 11px var(--font)}
+.store-cover h2{font:800 30px var(--round);margin:8px 0;color:white}
+.store-cover p{font-size:14px;color:#efffec;font-weight:800}
+.store-cover img{width:42%;height:170px;object-fit:contain;filter:drop-shadow(0 8px 12px #13563334)}
+.store-heading{display:flex;align-items:center;gap:12px;margin:16px 0}
+.store-heading>div{display:flex;flex-direction:column;gap:3px}
+.store-heading b{font:800 21px var(--round);color:#106b39}
+.store-heading small{font:700 11px var(--font);color:#6f896f}
+.store-badge{display:grid;place-items:center;background:#fff0d7;border-radius:12px;width:43px;height:43px;color:#ee8b00}
+.store-badge svg{width:27px;height:27px}
+@media(max-width:390px){
+ .onboard-wrap{padding:12px 11px 25px}
+ .onboard-brand img{width:50px;height:64px}
+ .onboard-brand strong{font-size:35px}
+ .onboard-card{border-radius:23px;padding:20px 14px;gap:11px}
+ .onboard-scene{min-height:160px}
+ .onboard-scene img{max-height:185px}
+ .onboard-card h1{font-size:27px}
+ .onboard-card>.cta{font-size:17px}
+ .role-choice{padding:11px 8px;gap:8px}
+ .role-choice b{font-size:17px}
+ .role-icon{width:43px;height:43px}
+ .store-cover{min-height:170px;padding:14px}
+ .store-cover h2{font-size:23px}
+ .store-cover img{height:140px}
+}
