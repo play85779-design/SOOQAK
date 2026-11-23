@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="./styles.css">
   <link rel="stylesheet" href="./marketplace-refresh.css">
   <link rel="stylesheet" href="./poster-ui.css">
+  <link rel="stylesheet" href="./joyful-v92.css">
   <title>سوقك | للبيع والشراء وإنشاء المتاجر — معاينة خاصة</title>
 <link rel="icon" type="image/svg+xml" href="./assets/icon.svg" />
 <link rel="manifest" href="./manifest.webmanifest" />
@@ -46,26 +47,25 @@
     </nav>
     <section class="hero sooqak-hero-v68" aria-labelledby="sooqakHeroTitle">
       <div class="hero-copy">
-        <div class="hero-tag">منصتك المتكاملة للبيع والشراء</div>
-        <h1 id="sooqakHeroTitle">كل ما تحتاجه في مكان واحد… <span>وافتح متجرك في سوقك</span></h1>
-        <p>تصفّح الإعلانات والمتاجر والخدمات، وبِع واشترِ بسهولة من حساب واحد.</p>
-        <div class="hero-points" aria-label="مميزات تجربة سوقك"><span>✓ حساب واحد</span><span>✓ إعلانات الأفراد</span><span>✓ متجر مستقل للتاجر</span></div>
+        <div class="hero-tag">سوقك يجمع كل اللي تحتاجه</div>
+        <h1 id="sooqakHeroTitle">بيع واشتري بكل سهولة <span>في سوقك!</span></h1>
+        <p>إعلانات ومتاجر وخدمات في مكان واحد. اكتشف الفرص وابدأ اليوم.</p>
+        <div class="hero-points" aria-label="مزايا سوقك"><span>تسوّق بسهولة</span><span>إعلانات متنوعة</span><span>متاجر وخدمات</span></div>
         <div class="sooqak-hero-actions">
-          <button id="sooqakCreateStore" class="btn btn-gold btn-large" type="button">🏪 أنشئ متجرك</button>
-          <button id="heroPost" class="btn btn-outline btn-large sooqak-hero-secondary" type="button">＋ أضف إعلانًا</button>
+          <button id="heroPost" class="btn btn-gold btn-large" type="button">＋ أضف إعلانك</button>
+          <button id="sooqakCreateStore" class="btn btn-outline btn-large sooqak-hero-secondary" type="button">🏪 افتح متجرك</button>
         </div>
-        <small class="sooqak-hero-disclaimer">نسخة تطوير؛ إنشاء الحسابات والخدمات يتبع حالة التفعيل وصلاحياتها الفعلية.</small>
+        <small class="sooqak-hero-disclaimer">هذه بيئة اختبار؛ تشغيل الميزات يعتمد على حالة الحساب الفعلية.</small>
       </div>
       <div class="hero-art sooqak-store-art" aria-hidden="true">
-        <div class="sooqak-art-orbit"></div><div class="sooqak-art-shop"><div class="sooqak-art-awning"><i></i><i></i><i></i><i></i><i></i></div><div class="sooqak-art-window">🛍️</div><div class="sooqak-art-door"></div></div>
-        <span class="sooqak-art-bag">🛍️</span><span class="sooqak-art-box">📦</span>
+        <img class="v92-stall-img" src="./assets/v92-market-stall.svg" alt="" width="640" height="440" decoding="async" fetchpriority="high"/>
       </div>
     </section>
     <section class="categories-section"><div class="section-head"><div><div class="eyebrow">تصفح على راحتك</div><h2>أقسام سوقك</h2></div><button class="text-button" id="showAllCats">جميع الأقسام ←</button></div><div class="categories" id="categoryCards"></div><div id="subcategoryPreview" class="subcategory-preview" hidden></div></section>
 
     <section id="sooqakStores" class="sooqak-shops" aria-labelledby="sooqakStoresHeading">
       <div class="section-head"><div><div class="eyebrow">تسوّق من التجار</div><h2 id="sooqakStoresHeading">متاجر سوقك</h2></div><a class="text-button" href="#sooqakListings">استكشف الإعلانات ←</a></div>
-      <p class="sooqak-shop-intro">متاجر مرتبطة بإعلانات بيع منشورة فعلًا، وليست أسماء أو تقييمات افتراضية. افتح المتجر لتشاهد منتجاته.</p>
+      <p class="sooqak-shop-intro">تعرّف على المتاجر التي لديها إعلانات حقيقية منشورة على سوقك.</p>
       <div class="sooqak-shop-grid" id="sooqakShopsGrid" aria-live="polite" aria-busy="true"><p class="sooqak-shop-state">جاري التحقق من المتاجر المنشورة…</p></div>
       <div class="sooqak-shop-create"><span aria-hidden="true">🏪</span><div><strong>عندك نشاط تجاري؟</strong><small>يمكنك استخدام حسابك نفسه للوصول إلى حساب المتجر وإدارة إعلاناته.</small></div><button type="button" id="sooqakCreateStoreSecondary" class="btn btn-gold">افتح حساب المتجر</button><a class="btn btn-outline sooqak-manage-link" href="./merchant-dashboard.html">لوحة متجري</a></div>
     </section>
@@ -107,6 +107,7 @@ window.SOOQAK_CLOUD_ENABLED = Boolean(
   </script>
   <script src="./app.js"></script>
   <script src="./marketplace-refresh.js" defer></script>
+  <script src="./joyful-v92.js" defer></script>
   <script src="./search-assist.js"></script>
   <script src="./location-filters.js"></script>
   <script src="./inbox-local-tools.js"></script>
