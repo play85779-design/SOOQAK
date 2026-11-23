@@ -98,3 +98,8 @@ body{background:var(--bg)}
 
 /* Instant header search must keep results adjacent to header. */
 body.sooqak-search-active .marketplace-quicktabs,body.sooqak-search-active .sooqak-shops{display:none!important}
+
+/* Genuine confirmed public product photo, with fallback category illustration. */
+.sooqak-store-item-visual{overflow:hidden}
+.sooqak-store-item-visual img{display:block;width:100%;height:180px;object-fit:cover;border-radius:14px}
+@media(max-width:750px){.sooqak-store-item-visual img{height:135px}}
