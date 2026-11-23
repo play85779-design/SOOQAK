@@ -24,7 +24,7 @@
   <div class="demo-banner" role="status">🧪 اختبار محدود متصل بقاعدة البيانات: إعلانات الأمثلة غير حقيقية؛ النشر الفعلي متاح بعد تأكيد البريد، وقد تكون الإعلانات والصور المنشورة مرئية للجميع. لا تدخل بيانات حساسة أو تحول أموالًا. هذه ليست منصة تجارية عامة.</div>
   <header class="topbar">
     <div class="container header-inner">
-      <a href="#" class="brand" id="homeLink" aria-label="العودة إلى الرئيسية"><span class="brand-mark">س</span><span class="brand-label">سوقك <small>SOOQAK</small></span></a>
+      <div class="brand"><button id="brandAccountButton" class="brand-mark" type="button" title="افتح حسابي وإعداداتي" aria-label="حسابي وإعداداتي"><span class="brand-glyph">س</span><span class="brand-account-caption">حسابي</span></button><a href="#" class="brand-label" id="homeLink" aria-label="العودة إلى الرئيسية">سوقك <small>SOOQAK</small></a></div>
       <div class="header-search"><span>⌕</span><input id="searchInput" type="search" placeholder="وش تدور عليه اليوم؟ سيارة، جوال، عقار..." autocomplete="off" aria-label="ابحث في الإعلانات"/><button id="searchButton" class="search-action" type="button">بحث</button></div>
       <div class="header-actions"><button id="favButton" class="icon-button" title="المفضلة" aria-label="المفضلة">♡ <span id="favBadge" class="badge-count" hidden>0</span></button><button id="chatButton" class="icon-button" title="المحادثات" aria-label="المحادثات">✉ <span id="chatUnreadBadge" class="badge-count" aria-label="عدد الرسائل غير المقروءة" hidden>0</span></button><button id="signupButton" type="button" class="btn btn-gold auth-top-signup">إنشاء حساب جديد</button><button id="loginButton" type="button" class="profile-button auth-top-login" hidden>دخول / حساب جديد</button><span id="authBusy" class="auth-busy" role="status" aria-live="polite">جاري التحقق من الحساب…</span><button id="profileButton" type="button" class="profile-button profile-signed-in" aria-label="افتح حسابي" hidden><span id="profileLabel">حسابي</span></button><button id="postButton" class="btn btn-gold"><span>＋</span> أضف إعلان</button></div>
     </div>
@@ -47,7 +47,7 @@
   <section aria-labelledby="v14Safe" style="padding:15px 18px;margin:22px 0;background:#fff7e7;border:1px solid #e9d8a9;border-radius:14px;color:#593e12;line-height:1.8"><h2 id="v14Safe" style="font-size:17px;margin:0 0 7px">نصيحة قبل أي عملية شراء</h2><p style="margin:0">تأكد من السلعة وهوية الطرف الآخر، ولا ترسل عربونًا أو بيانات بنكية حساسة لحساب غير موثوق. سوقك حاليًا تجريبي ولا يستلم أموالًا ولا يتحقق من أرقام الجوال.</p></section></main>
   <footer><div class="container footer-inner"><div class="footer-brand">سوقك <small>SOOQAK</small><p>بداية بسيطة لسوق كبير.</p></div><div>معاينة تجريبية خاصة — 2026</div><button id="aboutButton">عن تجربة سوقك</button><button type="button" data-act="bank">سجل العمولة التجريبي</button><a href="./pricing.html" target="_blank" rel="noopener noreferrer" style="color:#d6a653;text-decoration:underline;font-weight:700">خطط الاشتراكات</a><a href="./roadmap.html" target="_blank" rel="noopener noreferrer" style="color:#d6a653;text-decoration:underline;font-weight:700">خطة تطوير سوقك</a><a href="./status-100.html" target="_blank" rel="noopener noreferrer" style="color:#d6a653;text-decoration:underline;font-weight:700">المهام المئة وحالتها</a></div><a href="./v14-changes.html" target="_blank" rel="noopener noreferrer" style="color:#d6a653;text-decoration:underline;font-weight:700">ملخص التحديثات السابقة</a></footer>
   <nav class="mobile-nav" aria-label="التنقل الرئيسي"><button data-nav="home" class="active"><span>⌂</span>الرئيسية</button><button data-nav="search"><span>⌕</span>بحث</button><button data-nav="post" class="nav-post"><span>＋</span>إعلان</button><button data-nav="favorites"><span>♡</span>المفضلة</button><button data-nav="account"><span>♙</span>حسابي</button></nav>
-  <div id="modalBackdrop" class="modal-backdrop" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-head"><h2 id="modalTitle"></h2><button id="modalClose" class="close-button" aria-label="إغلاق">×</button></div><div id="modalContent" class="modal-content"></div></div></div>
+  <div id="modalBackdrop" class="modal-backdrop" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-head"><div class="modal-heading"><span class="sooqak-modal-brand" aria-hidden="true">سوقك <small>SOOQAK</small></span><h2 id="modalTitle"></h2></div><button id="modalClose" class="close-button" aria-label="إغلاق">×</button></div><div id="modalContent" class="modal-content"></div></div></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script>/* إعداد عام فقط. اكتب رابط المشروع والمفتاح publishable بعد إنشاء مشروع Supabase المجاني.
  * لا تضع service_role أو sb_secret_* هنا أبدًا.
@@ -66,6 +66,14 @@ window.SOOQAK_CLOUD_ENABLED = Boolean(
 </script>
   <script src="./category-tree.js"></script>
   <script src="./category-fields.js"></script>
+  <script>
+  // Recovery intents are inferred from the link type only; never read/store its token.
+  try {
+    const h=new URLSearchParams(location.hash.replace(/^#/,''));
+    const q=new URLSearchParams(location.search);
+    if(h.get('type')==='recovery'||q.get('type')==='recovery')window.sooqakPasswordRecoveryPending=true;
+  } catch(_e){}
+  </script>
   <script src="./app.js"></script>
   <script src="./search-assist.js"></script>
   <script src="./location-filters.js"></script>

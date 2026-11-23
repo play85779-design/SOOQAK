@@ -196,3 +196,31 @@ body.sooqak-search-active .market-section{scroll-margin-top:90px}
 .sooqak-inbox-privacy{font-size:11px;color:var(--muted);line-height:1.65}
 .sooqak-inbox-tools p{margin:0;font-size:12px;color:var(--navy)}
 .sooqak-chat-archive-action{margin-inline-start:6px}
+
+/* SOOQAK V90 mobile usability: golden account mark and softer, branded posting. */
+#brandAccountButton{border:0;cursor:pointer;padding:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.02;flex-shrink:0}
+#brandAccountButton .brand-glyph{font-size:24px;font-weight:900}
+#brandAccountButton .brand-account-caption{font-size:9px;color:#fff;font-weight:700;margin-top:2px}
+#brandAccountButton:hover,#brandAccountButton:focus-visible{box-shadow:0 0 0 3px rgba(214,166,83,.25);outline-offset:2px}
+.brand>.brand-label{display:flex;flex-direction:column;text-decoration:none}
+.modal-heading{min-width:0;display:flex;flex-direction:column;gap:4px}
+.sooqak-modal-brand{color:#b48633;font-weight:900;font-size:13px;letter-spacing:.04em}
+.sooqak-modal-brand small{font-size:10px;letter-spacing:.16em;color:#6d7e90;direction:ltr}
+.market-section{scroll-margin-top:14px}
+.sooqak-post-intro{background:linear-gradient(120deg,#fff9ed,#f3f7fc);border:1px solid #e8d8b5;border-radius:17px;padding:16px;margin:4px 0 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.sooqak-post-intro strong{display:block;color:#122c4b;font-size:17px}
+.sooqak-post-intro p{font-size:13px;margin:5px 0 0;line-height:1.8;color:#576c80}
+.sooqak-post-visuals{display:flex;gap:7px}
+.sooqak-post-visuals span{display:grid;place-items:center;width:38px;height:38px;border:1px solid #e8d8b5;background:#fff;border-radius:12px;font-size:22px}
+.sooqak-post-safety{font-size:12px;line-height:1.85;color:#596d80;padding:12px 15px;background:#f5f8fc;border-radius:12px;border-inline-start:3px solid #c59a4e;margin:0 0 13px}
+.sooqak-post-helper{border:1px solid #e2e9f0;border-radius:13px;background:#fafcfe;padding:11px;margin-bottom:12px}
+.sooqak-post-helper small{display:block;font-size:12px;line-height:1.7;color:#667b90;margin-top:6px}
+.sooqak-post-photos{border:1px dashed #c6d6e1;border-radius:16px;padding:16px;background:#fbfdff}
+.sooqak-post-photos strong{display:block;font-size:14px;color:#153650;margin-bottom:5px}
+.sooqak-post-photos p{font-size:12px;color:#677d91;margin:0 0 13px;line-height:1.8}
+.sooqak-photo-actions{display:flex;gap:9px;flex-wrap:wrap}
+.sooqak-photo-actions .btn{display:inline-flex;min-height:48px;align-items:center;justify-content:center;flex:1 1 160px;gap:6px}
+.sooqak-post-photos input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden}
+.sooqak-account-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.sooqak-account-links .btn{min-width:0;white-space:normal;text-align:center;min-height:45px}
+@media(max-width:600px){#brandAccountButton{width:43px;height:43px}.sooqak-post-intro{padding:12px}.sooqak-post-visuals span{width:32px;height:32px;font-size:19px}.sooqak-account-links{grid-template-columns:1fr 1fr}.sooqak-photo-actions{flex-direction:column}.sooqak-photo-actions .btn{width:100%}.modal-head{padding:13px 15px}}
