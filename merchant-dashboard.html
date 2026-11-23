@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow,noarchive"><meta name="theme-color" content="#08663f"><title>لوحة إدارة متجري | سوقك SOOQAK</title><link rel="icon" href="./assets/icon.svg"><link rel="stylesheet" href="./styles.css"><link rel="stylesheet" href="./marketplace-refresh.css">
+<style>
+.so-dashboard{max-width:1050px;margin:26px auto 60px;padding:0 18px}
+.so-dashboard h1{font-size:clamp(22px,4vw,32px);margin:6px 0;color:#096440}
+.so-dashboard .intro{color:#607b68;line-height:1.8}
+.so-dash-hero{background:linear-gradient(115deg,#0b784b,#075639);color:#fff;border-radius:22px;padding:26px 28px;margin-bottom:18px}
+.so-dash-hero h1{color:#fff}.so-dash-hero .intro{color:#dbf5e6}
+.so-dash-gate{padding:20px;border:1px solid #d5e9dc;border-radius:15px;background:#fff;line-height:1.8}
+.so-dash-gate a{display:inline-flex;margin-top:10px;background:#ff8918;color:#fff;border-radius:9px;padding:10px 15px;font-weight:800}
+.so-dash-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.so-dash-actions a{border:1px solid #d6e7df;background:#fff;border-radius:12px;padding:12px 15px;font-weight:700;color:#096440}
+.so-dash-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:20px}
+.so-dash-stat{padding:17px;border:1px solid #dcece2;background:white;border-radius:17px;display:grid;gap:8px}
+.so-dash-stat small{color:#678074}.so-dash-stat strong{font-size:29px;color:#0b683e}
+.so-dash-products{border:1px solid #dcece2;background:#fff;border-radius:18px;padding:17px}
+.so-dash-products h2{margin:0 0 14px;font-size:19px;color:#0c5639}
+.so-dash-row{padding:13px 0;border-bottom:1px solid #edf2ee;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.so-dash-row:last-child{border:0}.so-dash-row strong{color:#234332;overflow-wrap:anywhere}.so-dash-row small{display:block;color:#6e8276;margin-top:4px}
+.so-dash-badge{border-radius:99px;background:#e9f5eb;color:#116d43;padding:5px 11px;white-space:nowrap;font-weight:700;font-size:12px}
+.so-dash-notes{margin-top:15px;border-radius:15px;background:#fff5e8;color:#805a29;padding:15px;line-height:1.85;font-size:12px}
+@media(max-width:580px){.so-dash-hero{padding:20px 16px}.so-dash-stats{gap:8px}.so-dash-stat{padding:12px 9px}.so-dash-stat strong{font-size:23px}.so-dash-row{align-items:flex-start}.so-dash-row strong{font-size:12px}}
+</style></head>
+<body><header class="sooqak-store-bar"><nav class="sooqak-store-bar-inner" aria-label="التنقل"><a class="sooqak-store-brand" href="./index.html">سوقك <small>SOOQAK</small></a><a class="sooqak-store-back" href="./index.html">الرئيسية ←</a></nav></header>
+<main class="so-dashboard">
+ <section class="so-dash-hero"><p>حسابك التجاري في سوقك</p><h1>لوحة إدارة متجري</h1><p class="intro">صفحة خاصة بصاحب المتجر، تعرض الإعلانات التابعة لحسابه فقط بعد التحقق من الجلسة.</p></section>
+ <section id="dashGate" class="so-dash-gate" role="status" aria-live="polite">جاري التأكد من هوية صاحب الحساب…</section>
+ <section id="dashPanel" hidden aria-label="لوحة التاجر">
+  <h2 id="dashStoreName">متجري</h2><div class="so-dash-actions"><a href="./index.html">إدارة الإعلانات من حسابي</a><a id="dashPublicStore" href="./index.html#sooqakStores">صفحة متجري العامة</a></div>
+  <div class="so-dash-stats"><div class="so-dash-stat"><small>إجمالي إعلانات المتجر</small><strong id="dashTotal">—</strong></div><div class="so-dash-stat"><small>نشطة ضمن آخر 50</small><strong id="dashActive">—</strong></div><div class="so-dash-stat"><small>معلّمة كمباعة ضمن آخر 50</small><strong id="dashSold">—</strong></div></div>
+  <section class="so-dash-products" aria-labelledby="dashRecentTitle"><h2 id="dashRecentTitle">إعلانات متجري الحديثة</h2><div id="dashListings"></div></section>
+  <p class="so-dash-notes">لا توجد خدمة دفع أو طلبات مفعّلة هنا حاليًا؛ الأرقام تخص الإعلانات المرئية لحسابك بعد التحقق، ولا تمثل إيرادات أو طلبات حقيقية.</p>
+ </section>
+</main><script type="module" src="./merchant-dashboard.mjs"></script></body></html>
