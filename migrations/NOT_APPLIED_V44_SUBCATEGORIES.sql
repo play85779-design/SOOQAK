@@ -13,7 +13,7 @@ UPDATE public.sooqak_listings SET specifications='{}'::jsonb WHERE specification
 ALTER TABLE public.sooqak_listings
   ALTER COLUMN specifications SET NOT NULL;
 -- Avoid dynamic SQL. Validate size and shape; never store phone numbers, names or private identity here.
-DO $
+DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid='public.sooqak_listings'::regclass AND conname='sooqak_listings_subcategory_v44_check') THEN
     ALTER TABLE public.sooqak_listings ADD CONSTRAINT sooqak_listings_subcategory_v44_check
