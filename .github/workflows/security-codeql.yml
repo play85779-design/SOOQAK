@@ -22,25 +22,3 @@ jobs:
       - uses: github/codeql-action/analyze@v4
         with:
           category: /language:javascript-typescript
-      - name: Report CodeQL finding locations in draft preview (temporary)
-        if: always()
-        shell: bash
-        run: |
-          node - <<'NODE'
-          const fs = require('fs');
-          const path = require('path');
-          const p = path.resolve('../results/javascript.sarif');
-          if (!fs.existsSync(p)) { console.log('CODEQL_DIAGNOSTIC: SARIF unavailable'); process.exit(0); }
-          const d = JSON.parse(fs.readFileSync(p, 'utf8'));
-          for (const run of d.runs || []) {
-            for (const item of (run.results || []).slice(0,50)) {
-              const x = (item.locations || [])[0]?.physicalLocation;
-              console.log('CODEQL_FINDING', JSON.stringify({
-                rule: item.ruleId,
-                severity: item.level,
-                file: x?.artifactLocation?.uri,
-                line: x?.region?.startLine
-              }));
-            }
-          }
-          NODE
