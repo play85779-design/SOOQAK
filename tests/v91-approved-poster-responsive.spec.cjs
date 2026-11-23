@@ -53,7 +53,7 @@ test('approved assets are loadable and prices use Western numerals',async({page}
  const price=await page.locator('#listingGrid .listing-price').first().innerText();
  expect(price).toMatch(/[0-9]/);
  expect(price).not.toMatch(/[٠-٩]/);
- await expect(page.locator('.demo-banner')).toContainText('تجريب');
+ await expect(page.locator('.demo-banner:visible')).toContainText('تجريب');
 });
 
 test('approved identity is shared by real store, merchant dashboard and service directory',async({page})=>{
