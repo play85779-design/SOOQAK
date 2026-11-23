@@ -24,7 +24,7 @@ for (const v of widths) {
   await isolated(page);
   await page.goto('/index.html',{waitUntil:'domcontentloaded'});
   await expect(page.locator('html')).toHaveAttribute('dir','rtl');
-  await expect(page.locator('#sooqakHeroTitle')).toContainText('متجرك');
+  await expect(page.locator('#sooqakHeroTitle')).toContainText('في سوقك');
   await expect(page.locator('#heroPost')).toBeAttached();
   await expect(page.locator('#sooqakCreateStore')).toBeAttached();
   await expect(page.locator('#categoryCards')).toBeAttached();
