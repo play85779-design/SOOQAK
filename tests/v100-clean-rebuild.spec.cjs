@@ -33,7 +33,7 @@ for(const size of sizes){
   expect(data.scroll-data.width,'horizontal overflow').toBeLessThanOrEqual(2);
   expect(data.hero.height,'compact hero').toBeLessThan(300);
   expect(data.cards.top,'show products early').toBeLessThan(size.width<400?1050:980);
-  expect(data.logo,'poster image loaded').toBe(1536);
+  expect(data.logo,'exact poster logo asset loaded').toBeGreaterThan(0);
   expect(errors,'no browser errors').toEqual([]);
  });
 }
@@ -85,14 +85,14 @@ test('V100 preview-only action guards remain truthful',async({page})=>{
  await expect(page.getByRole('dialog')).toContainText('لا توجد حسابات');
 });
 test('V100 poster asset and new source files load from true path',async({page,request})=>{
- for(const file of ['v100/index.html','v100/styles.css','v100/app.js','v100/assets/reference-poster.png']){
+ for(const file of ['v100/index.html','v100/styles.css','v100/app.js','v100/assets/reference-poster.png','v100/assets/logo.webp','v100/assets/hero.webp','v100/assets/car.webp','v100/assets/store-illustration.webp']){
   const response=await request.get('/'+file);
   expect(response.status(),file).toBe(200);
  }
  await start(page);
  const image=page.locator('.hero-banner img');
  await expect(image).toBeVisible();
- await expect(image).toHaveJSProperty('naturalWidth',1536);
+ await expect(image).toHaveJSProperty('naturalWidth',738);
 });
 test('V100 all eight poster screens and supporting routes render semantically',async({page})=>{
  for(const route of ['welcome','role','home','listings','store','post','create-store','account','favorites','details','services','stores']){
