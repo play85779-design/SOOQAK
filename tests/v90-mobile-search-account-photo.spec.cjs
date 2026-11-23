@@ -68,7 +68,7 @@ test('photo step offers both the native camera and gallery without paid AI',asyn
   await expect(page.locator('#openCamera')).toContainText('صوّر الآن');
   await expect(page.locator('#openGallery')).toContainText('الاستوديو');
   await expect(page.locator('#adCamera')).toHaveAttribute('capture','environment');
-  await expect(page.locator('#sooqakSuggestCopy')).toContainText('اكتب وصفًا أجمل');
+  await expect(page.locator('#sooqakSuggestCopy')).toContainText('أكتب وصفًا أجمل');
   await page.locator('#adCamera').setInputFiles({name:'camera.jpg',mimeType:'image/jpeg',buffer:Buffer.from([0xff,0xd8,0xff,0xd9])});
   await expect(page.locator('#newPhotoPreview')).toContainText('camera.jpg');
   const count=await page.locator('#adImages').evaluate(el=>el.files.length);
