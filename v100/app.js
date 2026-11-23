@@ -165,7 +165,7 @@ function store(){
 }
 function post(){
  return '<section class="view section-view"><div class="page-topbar"><button class="back-btn" data-go="home" aria-label="العودة">'+icon('back')+'</button><h1>إضافة إعلان</h1><span></span></div>'+notice()+
- '<form class="form-card" id="listing-form" novalidate><div class="upload-row"><label class="upload-area" for="listing-photos">'+icon('camera',30)+'<strong>أضف صور الإعلان</strong><span>حتى 10 صور — معاينة محلية</span></label><input type="file" id="listing-photos" accept="image/*" multiple hidden><div class="upload-preview" id="image-preview">'+(state.selectedImages[0]?'<img src="'+state.selectedImages[0]+'" alt="معاينة صورة الإعلان">':crop('car','poster-photo'))+'</div></div>'+
+ '<form class="form-card" id="listing-form" novalidate><div class="upload-row"><label class="upload-area" for="listing-photos">'+icon('camera',30)+'<strong>أضف صور الإعلان</strong><span>حتى 10 صور — معاينة محلية</span></label><input type="file" id="listing-photos" accept="image/*" multiple hidden><div class="upload-preview" id="image-preview">'+crop('car','poster-photo')+'</div></div>'+
  '<div class="field"><label for="ad-title">عنوان الإعلان <span class="required">*</span></label><input id="ad-title" name="title" maxlength="85" placeholder="مثال: تويوتا كامري 2023 بحالة ممتازة" value="'+escape(state.draft.title)+'" required></div>'+
  '<div class="field"><label for="ad-desc">الوصف</label><textarea id="ad-desc" name="description" rows="3" placeholder="اكتب وصفًا واضحًا للمنتج...">'+escape(state.draft.description)+'</textarea></div>'+
  '<div class="field"><label for="ad-price">السعر (ر.س) <span class="required">*</span></label><input id="ad-price" name="price" inputmode="numeric" type="number" min="1" max="99999999" placeholder="45,000" value="'+escape(state.draft.price)+'" required></div>'+
@@ -219,9 +219,29 @@ function view(){
  default:return home();
  }
 }
+function paintSelectedImage(){
+ const frame=$('#image-preview');
+ if(!frame||!state.selectedImages.length)return;
+ const file=state.selectedImages[0];
+ if(!file||!file.type.startsWith('image/'))return;
+ const canvas=document.createElement('canvas');
+ canvas.width=320;canvas.height=240;
+ const context=canvas.getContext('2d');
+ if(!context)return;
+ frame.replaceChildren(canvas);
+ createImageBitmap(file).then(bitmap=>{
+  if(!frame.isConnected||state.selectedImages[0]!==file){bitmap.close();return}
+  const scale=Math.min(canvas.width/bitmap.width,canvas.height/bitmap.height);
+  const width=bitmap.width*scale,height=bitmap.height*scale;
+  context.clearRect(0,0,canvas.width,canvas.height);
+  context.drawImage(bitmap,(canvas.width-width)/2,(canvas.height-height)/2,width,height);
+  bitmap.close();
+ }).catch(()=>{if(frame.isConnected)frame.textContent='تعذر عرض الصورة، اختر صورة أخرى'});
+}
 function render({scroll=true}={}){
  const onboarding=state.route==='welcome'||state.route==='role';
  app.innerHTML=onboarding?'<main>'+view()+'</main>':'<div class="app-shell"><div class="main-layout">'+aside()+header()+'<main class="main-content">'+view()+'</main>'+nav()+'</div></div>';
+ paintSelectedImage();
  document.title='سوقك | '+({home:'الرئيسية',listings:'الإعلانات',store:'المتجر',post:'إضافة إعلان',account:'حسابي',role:'نوع حسابك',welcome:'مرحبًا',stores:'المتاجر',favorites:'المفضلة',services:'الخدمات',details:'تفاصيل الإعلان','create-store':'إنشاء متجر'}[state.route]||'SOOQAK');
  if(scroll)window.scrollTo({top:0,behavior:'instant'});
 }
@@ -309,23 +329,8 @@ document.addEventListener('change',e=>{
   const input=e.target;const files=Array.from(input.files||[]);
   if(files.length>10){notify('الحد الأعلى 10 صور');input.value='';return}
   if(files.some(f=>!f.type.startsWith('image/')||f.size>8*1024*1024)){notify('اختر صورًا أصغر من 8 ميجابايت');input.value='';return}
-  state.selectedImages.forEach(url=>URL.revokeObjectURL(url));
-  state.selectedImages=files.map(f=>URL.createObjectURL(f));
-  const frame=$('#image-preview');
-  if(frame){
-   frame.replaceChildren();
-   if(state.selectedImages.length){
-    const img=document.createElement('img');
-    img.src=state.selectedImages[0];
-    img.alt='معاينة صورة الإعلان';
-    frame.appendChild(img);
-   }else{
-    const placeholder=document.createElement('div');
-    placeholder.className='upload-placeholder';
-    placeholder.textContent='📷';
-    frame.appendChild(placeholder);
-   }
-  }
+  state.selectedImages=files;
+  paintSelectedImage();
   notify('تم اختيار '+files.length+' صورة للمعاينة المحلية');
  }
 });
