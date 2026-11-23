@@ -68,6 +68,9 @@ export function initOwnerWorkers(api, isAuthorized) {
   const note = root.querySelector('#workerConnectionNote');
   const cards = new Map([...root.querySelectorAll('[data-worker-id]')].map(card=>[card.dataset.workerId,card]));
   let requestId = 0;
+  let lastVerifiedSnapshot = [];
+  // Re-evaluate local heartbeat expiry without any extra paid/backend requests.
+  // A robot must not remain animated just because its browser tab was left open.
   function draw(items) {
     for (const worker of WORKERS) {
       const card = cards.get(worker.id);
@@ -96,14 +99,17 @@ export function initOwnerWorkers(api, isAuthorized) {
       if (current !== requestId || !isAuthorized()) return;
       if (result?.error || !Array.isArray(result?.data) ||
           !result.data.every(x=>x && typeof x.id === 'string' && ['W1','W2','W3'].includes(x.id))) {
+        lastVerifiedSnapshot = [];
         draw([]);
         note.textContent = 'لا يوجد اتصال حي موثوق بعد. الروبوتات لا تتحرك لمجرد مرور موعدها.';
       } else {
-        draw(result.data);
+        lastVerifiedSnapshot = result.data;
+        draw(lastVerifiedSnapshot);
         note.textContent = 'تم فحص المصدر المحمي؛ أي حالة بلا إثبات حديث تظهر غير متصل.';
       }
     } catch {
       if (current !== requestId || !isAuthorized()) return;
+      lastVerifiedSnapshot = [];
       draw([]);
       note.textContent = 'تعذر الاتصال بمصدر الحالة الآمن. لا نعرض نشاطًا تخمينيًا.';
     } finally {
@@ -112,5 +118,15 @@ export function initOwnerWorkers(api, isAuthorized) {
   }
   button.addEventListener('click',refresh);
   draw([]);
+  const expiryInterval = window.setInterval(() => {
+    if (!isAuthorized()) {
+      lastVerifiedSnapshot = [];
+      draw([]);
+      window.clearInterval(expiryInterval);
+      return;
+    }
+    // Updating the UI locally is not an additional query to Supabase or GitHub.
+    if (lastVerifiedSnapshot.length) draw(lastVerifiedSnapshot);
+  }, 15_000);
   void refresh();
 }
