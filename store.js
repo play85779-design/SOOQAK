@@ -49,7 +49,7 @@ async function load(){
    visualByListing.set(row.id,{visual,row});
    const link=document.createElement('a');link.href='./listing.html?id='+encodeURIComponent(row.id);link.textContent=row.title;
    const meta=document.createElement('p');meta.className='sooqak-store-item-meta';meta.textContent=[row.city,row.status==='reserved'?'محجوز':'متاح'].filter(Boolean).join(' · ');
-   const price=document.createElement('strong');price.className='sooqak-store-item-price';price.textContent=Number.isFinite(Number(row.price))&&row.price!==null?Number(row.price).toLocaleString('ar-SA')+' ر.س':'استفسر عن السعر';
+   const price=document.createElement('strong');price.className='sooqak-store-item-price';price.textContent=Number.isFinite(Number(row.price))&&row.price!==null?Number(row.price).toLocaleString('en-US')+' ر.س':'استفسر عن السعر';
    card.append(visual,link,meta,price);products.append(card);
   }
   // Render listing cards immediately; public photo hydration must never block the store.
