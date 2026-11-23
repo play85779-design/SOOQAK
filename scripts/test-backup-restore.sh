@@ -30,3 +30,5 @@ psql -X -v ON_ERROR_STOP=1 -d policy_fixture -f tests/sql/store-and-decision-fix
 createdb owner_approval_fixture
 psql -X -v ON_ERROR_STOP=1 -d owner_approval_fixture -f tests/sql/b07-owner-approval-fixture.sql
 echo 'Verified B07 owner approval fixture: no public grants, owner-only decisions, unknown costs blocked.'
+# Reuse this disposable socket-only cluster; never connect to Supabase.
+bash scripts/test-v44-migration-fixture.sh
