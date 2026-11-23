@@ -30,11 +30,12 @@ for (const v of widths) {
   await expect(page.locator('#categoryCards')).toBeAttached();
   await expect(page.locator('#listingGrid')).toBeAttached();
   await expect(page.locator('.brand-mark')).toBeVisible();
-  await expect(page.locator('.marketplace-quicktabs')).toBeVisible();
+  if(v.width<=390)await expect(page.locator('.marketplace-quicktabs')).toBeHidden();
+  else await expect(page.locator('.marketplace-quicktabs')).toBeVisible();
   const horizontalOverflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
   expect(horizontalOverflow,'no unwanted horizontal scrolling on '+v.name).toBeLessThanOrEqual(2);
-  const backgrounds=await page.locator('.sooqak-store-art').evaluate(el=>getComputedStyle(el).backgroundImage);
-  expect(backgrounds).toContain('sooqak-market.svg');
+  const heroIllustration=await page.locator('.sooqak-store-art .v92-stall-img').evaluate(img=>img.complete&&img.naturalWidth>0);
+  expect(heroIllustration,'v92 hero illustration must load').toBe(true);
   const font=await page.locator('body').evaluate(el=>getComputedStyle(el).fontFamily);
   expect(font).toContain('Tajawal');
   if(v.width<=390)await expect(page.locator('.mobile-nav')).toBeVisible();
