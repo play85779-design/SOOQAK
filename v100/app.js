@@ -3,7 +3,7 @@
  * Preview is interactive but intentionally NOT a live commerce service.
  */
 (()=>{'use strict';
-const POSTER='./assets/reference-poster.png';
+const POSTER='./assets/logo.webp';
 const $=(sel,root=document)=>root.querySelector(sel);
 const $$=(sel,root=document)=>Array.from(root.querySelectorAll(sel));
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -63,18 +63,10 @@ const crops={
  storeArt:{x:884,y:636},
  headphone:{x:452,y:840}
 };
-const crop=(name,variant='poster-photo',scale)=>{
- const c=crops[name]||crops.car;
- const vw=window.innerWidth;
- const s=scale||(variant==='banner-art'?(vw>=1080?3.15:vw>=700?2.65:vw>=400?1.53:vw<355?1.18:1.37):
- variant==='promo-art'?(vw>=700?2.05:vw<355?1.35:1.57):
- variant==='store-art'?(vw>=700?1.9:vw<355?1.07:1.23):
- variant==='shop-crop'?(vw>=1080?1.22:vw>=700?1.1:.72):
- variant==='store-cover-photo'?(vw>=700?2.0:1.22):
- variant==='gallery-photo'?(vw>=700?3.5:2.4):
- vw>=1080?2.18:vw>=700?1.96:vw<355?1.18:vw<390?1.32:1.5);
- const style='--scaled-width:'+(1536*s)+'px;--scaled-height:'+(1152*s)+'px;--tx:'+(-c.x*s)+'px;--ty:'+(-c.y*s)+'px';
- return '<div class="'+escape(variant)+' crop-'+escape(name)+'" style="'+style+'"><img src="'+POSTER+'" alt="" decoding="async" draggable="false" style="width:var(--scaled-width);height:var(--scaled-height);transform:translate(var(--tx),var(--ty))"></div>';
+const CROPPED_ASSETS=Object.freeze({logo:'logo',welcome:'welcome',banner:'hero',car:'car',sofa:'sofa',laptop:'laptop',phone:'phone',storeCover:'store-cover',shopTech:'shop-tech',shopHome:'shop-home',shopCar:'shop-car',storeArt:'store-illustration',headphone:'headphones'});
+const crop=(name,variant='poster-photo')=>{
+ const asset=CROPPED_ASSETS[name]||'car';
+ return '<div class="'+escape(variant)+' crop-'+escape(name)+'"><img src="./assets/'+asset+'.webp" alt="" decoding="async" '+(name==='banner'?'fetchpriority="high"':'loading="lazy"')+' draggable="false"></div>'
 };
 const DEMO_PRODUCTS=[
  {id:'car',category:'سيارات',title:'تويوتا كامري 2023',price:45000,city:'الرياض',image:'car',description:'مثال تصميمي لبطاقة سيارة. ليست هناك سيارة معروضة للبيع عبر هذه المعاينة.'},
@@ -146,7 +138,7 @@ function roles(){
 }
 function home(){
  return '<section class="view section-view home-view">'+search()+notice(true)+
- '<div class="hero-banner"><div class="banner-art">'+crop('banner','poster-art')+'</div><button class="banner-hit" data-action="car-offers" aria-label="تصفح إعلانات السيارات التجريبية"></button><span class="banner-caption">عرض بصري من البوستر المعتمد</span></div><div class="hero-dots"><span></span><span></span><span></span></div>'+
+ '<div class="hero-banner"><div class="banner-art">'+crop('banner','poster-art')+'</div><div class="banner-extra"><h2>سوقك... كل اللي تبيه</h2><p>سيارات وإلكترونيات ومتاجر وخدمات في مكان واحد</p><button data-action="car-offers" class="btn-orange">تصفح الإعلانات '+icon('arrow')+'</button></div><button class="banner-hit" data-action="car-offers" aria-label="تصفح إعلانات السيارات التجريبية"></button><span class="banner-caption">عرض بصري من البوستر المعتمد</span></div><div class="hero-dots"><span></span><span></span><span></span></div>'+
  '<div class="category-strip">'+CATS.filter(c=>c.id!=='all').map(c=>'<button class="category-item" data-shortcut="'+c.id+'"><span class="category-icon">'+icon(c.icon,25)+'</span><span>'+c.name+'</span></button>').join('')+'</div>'+
  title('🏬 متاجر سوقك','<button class="text-link" data-go="stores">عرض الكل ‹</button>')+
  '<div class="shop-strip">'+DEMO_STORES.map(shop).join('')+'</div>'+
