@@ -84,15 +84,34 @@ test('V100 preview-only action guards remain truthful',async({page})=>{
  await page.getByRole('button',{name:/مراسلة/}).click();
  await expect(page.getByRole('dialog')).toContainText('لا توجد حسابات');
 });
-test('V100 poster asset and new source files load from true path',async({page,request})=>{
- for(const file of ['v100/index.html','v100/styles.css','v100/app.js','v100/assets/reference-poster.png','v100/assets/logo.webp','v100/assets/hero.webp','v100/assets/car.webp','v100/assets/store-illustration.webp']){
-  const response=await request.get('/'+file);
-  expect(response.status(),file).toBe(200);
+test('V100 all preview images have correct MIME, real bytes and decode in browser',async({page,request})=>{
+ const assets=['logo.webp','hero.webp','car.webp','sofa.webp','laptop.webp','phone.webp','shop-car.webp','shop-home.webp','shop-tech.webp','store-cover.webp','store-illustration.webp','welcome.webp','headphones.webp','reference-poster.webp'];
+ for(const path of ['v100/index.html','v100/styles.css','v100/app.js']){
+  const response=await request.get('/'+path);
+  expect(response.status(),path).toBe(200);
  }
- await start(page);
- const image=page.locator('.hero-banner img');
- await expect(image).toBeVisible();
- await expect(image).toHaveJSProperty('naturalWidth',738);
+ for(const name of assets){
+  const response=await request.get('/v100/assets/'+name);
+  expect(response.status(),name).toBe(200);
+  expect(response.headers()['content-type'],name).toMatch(/image\\/webp/);
+  const bytes=await response.body();
+  expect(bytes.subarray(0,4).toString('ascii'),name).toBe('RIFF');
+  expect(bytes.subarray(8,12).toString('ascii'),name).toBe('WEBP');
+ }
+ for(const route of ['home','stores','store','listings','details','welcome','role','post','create-store','account']){
+  await page.goto('/v100/index.html#'+route,{waitUntil:'domcontentloaded'});
+  const images=await page.evaluate(async()=>{
+   const imgs=[...document.querySelectorAll('img')];
+   for(const img of imgs)img.loading='eager';
+   return Promise.all(imgs.map(async img=>{
+    try{await img.decode()}catch(err){}
+    return {path:new URL(img.src).pathname,width:img.naturalWidth,height:img.naturalHeight};
+   }));
+  });
+  expect(images.length,route).toBeGreaterThan(0);
+  const broken=images.filter(img=>img.width===0||img.height===0);
+  expect(broken,route+' has broken visible image assets').toEqual([]);
+ }
 });
 test('V100 all eight poster screens and supporting routes render semantically',async({page})=>{
  for(const route of ['welcome','role','home','listings','store','post','create-store','account','favorites','details','services','stores']){
