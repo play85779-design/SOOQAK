@@ -31,7 +31,7 @@ async function open(){
    const row=document.createElement('div');row.className='so-dash-row';
    const info=document.createElement('div'),title=document.createElement('strong'),small=document.createElement('small');
    title.textContent=String(item.title||'إعلان بدون عنوان').slice(0,160);
-   small.textContent=[item.city,Number.isFinite(Number(item.price))&&item.price!==null?Number(item.price).toLocaleString('ar-SA')+' ر.س':''].filter(Boolean).join(' · ');
+   small.textContent=[item.city,Number.isFinite(Number(item.price))&&item.price!==null?Number(item.price).toLocaleString('en-US')+' ر.س':''].filter(Boolean).join(' · ');
    info.append(title,small);
    const status=document.createElement('span');status.className='so-dash-badge';status.textContent=({active:'نشط',reserved:'محجوز',sold:'مباع',expired:'منتهي',hidden:'مخفي'})[item.status]||'غير منشور';
    row.append(info,status);list.append(row);
