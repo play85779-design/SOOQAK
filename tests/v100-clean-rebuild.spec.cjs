@@ -93,7 +93,7 @@ test('V100 all preview images have correct MIME, real bytes and decode in browse
  for(const name of assets){
   const response=await request.get('/v100/assets/'+name);
   expect(response.status(),name).toBe(200);
-  expect(response.headers()['content-type'],name).toMatch(/image\\/webp/);
+  expect(response.headers()['content-type'],name).toContain('image/webp');
   const bytes=await response.body();
   expect(bytes.subarray(0,4).toString('ascii'),name).toBe('RIFF');
   expect(bytes.subarray(8,12).toString('ascii'),name).toBe('WEBP');
