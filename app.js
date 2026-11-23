@@ -63,11 +63,11 @@ function refreshGlobalUI(){
  setDirectText('.demo-banner',en?'🧪 RESTRICTED DATABASE BETA — Sample ads are fictitious. Posted photos and ads may be public. Do not share sensitive information or send money.':'🧪 اختبار محدود متصل بقاعدة بيانات: الإعلانات التجريبية خيالية. لا تُدخل بيانات حساسة ولا تحوّل أي أموال.');
  setDirectText('#searchButton',en?'Search':'بحث');$('searchInput').placeholder=en?'Search for cars, phones, property...':'وش تدور عليه اليوم؟ سيارة، جوال، عقار...';
  setDirectText('#postButton',en?'＋ Post Ad':'＋ أضف إعلان');$('favButton').title=en?'Favorites':'المفضلة';$('chatButton').title=en?'Messages':'المحادثات';if(!state.account)setDirectText('#profileLabel',en?'My Account':'حسابي');setDirectText('#signupButton',en?'Create account':'إنشاء حساب جديد');setDirectText('#loginButton',en?'Sign in / Join':'دخول / حساب جديد');setDirectText('#welcomeSignup',en?'Create account':'إنشاء حساب جديد');setDirectText('#welcomeLogin',en?'Sign in':'تسجيل الدخول');setDirectText('#authWelcomeTitle',en?'New to SOOQAK?':'جديد في سوقك؟');setDirectText('#authWelcomeDesc',en?'Create a free account or sign in on phone and desktop.':'سوّ حسابك مجانًا، أو سجّل دخولك من جوالك والكمبيوتر.');
- setDirectText('.hero-tag',en?'One marketplace for everyone':'منصتك المتكاملة للبيع والشراء');
- document.querySelector('.hero h1').innerHTML=en?'Buy, sell, and <span>open your shop on SOOQAK</span>':'كل ما تحتاجه في مكان واحد… <span>وافتح متجرك في سوقك</span>';
- setDirectText('.hero-copy p',en?'Personal listings and merchant stores in one marketplace. Keep one account and use a shop when you need it.':'تصفّح الإعلانات والمتاجر والخدمات، وبِع واشترِ بسهولة من حساب واحد.');
- document.querySelector('.hero-points').innerHTML=en?'<span>✓ One account</span><span>✓ Personal listings</span><span>✓ Merchant storefront</span>':'<span>✓ حساب واحد</span><span>✓ إعلانات الأفراد</span><span>✓ متجر مستقل للتاجر</span>';
- setDirectText('#heroPost',en?'Post an ad for free':'اعرض سلعتك مجانًا ←');
+ setDirectText('.hero-tag',en?'One marketplace for everyone':'سوقك يجمع كل اللي تحتاجه');
+ document.querySelector('.hero h1').innerHTML=en?'Buy, sell, and <span>open your shop on SOOQAK</span>':'بيع واشتري بكل سهولة <span>في سوقك!</span>';
+ setDirectText('.hero-copy p',en?'Personal listings and merchant stores in one marketplace. Keep one account and use a shop when you need it.':'إعلانات ومتاجر وخدمات في مكان واحد. اكتشف الفرص وابدأ اليوم.');
+ document.querySelector('.hero-points').innerHTML=en?'<span>✓ One account</span><span>✓ Personal listings</span><span>✓ Merchant storefront</span>':'<span>تسوّق بسهولة</span><span>إعلانات متنوعة</span><span>متاجر وخدمات</span>';
+ setDirectText('#heroPost',en?'Post an ad for free':'＋ أضف إعلانك');
  const eyebrows=[document.querySelector('.categories-section .eyebrow'),document.querySelector('.market-section .eyebrow')];if(eyebrows[0])eyebrows[0].textContent=en?'Explore at your pace':'تصفح على راحتك';if(eyebrows[1])eyebrows[1].textContent=en?'Recently added':'آخر المعروض';
  setDirectText('.categories-section h2',en?'Browse Categories':'أقسام سوقك');setDirectText('#showAllCats',en?'All categories →':'جميع الأقسام ←');
  document.querySelectorAll('#categoryCards [data-category]').forEach(el=>setLabelText(el,en?CATEGORIES_EN[el.dataset.category]:el.dataset.category));
