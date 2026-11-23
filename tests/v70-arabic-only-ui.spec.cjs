@@ -29,3 +29,12 @@ test('merchant storefront and dashboard headings are Arabic',async({page})=>{
  await expect(page.locator('html')).toHaveAttribute('lang','ar');
  await expect(page.locator('.so-dash-hero h1')).toHaveText('لوحة إدارة متجري');
 });
+
+test('public service pages and policies retain Arabic titles and RTL structure',async({page})=>{
+ for(const [route,heading] of [['/services.html','دليل الورش'],['/service-detail.html','تفاصيل النشاط'],['/privacy.html','سياسة الخصوصية'],['/terms.html','شروط استخدام سوقك'],['/content-policy.html','سياسة الإعلانات']]){
+  await page.goto(route,{waitUntil:'domcontentloaded'});
+  await expect(page.locator('html')).toHaveAttribute('lang','ar');
+  await expect(page.locator('html')).toHaveAttribute('dir','rtl');
+  await expect(page).toHaveTitle(new RegExp(heading));
+ }
+});
