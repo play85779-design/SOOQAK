@@ -23,7 +23,7 @@ test('V108 non-test address is refused and cleared; no backend request',async({p
  await page.locator('#auth-email-preview').fill('person@example.com');
  await page.locator('#auth-password-preview').fill('Demo1234');
  await page.locator('.auth-explain').click();
- await expect(page.locator('#auth-demo-error')).toContainText('example.invalid');
+ await expect(page.locator('#auth-demo-error')).toContainText('تعبئة بيانات اختبار جاهزة');
  await expect(page.locator('#auth-email-preview')).toHaveValue('');
  await expect(page.locator('#auth-password-preview')).toHaveValue('');
  expect(sensitiveRequests).toEqual([]);
