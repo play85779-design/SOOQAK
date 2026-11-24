@@ -6,7 +6,7 @@ test('V103 account separates guest, auth preview, my ads and messages without fa
  await expect(page.locator('.account-quick-card')).toHaveCount(4);
  await page.getByRole('button',{name:/استكشف تسجيل الدخول/}).first().click();
  await expect(page.locator('.auth-preview-card')).toBeVisible();
- await expect(page.locator('#auth-email-preview')).toBeDisabled();
+ await expect(page.locator('#auth-email-preview')).toBeEditable();
  await expect(page.locator('.auth-preview-card')).toContainText('هذه معاينة للتصميم فقط');
  await page.goto('/v101/index.html#my-ads');
  await expect(page.locator('.account-empty')).toContainText('لا توجد إعلانات مرتبطة بحساب حقيقي');
