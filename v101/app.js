@@ -212,7 +212,7 @@ document.addEventListener('click',e=>{
  if(b.dataset.category){if(b.dataset.category==='خدمات'){go('services');return}state.filter=b.dataset.category;go('listings');return}
  if(b.dataset.filter){state.filter=b.dataset.filter;render(true);return}
  if(b.dataset.detail){state.item=b.dataset.detail;state.detailIndex=0;go('detail');return}
- if(b.dataset.fav){let id=b.dataset.fav;if(state.favorites.has(id))state.favorites.delete(id);else state.favorites.add(id);try{sessionStorage.setItem('sooqak-v101-fav',JSON.stringify([...state.favorites]))}catch{}render(true);toast(state.favorites.has(id)?'حُفظ في المفضلة التجريبية':'أزيل من المفضلة');return}
+ if(b.dataset.fav){let id=b.dataset.fav;if(state.favorites.has(id))state.favorites.delete(id);else state.favorites.add(id);try{sessionStorage.setItem('sooqak-v101-fav',JSON.stringify([...state.favorites].filter(id=>!id.startsWith('local-'))))}catch{}render(true);toast(state.favorites.has(id)?'حُفظ في المفضلة التجريبية':'أزيل من المفضلة');return}
  if(b.dataset.photoMain!==undefined){
   const i=Number(b.dataset.photoMain);
   if(Number.isInteger(i)&&i>0&&i<state.photoUrls.length){
