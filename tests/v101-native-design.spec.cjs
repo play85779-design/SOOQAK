@@ -60,7 +60,7 @@ test('V103 search and editable local listing review',async({page})=>{
  await expect(page.locator('.wizard-summary-info')).toContainText('سيارة توضيحية للتجربة');
  await expect(page.locator('.wizard-summary-info')).toContainText('65,000');
  await page.locator('[data-post-preview]').click();
- await expect(page.getByRole('dialog')).toContainText('لم يُنشر شيء');
+ await expect(page.getByRole('dialog')).toContainText('لم يُنشر للعامة');
 });
 test('V101 logo and all independent SVG illustrations exist',async({request})=>{
  for(const p of ['index.html','styles.css','app.js','assets/bag.svg','assets/hero-car.svg','assets/shop.svg','assets/sofa.svg','assets/laptop.svg','assets/phone.svg']){
