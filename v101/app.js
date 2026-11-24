@@ -136,7 +136,24 @@ function render(preserve=false){
  document.title='سوقك — '+({welcome:'أهلا بك',role:'نوع الحساب',store:'متجر',home:'الرئيسية',listings:'الإعلانات',stores:'المتاجر',post:'إضافة إعلان',account:'حسابي',auth:'تسجيل الدخول','my-ads':'إعلاناتي',messages:'الرسائل',favorites:'المفضلة',detail:'تفاصيل الإعلان','create-store':'إنشاء متجر',services:'الخدمات'}[state.route]||'SOOQAK');
  if(preserve)window.scrollTo({top:y,behavior:'instant'});else window.scrollTo({top:0,behavior:'instant'});
 }
-function go(route,push=true){state.route=routes.has(route)?route:'home';if(push)history.pushState({},'',location.pathname+'#'+state.route);render()}
+// Store only known fixture identifiers in the URL. Legacy #detail remains readable.
+function routeFromHash(){
+ const hash=location.hash.slice(1);
+ if(hash==='detail')return {route:'detail',item:items[0].id};
+ if(hash.startsWith('detail/')){
+  const id=hash.slice(7);
+  return items.some(x=>x.id===id)?{route:'detail',item:id}:{route:'listings'};
+ }
+ return {route:routes.has(hash)?hash:'home'};
+}
+function syncRoute(initial=false){
+ const next=routeFromHash();
+ const changed=state.route!==next.route||(next.route==='detail'&&state.item!==next.item);
+ state.route=next.route;
+ if(next.route==='detail'){if(state.item!==next.item)state.detailIndex=0;state.item=next.item;}
+ if(initial||changed)render();
+}
+function go(route,push=true){state.route=routes.has(route)?route:'home';if(push)history.pushState({},'',location.pathname+location.search+'#'+(state.route==='detail'?'detail/'+state.item:state.route));render()}
 let timer=0;function toast(msg){const el=$('#toast');el.textContent=msg;el.hidden=false;clearTimeout(timer);timer=setTimeout(()=>el.hidden=true,3000)}
 function dialog(title,text){$('#dialog-root').innerHTML='<div class="dialog-backdrop"><section class="dialog-card" role="dialog" aria-modal="true" aria-label="'+esc(title)+'"><button class="dialog-close" aria-label="إغلاق" data-action="close">×</button><h3>'+esc(title)+'</h3><p>'+text+'</p><button class="cta" data-action="close">فهمت</button></section></div>';}
 function action(a){if(a==='reset'){state.city='كل المدن';state.region='كل المناطق';state.country='السعودية';state.filter='الكل';state.term='';go('listings');return}if(a==='cars'){state.filter='سيارات';go('listings');return}if(a==='close'){$('#dialog-root').innerHTML='';return}if(a==='auth-unavailable'){dialog('التسجيل غير مفعل في المعاينة','هذه نسخة لتجربة التصميم فقط. لم نربط حسابات حقيقية أو نطلب معلومات حساسة. يجري تجهيز الربط مع نظام سوقك الموجود بعد مراجعة الأمان.');return}dialog(a==='notifications'?'التنبيهات':'الميزة قيد الربط','هذه تجربة تصميمية تفاعلية. لا توجد رسائل أو طلبات أو حسابات أو معاملات فعلية في هذه النسخة.');}
@@ -176,7 +193,7 @@ document.addEventListener('click',e=>{
  if(b.dataset.category){if(b.dataset.category==='خدمات'){go('services');return}state.filter=b.dataset.category;go('listings');return}
  if(b.dataset.filter){state.filter=b.dataset.filter;render(true);return}
  if(b.dataset.detail){state.item=b.dataset.detail;state.detailIndex=0;go('detail');return}
- if(b.dataset.fav){let id=b.dataset.fav;if(state.favorites.has(id))state.favorites.delete(id);else state.favorites.add(id);sessionStorage.setItem('sooqak-v101-fav',JSON.stringify([...state.favorites]));render(true);toast(state.favorites.has(id)?'حُفظ في المفضلة التجريبية':'أزيل من المفضلة');return}
+ if(b.dataset.fav){let id=b.dataset.fav;if(state.favorites.has(id))state.favorites.delete(id);else state.favorites.add(id);try{sessionStorage.setItem('sooqak-v101-fav',JSON.stringify([...state.favorites]))}catch{}render(true);toast(state.favorites.has(id)?'حُفظ في المفضلة التجريبية':'أزيل من المفضلة');return}
  if(b.dataset.photoMain!==undefined){
   const i=Number(b.dataset.photoMain);
   if(Number.isInteger(i)&&i>0&&i<state.photoUrls.length){
@@ -202,9 +219,10 @@ document.addEventListener('submit',e=>{
  if(e.target.id==='search'){e.preventDefault();state.term=String(new FormData(e.target).get('q')||'').trim().slice(0,70);state.filter='الكل';go('listings');return}
  // V103 wizard has interactive step controls and an honest preview instead of mock publishing.
 });
-window.addEventListener('popstate',()=>{const r=location.hash.slice(1);state.route=routes.has(r)?r:'home';render()});
-window.addEventListener('hashchange',()=>{const r=location.hash.slice(1);if(routes.has(r)&&r!==state.route){state.route=r;render()}});
-const hash=location.hash.slice(1);if(routes.has(hash))state.route=hash;else history.replaceState({},'',location.pathname+'#home');
+window.addEventListener('popstate',()=>syncRoute());
+window.addEventListener('hashchange',()=>syncRoute());
+const initialRoute=routeFromHash();state.route=initialRoute.route;if(initialRoute.item)state.item=initialRoute.item;
+if(!location.hash)history.replaceState({},'',location.pathname+location.search+'#home');
 render();
 window.SOOQAK_V101={version:'V104',getState:()=>({route:state.route,country:state.country,city:state.city,filter:state.filter,saved:state.favorites.size,previewOnly:true})};
 })();
