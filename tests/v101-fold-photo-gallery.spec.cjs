@@ -1,11 +1,13 @@
 const {test,expect}=require('@playwright/test');
 const sample=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/9o8AAAAASUVORK5CYII=','base64');
-test('V101 Fold layout fills display with four cards in a row and two balanced cards',async({page})=>{
+test('V101 Fold layout fills display with four readable cards in two balanced rows and two balanced cards',async({page})=>{
  await page.setViewportSize({width:790,height:950});
  await page.goto('/v101/index.html#home',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.card')).toHaveCount(4);
- const a=await page.locator('.card').evaluateAll(xs=>xs.map(x=>Math.round(x.getBoundingClientRect().top)));
- expect(new Set(a).size,'all four cards appear across one Fold row').toBe(1);
+ const a=await page.locator('.card').evaluateAll(xs=>xs.map(x=>({top:Math.round(x.getBoundingClientRect().top),width:Math.round(x.getBoundingClientRect().width)})));
+ expect(new Set(a.map(x=>x.top)).size,'four cards are distributed across two Fold rows').toBe(2);
+ expect(a[0].top).toBe(a[1].top);expect(a[2].top).toBe(a[3].top);
+ expect(Math.min(...a.map(x=>x.width))).toBeGreaterThan(250);
  await page.goto('/v101/index.html#listings');
  await page.locator('[data-filter="إلكترونيات"]').click();
  await expect(page.locator('.card')).toHaveCount(2);
