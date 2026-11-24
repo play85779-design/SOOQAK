@@ -44,17 +44,23 @@ test('V101 favorite heart only one per photo and toggles',async({page})=>{
  await page.locator('button[data-go="favorites"]:visible').first().click();
  await expect(page.locator('.card')).toHaveCount(1);
 });
-test('V101 search and editable local listing review',async({page})=>{
+test('V103 search and editable local listing review',async({page})=>{
  await page.goto('/v101/index.html#home',{waitUntil:'domcontentloaded'});
  await page.locator('input[name="q"]').fill('هاتف');
  await page.locator('#search').getByRole('button').click();
  await expect(page.locator('.card')).toHaveCount(1);
  await page.locator('button[data-go="post"]:visible').first().click();
+ const sample=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/9o8AAAAASUVORK5CYII=','base64');
+ await page.locator('#preview-images').setInputFiles({name:'ad.png',mimeType:'image/png',buffer:sample});
+ await page.locator('[data-post-next]').click();
  await page.locator('#post-title').fill('سيارة توضيحية للتجربة');
  await page.locator('#post-price').fill('65000');
  await page.locator('#post-region').selectOption('المنطقة الشرقية');
- await page.locator('#post-form').getByRole('button',{name:/مراجعة الإعلان/}).click();
- await expect(page.getByRole('dialog')).toContainText('لم يُنشر الإعلان');
+ await page.locator('[data-post-next]').click();
+ await expect(page.locator('.wizard-summary-info')).toContainText('سيارة توضيحية للتجربة');
+ await expect(page.locator('.wizard-summary-info')).toContainText('65,000');
+ await page.locator('[data-post-preview]').click();
+ await expect(page.getByRole('dialog')).toContainText('لم يُنشر شيء');
 });
 test('V101 logo and all independent SVG illustrations exist',async({request})=>{
  for(const p of ['index.html','styles.css','app.js','assets/bag.svg','assets/hero-car.svg','assets/shop.svg','assets/sofa.svg','assets/laptop.svg','assets/phone.svg']){
