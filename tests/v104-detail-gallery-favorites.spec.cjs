@@ -44,7 +44,7 @@ test('V104 account entry is visible and login signup recovery tabs are interacti
  await expect(page.locator('.header-auth-btn')).toBeVisible();
  await page.locator('.header-auth-btn').click();
  await expect(page.locator('.auth-preview-page')).toBeVisible();
- await page.getByRole('button',{name:'إنشاء حساب'}).click();
+ await page.locator('.auth-tabs button[data-auth-mode="signup"]').click();
  await expect(page.locator('.auth-preview-page h1')).toHaveText('إنشاء حساب سوقك');
  await expect(page.locator('#auth-email-preview')).toBeDisabled();
  await page.getByRole('button',{name:/نسيت كلمة المرور/}).click();
