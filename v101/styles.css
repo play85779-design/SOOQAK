@@ -809,3 +809,44 @@ body{font-weight:500;background:var(--bg)}
 .auth-intro{padding:9px 14px}
 .auth-demo-error:empty{display:none}
 @media(max-width:460px){.shops-page .shop-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.store-start{padding:12px;gap:8px}.store-start img{height:110px}.store-benefits>div{padding:9px}.store-benefits b{font-size:13px}.store-benefits small{font-size:11px}.managed-actions button{padding:6px 10px}.managed-unit .card-content{padding:8px}}
+
+/* V112 — balanced identity, quick access and interactive promotions */
+.top{background:#fff;border-bottom:1px solid #e2ede5;box-shadow:0 3px 15px #16472c0b}
+.top-inner{gap:10px;min-height:64px}
+.top-actions{gap:9px;min-width:0;align-items:center}
+.header-quick{display:flex;align-items:center;justify-content:center;gap:5px;min-height:42px;padding:8px 10px;border-radius:12px;background:#f0f8f3;color:#137945;font-weight:700;font-size:12px;white-space:nowrap}
+.header-quick svg{width:20px;height:20px;flex:none}
+.header-notifications{color:#6b3ea5;background:#f5effc}
+.header-auth-btn{min-height:42px;border-radius:12px}
+.locale{min-height:40px;border-color:#d6e8d9}
+.search-row{display:flex;gap:8px;align-items:center;margin-bottom:9px}
+.search-row .search{flex:1;min-width:0;margin:0}
+.search-filter-btn{display:flex;align-items:center;gap:6px;justify-content:center;min-height:44px;padding:7px 12px;border:1px solid #e6d9f3;background:#f4edff;color:#60369a;border-radius:13px;font-weight:800}
+.search-filter-btn svg{height:20px;width:20px}
+.location-picker{max-width:none;width:100%;gap:8px}
+.location-box label{display:flex;align-items:center;gap:4px}
+.location-box label svg{width:13px;height:13px;color:#18834a}
+.hero{min-height:clamp(180px,28vw,255px);background:radial-gradient(circle at 20% 30%,#b278ff65,transparent 45%),linear-gradient(120deg,#512190,#8434c9 60%,#9c43db);border-radius:23px;box-shadow:0 8px 22px #65319e29}
+.hero-emerald{background:radial-gradient(circle at 18% 24%,#70d9a265,transparent 45%),linear-gradient(120deg,#075a39,#098f58);border-color:#1b9e67}
+.hero-amber{background:radial-gradient(circle at 15% 20%,#ffc5666b,transparent 45%),linear-gradient(120deg,#9c4312,#c66b19);border-color:#d68b43}
+.hero h1{font-size:clamp(21px,3.7vw,40px);line-height:1.2}
+.hero h1 span{color:#ffe582}
+.hero p{color:white;font-weight:600}
+.hero-figure{align-items:center;overflow:hidden;padding:5px}
+.hero-figure img{width:100%;max-width:100%;height:auto;max-height:245px;margin:0;object-fit:contain}
+.hero-dots{gap:3px;margin:4px 0 9px}
+.hero-dots button{height:26px;width:30px;display:grid;place-items:center}
+.hero-dots button:after{content:'';width:7px;height:7px;border-radius:9px;background:#c5b2d9;transition:width .15s}
+.hero-dots button.active:after{width:19px;background:#e99513}
+.cat{border-radius:16px;background:#fff;box-shadow:0 3px 8px #251a4010;transition:transform .15s,box-shadow .15s}
+.cat:hover{transform:translateY(-2px);box-shadow:0 5px 12px #251a401c}
+.cat-icon{border-radius:16px;box-shadow:inset 0 2px 2px #ffffffc0,0 4px 8px #2b1d3d13}
+.cat:nth-child(1) .cat-icon{background:linear-gradient(145deg,#effcf1,#b9ebce)}
+.cat:nth-child(2) .cat-icon{background:linear-gradient(145deg,#f0f7ff,#b8d8fb)}
+.cat:nth-child(3) .cat-icon{background:linear-gradient(145deg,#fff8ef,#ffd5a2)}
+.cat:nth-child(4) .cat-icon{background:linear-gradient(145deg,#fffae9,#ffe18c)}
+.cat:nth-child(5) .cat-icon{background:linear-gradient(145deg,#f7efff,#d7bdf8)}
+.cat-icon svg{filter:drop-shadow(0 2px 1px #ffffff80)}
+@media(max-width:600px){.top-inner{gap:5px;padding-inline:9px;min-height:62px}.top-actions{gap:4px}.header-quick{padding:6px;min-width:36px;min-height:40px}.header-quick span{display:none}.locale{padding:2px 3px;min-height:38px}.header-auth-btn{padding-inline:7px}.header-auth-btn .auth-long{display:none}.header-auth-btn .auth-short{display:none}.header-auth-btn svg{width:20px;height:20px}.search-filter-btn{padding:6px 9px}.search-filter-btn span{display:none}.hero-figure img{max-height:180px}.hero-copy{padding-inline:12px 0}.hero-chip{font-size:10px}}
+@media(max-width:360px){.header-quick{min-width:32px;padding:4px}.header-quick svg{width:18px;height:18px}.top-actions{gap:3px}.top-inner{padding-inline:6px}.hero-copy{padding-inline:9px 0}}
+@media(prefers-reduced-motion:reduce){.hero-dots button:after,.cat{transition:none}.cat:hover{transform:none}}
