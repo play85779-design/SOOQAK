@@ -771,4 +771,4 @@ body{font-weight:500;background:var(--bg)}
 .auth-preview-card .auth-explain{font-weight:800}
 @media(min-width:700px){.wizard-summary{grid-template-columns:minmax(0,46%) minmax(0,1fr)}.wizard-summary-photo{height:clamp(230px,32vw,340px)}}
 @media(max-width:460px){.ads-dashboard{flex-direction:column;align-items:stretch;padding:15px;gap:12px}.ads-stats>div{padding:11px 7px}.ads-stats span{flex-wrap:wrap}.ads-managed-list .card-content{padding:8px}.wizard-summary-photo{height:220px}}
-@media(min-width:700px) and (max-width:900px){.card-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:700px) and (max-width:900px){.card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
