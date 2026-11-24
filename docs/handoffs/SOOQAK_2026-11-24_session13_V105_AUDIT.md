@@ -15,3 +15,6 @@ https://github.com/play85779-design/SOOQAK/actions/runs/45323509095
 https://docs.google.com/document/d/1whMX7gdZrHnCtrD8D96Rx5__iVDsNBp1tljp7Y3V7y8/edit
 https://docs.google.com/spreadsheets/d/1RKlSs77CvaS81jACLT_MmGUvbL-dXNhBXNXXsYwSgfQ/edit
 لا دمج، لا تغيير main أو DB، لا اشتراك جديد.
+
+## تحقق إضافي مباشر
+Supabase يعرض مشروعًا واحدًا فقط، وقائمة فروع التطوير فارغة. لا بيئة staging منفصلة مثبتة؛ يمنع الربط الحي أو تغيير إعدادات Auth/DB. W1 مجدول ومفعّل، W2 موقوف، W3 ضمن الأتمتة اليومية المفعلة؛ لا إثبات نشاط لحظي. PR53 عُدّل أساسه إلى develop/v38-recovery لأن سير Quality يستهدف main/develop فقط؛ لا تغيير إعدادات CI ولا دمج. رابط PR53: https://github.com/play85779-design/SOOQAK/pull/53 .
