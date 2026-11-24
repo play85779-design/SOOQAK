@@ -4,12 +4,12 @@ test('V103 account separates guest, auth preview, my ads and messages without fa
  await page.goto('/v101/index.html#account',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.account-hero')).toContainText('زائر');
  await expect(page.locator('.account-quick-card')).toHaveCount(4);
- await page.getByRole('button',{name:/استكشف تسجيل الدخول/}).first().click();
+ await page.getByRole('button',{name:/^تسجيل الدخول/}).first().click();
  await expect(page.locator('.auth-preview-card')).toBeVisible();
  await expect(page.locator('#auth-email-preview')).toBeEditable();
- await expect(page.locator('.auth-preview-card')).toContainText('هذه معاينة للتصميم فقط');
+ await expect(page.locator('.auth-preview-card')).toContainText('معاينة فقط: لا تدخل بياناتك الحقيقية');
  await page.goto('/v101/index.html#my-ads');
- await expect(page.locator('.account-empty')).toContainText('لا توجد إعلانات مرتبطة بحساب حقيقي');
+ await expect(page.locator('.account-empty')).toContainText('ابدأ بإعلانك الأول');
  await page.goto('/v101/index.html#messages');
  await expect(page.locator('.account-empty')).toContainText('المراسلة الحقيقية');
 });
