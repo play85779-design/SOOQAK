@@ -38,7 +38,7 @@ test('V104 detail favorite fills and un-fills and matches cards/favorites page',
  await expect(page.locator('.detail-fav')).toContainText('حفظ');
 });
 
-test('V104 account entry is visible and login signup recovery tabs are interactive but safely disabled',async({page})=>{
+test('V104 account entry is visible and login signup recovery tabs are editable with local-only test data',async({page})=>{
  await page.setViewportSize({width:330,height:760});
  await page.goto('/v101/index.html#home',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.header-auth-btn')).toBeVisible();
@@ -46,9 +46,10 @@ test('V104 account entry is visible and login signup recovery tabs are interacti
  await expect(page.locator('.auth-preview-page')).toBeVisible();
  await page.locator('.auth-tabs button[data-auth-mode="signup"]').click();
  await expect(page.locator('.auth-preview-page h1')).toHaveText('إنشاء حساب سوقك');
- await expect(page.locator('#auth-email-preview')).toBeDisabled();
+ await expect(page.locator('#auth-email-preview')).toBeEditable();
  await page.getByRole('button',{name:/نسيت كلمة المرور/}).click();
  await expect(page.locator('.auth-preview-page h1')).toHaveText('استعادة كلمة المرور');
+ await page.getByRole('button',{name:'تعبئة بيانات اختبار جاهزة'}).click();
  await page.locator('.auth-explain').click();
  await expect(page.getByRole('dialog')).toContainText('التسجيل غير مفعل');
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
