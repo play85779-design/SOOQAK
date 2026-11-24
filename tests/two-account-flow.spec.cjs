@@ -4,6 +4,7 @@ const {test,expect}=require('@playwright/test');
 // No live Supabase writes, outbound email, customer access or real payments.
 const SELLER='11111111-1111-4111-8111-111111111111';
 const BUYER='22222222-2222-4222-8222-222222222222';
+const OUTSIDER='44444444-4444-4444-8444-444444444444';
 const ID='00000000-0000-4000-8000-000000000099';
 const CHAT='00000000-0000-4000-8000-000000000050';
 
@@ -63,7 +64,10 @@ test('two separate accounts: seller posts, buyer chats, seller sells with 1% com
      return state.conversations[0];
    }
    if(action==='conversations')return state.conversations.filter(c=>c.seller_id===uid||c.buyer_id===uid);
-   if(action==='messages')return state.messages.filter(m=>m.conversation_id===p.id);
+   if(action==='messages'){
+     if(!state.conversations.some(c=>c.id===p.id&&(c.seller_id===uid||c.buyer_id===uid)))throw Error('forbidden read');
+     return state.messages.filter(m=>m.conversation_id===p.id);
+   }
    if(action==='send'){
      if(!state.conversations.some(c=>c.id===p.id&&(c.seller_id===uid||c.buyer_id===uid)))throw Error('forbidden send');
      state.messages.push({id:'msg-'+(state.messages.length+1),conversation_id:p.id,sender_id:uid,body:p.body,created_at:new Date().toISOString()});
@@ -110,6 +114,12 @@ test('two separate accounts: seller posts, buyer chats, seller sells with 1% com
    await expect(buyerPage.locator('#chatMessages')).toContainText('الأرض متاحة');
    expect(state.messages).toHaveLength(1);
    expect(state.messages[0].sender_id).toBe(BUYER);
+   // Fixture contract only: the third identity cannot read or send in this conversation.
+   expect(await db({action:'messages',uid:SELLER,id:CHAT})).toHaveLength(1);
+   expect(await db({action:'conversations',uid:OUTSIDER})).toHaveLength(0);
+   await expect(db({action:'messages',uid:OUTSIDER,id:CHAT})).rejects.toThrow('forbidden read');
+   await expect(db({action:'send',uid:OUTSIDER,id:CHAT,body:'unauthorized'})).rejects.toThrow('forbidden send');
+   expect(state.messages).toHaveLength(1);
 
    sellerPage.on('dialog',async dialog=>{if(dialog.type()==='prompt')await dialog.accept('42000');else await dialog.accept();});
    await sellerPage.locator('#listingGrid [data-open="'+ID+'"]').click();

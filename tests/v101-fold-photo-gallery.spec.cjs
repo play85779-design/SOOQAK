@@ -1,0 +1,44 @@
+const {test,expect}=require('@playwright/test');
+const sample=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/9o8AAAAASUVORK5CYII=','base64');
+test('V101 Fold layout fills display with four readable cards in two balanced rows and two balanced cards',async({page})=>{
+ await page.setViewportSize({width:790,height:950});
+ await page.goto('/v101/index.html#home',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.card')).toHaveCount(4);
+ const a=await page.locator('.card').evaluateAll(xs=>xs.map(x=>({top:Math.round(x.getBoundingClientRect().top),width:Math.round(x.getBoundingClientRect().width)})));
+ expect(new Set(a.map(x=>x.top)).size,'four cards are distributed across two Fold rows').toBe(2);
+ expect(a[0].top).toBe(a[1].top);expect(a[2].top).toBe(a[3].top);
+ expect(Math.min(...a.map(x=>x.width))).toBeGreaterThan(250);
+ await page.goto('/v101/index.html#listings');
+ await page.locator('[data-filter="إلكترونيات"]').click();
+ await expect(page.locator('.card')).toHaveCount(2);
+ const b=await page.locator('.card').evaluateAll(xs=>xs.map(x=>({top:Math.round(x.getBoundingClientRect().top),width:Math.round(x.getBoundingClientRect().width)})));
+ expect(b[0].top).toBe(b[1].top);
+ expect(b[0].width).toBeGreaterThan(250);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(2);
+});
+test('V101 photo previews appear for each selected image and can be removed',async({page})=>{
+ await page.goto('/v101/index.html#post',{waitUntil:'domcontentloaded'});
+ const input=page.locator('#preview-images');
+ await input.setInputFiles([{name:'one.png',mimeType:'image/png',buffer:sample},{name:'two.png',mimeType:'image/png',buffer:sample}]);
+ await expect(page.locator('.upload-thumb')).toHaveCount(2);
+ await expect(page.locator('#upload-label')).toContainText('2 صور');
+ await input.setInputFiles([{name:'three.png',mimeType:'image/png',buffer:sample}]);
+ await expect(page.locator('.upload-thumb')).toHaveCount(3);
+ await page.getByRole('button',{name:'حذف الصورة 1'}).click();
+ await expect(page.locator('.upload-thumb')).toHaveCount(2);
+ await expect(page.locator('#upload-label')).toContainText('2 صور');
+ await expect(page.locator('.upload-count').first()).toContainText('رئيسية');
+ await page.getByRole('button',{name:'تعيين الصورة 2 رئيسية'}).click();
+ await expect(page.locator('.upload-count').first()).toContainText('رئيسية');
+ await expect(page.locator('.upload-thumb')).toHaveCount(2);
+});
+test('V102 shows single national flag next to selected country',async({page})=>{
+ await page.goto('/v101/index.html#home',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.country-flag')).toContainText('🇸🇦');
+ await expect(page.locator('#country')).toHaveValue('السعودية');
+ await page.locator('#country').selectOption('البحرين');
+ await expect(page.locator('.country-flag')).toContainText('🇧🇭');
+ await page.locator('#country').selectOption('الإمارات');
+ await expect(page.locator('.country-flag')).toContainText('🇦🇪');
+ await expect(page.locator('#country')).toHaveValue('الإمارات');
+});
