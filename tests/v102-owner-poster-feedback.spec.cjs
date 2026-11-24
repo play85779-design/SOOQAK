@@ -37,20 +37,28 @@ test('V102 shop cards open a sample store without invented sales or ratings',asy
  await expect(page.locator('.store-preview')).toContainText('لا توجد تقييمات أو متابعون');
 });
 
-test('V102 posting form has three visual steps and requires a region before local review',async({page})=>{
+test('V103 post wizard has clickable steps and retains editing',async({page})=>{
+ const sample=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/9o8AAAAASUVORK5CYII=','base64');
  await page.goto('/v101/index.html#post',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.post-steps span')).toHaveCount(3);
- await expect(page.locator('#post-city')).toHaveValue('');
+ await expect(page.locator('.wizard-step')).toHaveCount(3);
+ await page.locator('[data-post-step="2"]').click();
+ await expect(page.locator('#toast')).toContainText('اختر صورة');
+ await page.locator('#preview-images').setInputFiles({name:'photo.png',mimeType:'image/png',buffer:sample});
+ await page.locator('[data-post-step="2"]').click();
  await page.locator('#post-title').fill('سيارة نموذجية جذابة');
  await page.locator('#post-price').fill('45000');
- await page.locator('#post-form').getByRole('button',{name:/مراجعة الإعلان/}).click();
+ await page.locator('[data-post-step="3"]').click();
  await expect(page.locator('#toast')).toContainText('اختر المنطقة');
  await page.locator('#post-region').selectOption('المنطقة الشرقية');
  await page.locator('#post-city').selectOption('الدمام');
- await page.locator('#post-form').getByRole('button',{name:/مراجعة الإعلان/}).click();
- await expect(page.getByRole('dialog')).toContainText('لم يُنشر الإعلان');
+ await page.locator('[data-post-step="3"]').click();
+ await expect(page.locator('.wizard-summary')).toContainText('سيارة نموذجية جذابة');
+ await page.locator('[data-post-step="2"]').click();
+ await expect(page.locator('#post-title')).toHaveValue('سيارة نموذجية جذابة');
+ await expect(page.locator('#post-city')).toHaveValue('الدمام');
+ await page.locator('[data-post-step="1"]').click();
+ await expect(page.locator('.upload-thumb')).toHaveCount(1);
 });
-
 for(const width of [330,390,790,1180]){
  test('V102 layout remains scroll-safe with hierarchy and poster typography at '+width,async({page})=>{
   await page.setViewportSize({width,height:900});
