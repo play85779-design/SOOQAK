@@ -87,7 +87,7 @@ const filters=()=>'<div class="filter-bar" aria-label="فلترة الإعلان
 const home=()=>'<div class="shell">'+search()+locationPicker()+notice()+hero()+catbar()+title('متاجر سوقك','تسوّق من المتاجر','stores')+shops()+title('أحدث الإعلانات','اكتشف اللي يناسبك','listings')+cards(eligible())+'</div>';
 const listings=()=>'<div class="shell"><div class="screen-title"><h1>الإعلانات</h1><button data-go="home" aria-label="العودة">'+ic('back')+'</button></div>'+search()+locationPicker()+notice()+filters()+'<div class="feed-head"><h2>إعلانات قريبة منك</h2><span class="subtext">'+eligible().length+' أمثلة</span></div>'+cards(eligible())+'</div>';
 const storePage=()=>'<div class="shell shops-page"><div class="screen-title"><h1>متاجر سوقك</h1><button data-go="home" aria-label="العودة">'+ic('back')+'</button></div>'+notice()+title('تسوّق من المتاجر','واجهة تجريبية')+shops()+'<div class="inline-alert">المتاجر هنا تصميم توضيحي. لا توجد شارات توثيق أو تقييمات أو عمليات بيع حقيقية في هذه المعاينة.</div><button class="cta" data-go="create-store">أنشئ متجرك '+ic('store')+'</button></div>';
-const photoGallery=()=>state.photoUrls.length?'<div class="upload-previews" role="list" aria-label="صور الإعلان المختارة">'+state.photoUrls.map((p,i)=>'<div class="upload-thumb" role="listitem"><img src="'+p.url+'" alt="الصورة المختارة '+(i+1)+'"><span class="upload-count">'+(i+1)+'</span><button type="button" aria-label="حذف الصورة '+(i+1)+'" data-photo-remove="'+i+'">×</button></div>').join('')+'</div>':'';
+const photoGallery=()=>state.photoUrls.length?'<div class="upload-previews" role="list" aria-label="صور الإعلان المختارة">'+state.photoUrls.map((p,i)=>'<div class="upload-thumb" role="listitem"><img src="'+p.url+'" alt="الصورة المختارة '+(i+1)+'"><span class="upload-count">'+(i===0?'رئيسية':i+1)+'</span>'+(i>0?'<button type="button" class="upload-main" aria-label="تعيين الصورة '+(i+1)+' رئيسية" data-photo-main="'+i+'">اجعلها رئيسية</button>':'')+'<button type="button" aria-label="حذف الصورة '+(i+1)+'" data-photo-remove="'+i+'">×</button></div>').join('')+'</div>':'';
 const post=()=>{
  const d=state.postDraft,step=state.postStep;
  const labels=['صور الإعلان','تفاصيل المنتج','المراجعة'];
@@ -157,6 +157,17 @@ document.addEventListener('click',e=>{
  if(b.dataset.filter){state.filter=b.dataset.filter;render(true);return}
  if(b.dataset.detail){state.item=b.dataset.detail;go('detail');return}
  if(b.dataset.fav){let id=b.dataset.fav;if(state.favorites.has(id))state.favorites.delete(id);else state.favorites.add(id);sessionStorage.setItem('sooqak-v101-fav',JSON.stringify([...state.favorites]));render(true);toast(state.favorites.has(id)?'حُفظ في المفضلة التجريبية':'أزيل من المفضلة');return}
+ if(b.dataset.photoMain!==undefined){
+  const i=Number(b.dataset.photoMain);
+  if(Number.isInteger(i)&&i>0&&i<state.photoUrls.length){
+   const chosen=state.photoUrls.splice(i,1)[0];
+   state.photoUrls.unshift(chosen);
+   const frame=$('#upload-previews');
+   if(frame)frame.innerHTML=photoGallery();
+   toast('تم تعيين الصورة الرئيسية');
+  }
+  return;
+ }
  if(b.dataset.photoRemove!==undefined){const i=Number(b.dataset.photoRemove);if(Number.isInteger(i)&&state.photoUrls[i]){URL.revokeObjectURL(state.photoUrls[i].url);state.photoUrls.splice(i,1);const frame=$('#upload-previews');if(frame)frame.innerHTML=photoGallery();const label=$('#upload-label');if(label)label.textContent=state.photoUrls.length?'تم اختيار '+state.photoUrls.length+' صور — يمكنك إضافة المزيد':'أضف صور الإعلان';}return}
  if(b.dataset.action){action(b.dataset.action);return}
 });
