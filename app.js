@@ -792,7 +792,7 @@ camera.addEventListener('change',()=>{
  const picked=new DataTransfer();for(const file of [...previous,...shot])picked.items.add(file);
  gallery.files=picked.files;camera.value='';
  gallery.dispatchEvent(new Event('change',{bubbles:true}));
-});document.querySelectorAll('[data-photo-remove]').forEach(b=>b.onclick=()=>removeCloudPhoto(b.dataset.photoRemove,b.dataset.photoPath,b.dataset.photoAd));document.querySelectorAll('[data-photo-move]').forEach(b=>b.onclick=()=>moveV12Photo(b.dataset.photoAd,b.dataset.photoMove,Number(b.dataset.photoDirection)));form.addEventListener('input',()=>{if(!ad){draftSave(form);sooqakSaveDraftSoon(form)}});form.addEventListener('change',()=>{if(!ad){draftSave(form);sooqakSaveDraftSoon(form)}});$('saveDraftButton').onclick=async()=>{draftSave(form);if(cloudEnabled()){try{await window.sooqakCloud.saveAccountDraft(state.role==='متجر'?'business':'personal',state.draft);notify('حُفظت المسودة النصية في حسابك دون الصور أو أرقام التواصل')}catch(e){cloudError(e)}}else notify('حفظنا المسودة على جهازك')};form.onsubmit=async e=>{e.preventDefault();await publishAd(form,ad)}}
+});document.querySelectorAll('[data-photo-remove]').forEach(b=>b.onclick=()=>removeCloudPhoto(b.dataset.photoRemove,b.dataset.photoPath,b.dataset.photoAd));document.querySelectorAll('[data-photo-move]').forEach(b=>b.onclick=()=>moveV12Photo(b.dataset.photoAd,b.dataset.photoMove,Number(b.dataset.photoDirection)));form.addEventListener('input',()=>{if(!ad){draftSave(form);sooqakSaveDraftSoon(form)}});form.addEventListener('change',()=>{if(!ad){draftSave(form);sooqakSaveDraftSoon(form)}});$('saveDraftButton').onclick=async()=>{draftSave(form);if(cloudEnabled()){try{await window.sooqakCloud.saveAccountDraft(state.role==='متجر'?'business':'personal',state.draft);notify('حُفظت المسودة النصية في حسابك دون الصور أو أرقام التواصل')}catch(e){cloudError(e)}}else notify('حفظنا المسودة على جهازك')};form.onsubmit=async e=>{e.preventDefault();await submitAdOnce(form,ad)}}
 async function compressImage(file){return new Promise((resolve,reject)=>{if(file.size>12*1024*1024)return reject(Error('الصورة أكبر من 12 ميجابايت'));const reader=new FileReader();reader.onerror=()=>reject(Error('تعذرت قراءة الصورة'));reader.onload=()=>{const img=new Image();img.onerror=()=>reject(Error('صيغة الصورة غير مدعومة'));img.onload=()=>{const scale=Math.min(1,1100/Math.max(img.width,img.height));const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(img.width*scale));canvas.height=Math.max(1,Math.round(img.height*scale));canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);resolve(canvas.toDataURL('image/jpeg',.68))};img.src=reader.result};reader.readAsDataURL(file)})}
 async function compressCloudPhoto(file){
   if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('يرجى اختيار JPEG أو PNG أو WEBP');
@@ -812,6 +812,22 @@ async function compressCloudPhoto(file){
     if(blob.size>1572864)throw Error('الصورة كبيرة بعد الضغط؛ اختر صورة أصغر');
     return blob;
   } finally {URL.revokeObjectURL(url)}
+}
+// Block repeat submit before any asynchronous validation or photo compression.
+let sooqakPublishInFlight=false;
+async function submitAdOnce(form,old){
+ if(sooqakPublishInFlight)return;
+ sooqakPublishInFlight=true;
+ const button=form.querySelector('[type=submit]');
+ const previous=button?.textContent;
+ if(button){button.disabled=true;button.textContent='جارٍ الحفظ…';}
+ form.setAttribute('aria-busy','true');
+ try{await publishAd(form,old);}
+ finally{
+  sooqakPublishInFlight=false;
+  form.removeAttribute('aria-busy');
+  if(button){button.disabled=false;button.textContent=previous;}
+ }
 }
 async function publishAd(form,old){clearTimeout(sooqakDraftAutoSaveTimer);if(cloudEnabled())return publishCloudAd(form,old);const d=new FormData(form);if(!old&&!state.pledgeAcceptedAt&&d.get('pledgeAccept')!=='yes')return notify('يجب الموافقة على ميثاق الأمانة عند نشر أول إعلان');const title=String(d.get('title')||'').trim(),desc=sooqakComposedDescription(form),priceType=String(d.get('priceType')),priceStr=String(d.get('price')||'').trim();if(title.length<5||desc.length<10)return notify('تأكد من كتابة عنوان ووصف واضحين');if(desc.length>4000)return notify('تفاصيل الإعلان طويلة؛ اختصر الوصف أو المواصفات');if(priceType!=='تواصل للسعر'&&!priceStr)return notify('أدخل السعر أو اختر تواصل للسعر');if(priceStr!==''&&(!Number.isFinite(+priceStr)||+priceStr<0))return notify('السعر غير صالح');let wa='';if(d.get('showWhatsapp')==='yes'||d.get('allowCall')==='yes'){if(!String(d.get('whatsapp')||'').trim())return notify('أدخل رقم الجوال أو ألغِ خيار إظهار التواصل');const normalized=normalizeWhatsappPhone(d.get('whatsapp'),d.get('phoneCountry')||'SA');if(normalized.error)return notify(normalized.error);wa=normalized.phone;}const category=String(d.get('category'));const duplicate=state.ads.some(a=>a.id!==old?.id&&mine(a)&&active(a)&&a.category===category&&a.title.trim().toLowerCase()===title.toLowerCase());if(duplicate)return notify('عندك إعلان مماثل منشور. عدّل الإعلان الحالي بدل تكراره');const today=todayRiyadh(),limit=state.role==='متجر'?20:5;const used=state.ads.filter(a=>a.owner===state.account.email&&a.role===state.role&&a.postedDay===today).length;if(!old&&used>=limit)return notify(`وصلت الحد اليومي (${limit}) للإعلانات التجريبية`);const files=$('adImages').__sooqakSortedFiles||[...$('adImages').files];if(files.length>5)return notify('الحد الأقصى 5 صور');let images=old?.images||[];try{if(files.length)images=await Promise.all([...files].map(compressImage))}catch(err){return notify(err.message)}const now=new Date();const payload={id:old?.id||`my-${Date.now()}`,title,description:desc,price:priceStr?Number(priceStr):null,priceType,category,city:String(d.get('city')),district:String(d.get('district')||'').trim(),kind:String(d.get('kind')),whatsapp:wa,showWhatsapp:d.get('showWhatsapp')==='yes',allowCall:d.get('allowCall')==='yes',images,emoji:categories.find(x=>x[0]===category)?.[1]||'📦',color:'blue',seller:state.account.name,owner:state.account.email,role:state.role,createdAt:old?.createdAt||now.toISOString(),postedDay:old?.postedDay||today,status:old?.status||'متاح',expiresAt:old?.expiresAt||new Date(now.getTime()+60*86400000).toISOString(),bumpAt:old?.bumpAt||null,demo:false};if(old)state.ads=state.ads.map(a=>a.id===old.id?payload:a);else state.ads.push(payload);if(!state.pledgeAcceptedAt)state.pledgeAcceptedAt=new Date().toISOString();state.draft={};save();closeModal();reset();notify(old?'تم تعديل إعلانك التجريبي':'تم نشر إعلان محلي على هذا الجهاز فقط')}
 function reserve(id){if(cloudEnabled())return reserveCloud(id);const ad=byId(id);if(!ad||!mine(ad))return;const hours=prompt('كم مدة الحجز بالساعات؟ اختر 24 أو 48 أو 72','24');if(hours===null)return;if(!['24','48','72'].includes(hours))return notify('اختر 24 أو 48 أو 72 ساعة');ad.reservedUntil=new Date(Date.now()+Number(hours)*3600000).toISOString();ad.status='محجوز';save();openAd(id);notify('تم حجز الإعلان محليًا')}
@@ -1224,8 +1240,11 @@ async function publishCloudAd(form,old){
     catch(e){contactIssue=e;}
     let photoIssue=null;
     if(photos.length){try{await service.uploadPhotos(listingId,photos)}catch(err){photoIssue=err}}
-    if(!photoIssue){state.draft={};save();try{await service.deleteAccountDraft(state.role==='متجر'?'business':'personal')}catch(_e){}}closeModal();await refreshCloudAds();
-    notify(contactIssue?'حُفظ الإعلان، لكن تعذر تفعيل التواصل؛ راجع الموافقة والرقم: '+String(contactIssue.message||contactIssue):photoIssue?'حُفظ الإعلان، لكن لم تكتمل جميع الصور: '+String(photoIssue.message||photoIssue):old?'تم تحديث الإعلان والصور':'تم حفظ الإعلان والصور في قاعدة البيانات التجريبية')
+    // Once the listing ID is confirmed, do not leave a new-listing draft that invites duplication.
+    state.draft={};save();try{await service.deleteAccountDraft(state.role==='متجر'?'business':'personal')}catch(_e){}
+    closeModal();await refreshCloudAds();
+    const incomplete=[contactIssue?'التواصل':'',photoIssue?'الصور':''].filter(Boolean);
+    notify(incomplete.length?'حُفظ الإعلان، لكن تعذر إكمال '+incomplete.join(' و')+'. عدّل الإعلان الموجود من إعلاناتي، ولا تنشره مرة أخرى.':old?'تم تحديث الإعلان والصور':'تم حفظ الإعلان والصور في قاعدة البيانات التجريبية')
   }catch(e){cloudError(e)}
 }
 async function deleteCloud(id){
