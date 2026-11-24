@@ -25,6 +25,10 @@ test('V101 photo previews appear for each selected image and can be removed',asy
  await page.getByRole('button',{name:'حذف الصورة 1'}).click();
  await expect(page.locator('.upload-thumb')).toHaveCount(2);
  await expect(page.locator('#upload-label')).toContainText('2 صور');
+ await expect(page.locator('.upload-count').first()).toContainText('رئيسية');
+ await page.getByRole('button',{name:'تعيين الصورة 2 رئيسية'}).click();
+ await expect(page.locator('.upload-count').first()).toContainText('رئيسية');
+ await expect(page.locator('.upload-thumb')).toHaveCount(2);
 });
 test('V102 shows single national flag next to selected country',async({page})=>{
  await page.goto('/v101/index.html#home',{waitUntil:'domcontentloaded'});
