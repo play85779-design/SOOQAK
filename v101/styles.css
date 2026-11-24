@@ -448,3 +448,56 @@ body{background:#fafcf9;color:#193727;font-weight:600}
  .store-cover h2{font-size:23px}
  .store-cover img{height:140px}
 }
+
+/* V103 — interactive poster-aligned wizard: mobile-first, compact and functional */
+.wizard-page{max-width:860px}
+.wizard-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0 14px}
+.wizard-step{border:1.5px solid #dfebe1;border-radius:16px;background:#fff;color:#42664d;padding:11px 6px;display:flex;align-items:center;justify-content:center;gap:8px;font:800 13px var(--round);box-shadow:0 3px 9px #176c3213;min-height:51px;white-space:nowrap}
+.wizard-step .wizard-number{width:27px;height:27px;border-radius:50%;background:#e7f7eb;color:#087a3c;display:grid;place-items:center;flex:none;font:800 15px var(--round)}
+.wizard-step.active{background:linear-gradient(125deg,#0c9047,#05793a);border-color:#05793a;color:#fff;box-shadow:0 6px 13px #0c77302d}
+.wizard-step.active .wizard-number{background:#ffab25;color:#fff}
+.wizard-step.done{border-color:#96d7ae;background:#f0fbf1;color:#086c35}
+.wizard-card{background:white;border:1px solid #dcece0;border-radius:23px;box-shadow:0 9px 22px #0d79321a;padding:19px;max-width:680px;margin:0 auto}
+.wizard-panel-header{display:flex;align-items:center;gap:12px;margin:0 0 15px}
+.wizard-icon{display:grid;place-items:center;width:47px;height:47px;flex:none;border-radius:15px;background:linear-gradient(125deg,#fff0d7,#ffdda2);color:#c87908}
+.wizard-icon svg{height:26px;width:26px}
+.wizard-panel-header h2{font:800 23px/1.15 var(--round);color:#0a6d37}
+.wizard-panel-header p{font-size:12px;font-weight:700;color:#607b65;margin-top:4px}
+.wizard-upload{min-height:150px;gap:7px;padding:18px;border:2px dashed #53ba78;background:linear-gradient(135deg,#edfff1,#fff7e9)}
+.wizard-upload span{font:800 18px var(--round)}
+.wizard-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:11px}
+.wizard-fields .field{margin-bottom:12px}
+.wizard-fields .field:nth-child(-n+2){grid-column:1/-1}
+.wizard-fields .field label{font:800 14px var(--round);color:#194c2d}
+.wizard-fields .field input,.wizard-fields .field select,.wizard-fields .field textarea{font-size:14px;padding:10px 12px;min-height:43px;border:1px solid #d6e7db;border-radius:12px;width:100%;background:#fff}
+.wizard-fields .field textarea{min-height:75px}
+.wizard-actions{border-top:1px solid #e9f0e9;margin-top:17px;padding-top:14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.wizard-actions .cta{flex:1;font:800 17px var(--round);min-height:46px;box-shadow:0 4px 0 #dd7500}
+.wizard-back{padding:11px 16px;display:flex;align-items:center;gap:6px;background:#edf8ef;color:#0a6937;border-radius:13px;font:800 14px var(--round);min-height:46px}
+.wizard-back svg{width:18px;height:18px}
+.wizard-summary{display:grid;grid-template-columns:110px 1fr;gap:15px;border:1px solid #e0e9df;border-radius:16px;background:#f8fcf8;padding:11px;align-items:center}
+.wizard-summary-photo{height:94px;display:grid;place-items:center;border-radius:12px;background:#e4f7e7;overflow:hidden}
+.wizard-summary-photo img{width:100%;height:100%;object-fit:cover}
+.wizard-summary-photo svg{width:37px;height:37px;color:#188b4b}
+.wizard-summary-info{min-width:0;display:flex;flex-direction:column;gap:5px}
+.wizard-summary-info strong{font:800 18px var(--round);color:#143d2a}
+.wizard-summary-price{font:800 21px 'Readex Pro',var(--font);color:#04873d}
+.wizard-summary-info small{font-size:11px;color:#597a61;font-weight:800}
+.wizard-description{padding:12px 4px;color:#526b58;font-size:13px;line-height:1.7}
+@media(max-width:390px){
+ .wizard-steps{gap:5px}
+ .wizard-step{gap:4px;font-size:10px;min-height:43px;padding:6px 1px}
+ .wizard-step .wizard-number{height:22px;width:22px;font-size:12px}
+ .wizard-card{padding:12px;border-radius:17px}
+ .wizard-panel-header h2{font-size:20px}
+ .wizard-panel-header p{font-size:11px}
+ .wizard-icon{width:42px;height:42px}
+ .wizard-upload{min-height:125px}
+ .wizard-fields{grid-template-columns:1fr}
+ .wizard-fields .field:nth-child(-n+2){grid-column:auto}
+ .wizard-summary{grid-template-columns:90px 1fr;gap:8px}
+ .wizard-summary-photo{height:80px}
+ .wizard-summary-info strong{font-size:16px}
+ .wizard-actions .cta{font-size:14px}
+}
+@media(min-width:700px){.wizard-page{max-width:860px}.wizard-steps{max-width:680px;margin-inline:auto}}
