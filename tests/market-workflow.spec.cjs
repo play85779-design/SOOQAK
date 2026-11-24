@@ -16,7 +16,8 @@ const all=[{
  hidden_at:null,bumped_at:null,reserved_until:null,renewed_at:null,renewal_count:0,photos:[],contact:null
 }];
 const messages=[],reports=[],sales=[],history=[];
-window.__SOOQAK_FAKE={all,messages,reports,sales,history};
+const controls={hold:false,failContact:false,failPhoto:false,failSave:false,attempts:0,draftsDeleted:0};
+window.__SOOQAK_FAKE={all,messages,reports,sales,history,controls};
 const getListing=id=>all.find(row=>row.id===id);
 window.sooqakCloud=Object.freeze({
  getUser:()=>me,
@@ -29,15 +30,18 @@ window.sooqakCloud=Object.freeze({
  hasAcceptedPledge:async()=>true,
  acceptPledge:async()=>true,
  getAccountDraft:async()=>({}),
- deleteAccountDraft:async()=>true,
+ deleteAccountDraft:async()=>{controls.draftsDeleted++;return true},
  saveAccountDraft:async()=>true,
  saveListing:async(data,id)=>{
+  controls.attempts++;
+  while(controls.hold)await new Promise(resolve=>setTimeout(resolve,20));
+  if(controls.failSave)throw Error('simulated save failure');
   if(id){const row=getListing(id);if(!row||row.seller_user_id!==uid)throw Error('Not authorized');Object.assign(row,data);history.push({kind:'edit',id});return id;}
   const row={...all[0],id:newId,seller_user_id:uid,seller_display_name:'مستخدم تجريبي',seller_kind:'personal',...data,status:'active',created_at:new Date().toISOString(),photos:[],contact:null};
   all.unshift(row);history.push({kind:'create',id:newId});return newId;
  },
- saveListingContact:async()=>true,
- uploadPhotos:async()=>true,
+ saveListingContact:async()=>{if(controls.failContact)throw Error('simulated contact failure');return true},
+ uploadPhotos:async()=>{if(controls.failPhoto)throw Error('simulated photo failure');return true},
  removeListing:async id=>{const row=getListing(id);if(row?.seller_user_id===uid)row.hidden_at=new Date().toISOString();else throw Error('Not authorized');history.push({kind:'hide',id});return true;},
  reserve:async()=>true,bump:async()=>true,
  markSold:async(id,price)=>{const row=getListing(id);if(!row||row.seller_user_id!==uid)throw Error('Not authorized');row.status='sold';sales.push({id:'00000000-0000-4000-8000-000000000090',listing_id:id,final_price:price,commission:price/100,recorded_at:new Date().toISOString(),correction_count:0});history.push({kind:'sold',id});return true},
@@ -120,4 +124,49 @@ test('service never exposes live payment checkout controls',async({page})=>{
  await page.goto('/pricing.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('h1')).toContainText('المستقبلية');
  await expect(page.locator('form')).toHaveCount(0);
+});
+
+async function fillNewAd(page){
+ await start(page);
+ await page.locator('#postButton').click();
+ await page.locator('#adForm [name="title"]').fill('إعلان لا يتكرر');
+ await page.locator('#adForm [name="description"]').fill('اختبار نشر معزول دون بيانات أو أموال حقيقية');
+ await page.locator('#adForm [name="price"]').fill('1234');
+}
+test('V107 repeated submit events create only one ad while saving',async({page})=>{
+ await fillNewAd(page);
+ await page.evaluate(()=>window.__SOOQAK_FAKE.controls.hold=true);
+ await page.locator('#adForm button[type="submit"]').click();
+ await expect(page.locator('#adForm button[type="submit"]')).toBeDisabled();
+ await expect(page.locator('#adForm')).toHaveAttribute('aria-busy','true');
+ await expect.poll(()=>page.evaluate(()=>window.__SOOQAK_FAKE.controls.attempts)).toBe(1);
+ await page.locator('#adForm').evaluate(f=>{for(let i=0;i<5;i++)f.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}))});
+ await page.evaluate(()=>window.__SOOQAK_FAKE.controls.hold=false);
+ await expect(page.locator('#listingGrid')).toContainText('إعلان لا يتكرر');
+ expect(await page.evaluate(()=>window.__SOOQAK_FAKE.controls.attempts)).toBe(1);
+ expect(await page.evaluate(()=>window.__SOOQAK_FAKE.history.filter(x=>x.kind==='create').length)).toBe(1);
+});
+test('V107 failed save releases the submit lock for a controlled retry',async({page})=>{
+ await fillNewAd(page);
+ await page.evaluate(()=>window.__SOOQAK_FAKE.controls.failSave=true);
+ const submit=page.locator('#adForm button[type="submit"]');
+ await submit.click();
+ await expect.poll(()=>page.evaluate(()=>window.__SOOQAK_FAKE.controls.attempts)).toBe(1);
+ await expect(submit).toBeEnabled();
+ await expect(page.locator('#adForm')).not.toHaveAttribute('aria-busy','true');
+ await page.evaluate(()=>window.__SOOQAK_FAKE.controls.failSave=false);
+ await submit.click();
+ await expect(page.locator('#listingGrid')).toContainText('إعلان لا يتكرر');
+ expect(await page.evaluate(()=>window.__SOOQAK_FAKE.history.filter(x=>x.kind==='create').length)).toBe(1);
+});
+test('V107 partial publish confirms saved listing and directs user to edit instead of republish',async({page})=>{
+ await fillNewAd(page);
+ await page.evaluate(()=>{window.__SOOQAK_FAKE.controls.failContact=true;window.__SOOQAK_FAKE.controls.failPhoto=true;});
+ await page.locator('#adImages').setInputFiles({name:'fixture.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j8L8AAAAASUVORK5CYII=','base64')});
+ await page.locator('#adForm button[type="submit"]').click();
+ await expect(page.locator('#listingGrid')).toContainText('إعلان لا يتكرر');
+ await expect(page.locator('#toast')).toContainText('ولا تنشره مرة أخرى');
+ await expect(page.locator('#toast')).toContainText('التواصل والصور');
+ expect(await page.evaluate(()=>window.__SOOQAK_FAKE.controls.draftsDeleted)).toBe(1);
+ expect(await page.evaluate(()=>window.__SOOQAK_FAKE.history.filter(x=>x.kind==='create').length)).toBe(1);
 });
