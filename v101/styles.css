@@ -501,3 +501,5 @@ body{background:#fafcf9;color:#193727;font-weight:600}
  .wizard-actions .cta{font-size:14px}
 }
 @media(min-width:700px){.wizard-page{max-width:860px}.wizard-steps{max-width:680px;margin-inline:auto}}
+
+.upload-thumb{position:relative}.upload-count{position:absolute;right:5px;top:5px;background:#11783d;color:#fff;border-radius:8px;padding:3px 6px;font:800 10px var(--round)}.upload-main{position:absolute;bottom:5px;right:5px;border-radius:9px;background:#fff6dd;color:#956200;border:1px solid #f4d591;padding:4px 7px;font:800 10px var(--round)}
