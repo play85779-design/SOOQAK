@@ -503,3 +503,40 @@ body{background:#fafcf9;color:#193727;font-weight:600}
 @media(min-width:700px){.wizard-page{max-width:860px}.wizard-steps{max-width:680px;margin-inline:auto}}
 
 .upload-thumb{position:relative}.upload-count{position:absolute;right:5px;top:5px;background:#11783d;color:#fff;border-radius:8px;padding:3px 6px;font:800 10px var(--round)}.upload-main{position:absolute;bottom:5px;right:5px;border-radius:9px;background:#fff6dd;color:#956200;border:1px solid #f4d591;padding:4px 7px;font:800 10px var(--round)}
+
+/* V103 richer guest account and truthful auth preview; backend intentionally disconnected */
+.account-hero{background:linear-gradient(120deg,#efffeb,#fff8e9);border-color:#bfdfc4;padding:19px;align-items:flex-start}
+.account-hero-content{flex:1;display:flex;flex-direction:column;gap:5px}
+.account-hero-content h2{font:800 24px/1.15 var(--round);color:#08773d}
+.account-hero-content small{font-size:12px;font-weight:700;color:#55765c}
+.account-login{align-self:flex-start;display:inline-flex;align-items:center;gap:7px;background:#08803e;color:white;border-radius:12px;padding:8px 12px;margin-top:7px;font:800 12px var(--round)}
+.account-login svg{height:16px;width:16px}
+.account-quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:15px 0 20px}
+.account-quick-card{display:flex;min-height:108px;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4px;border-radius:17px;padding:9px 5px;border:1px solid #e2eddf}
+.account-quick-card span{display:grid;place-items:center;width:39px;height:39px;border-radius:12px;background:#ffffffaa}
+.account-quick-card svg{width:22px;height:22px}
+.account-quick-card b{font:800 15px var(--round)}
+.account-quick-card small{font:700 10px var(--font);color:#576e62}
+.account-quick-card.purple{background:#f1e5ff;color:#7932a4}
+.account-quick-card.orange{background:#fff0d7;color:#ac6308}
+.account-quick-card.pink{background:#ffebf4;color:#b34977}
+.account-quick-card.green{background:#e6faed;color:#0a8545}
+.account-section-head{font:800 19px var(--round);color:#153d27;margin-bottom:10px}
+.account-empty{max-width:580px;margin:40px auto;padding:27px 19px;display:flex;align-items:center;flex-direction:column;gap:12px;border:1px solid #d9eadf;border-radius:23px;text-align:center;background:linear-gradient(150deg,#f3fff5,#fff);box-shadow:var(--shadow)}
+.account-empty>svg{height:56px;width:56px;color:#18924c;background:#e5f9ea;border-radius:18px;padding:12px}
+.account-empty h2{font:800 25px var(--round);color:#176c37}
+.account-empty p{font:700 13px/1.65 var(--font);color:#59745f}
+.auth-preview-page{max-width:790px}
+.auth-intro{display:grid;place-items:center;gap:10px;text-align:center;background:linear-gradient(115deg,#076e3c,#16a958);border-radius:22px;color:#fff;padding:23px 18px}
+.auth-intro>svg{width:34px;height:34px;color:#ffdc85}
+.auth-intro h2{font:800 25px var(--round)}
+.auth-intro p{font:700 13px/1.6 var(--font);max-width:450px}
+.auth-preview-card{max-width:480px;margin:15px auto;background:#fff;border:1px solid #dce7df;border-radius:21px;padding:20px;display:flex;flex-direction:column;gap:8px}
+.auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px;font:800 14px var(--round);text-align:center}
+.auth-tabs span{padding:12px 5px;border-radius:11px;background:#f5f8f5;color:#70816f}
+.auth-tabs .active{background:#e5faea;color:#07803f}
+.auth-preview-card label{font:800 15px var(--round);color:#143d26}
+.auth-preview-card input{border:1px solid #cfdfd3;border-radius:12px;padding:12px;color:#466251;background:#f6f9f6;min-height:44px}
+.auth-preview-card .cta{min-height:46px;margin:6px 0}
+.auth-preview-card button:disabled{opacity:.55}
+@media(max-width:390px){.account-hero{padding:12px}.account-hero-content h2{font-size:19px}.account-quick{gap:5px}.account-quick-card{min-height:95px;padding:8px 2px}.account-quick-card span{height:33px;width:33px}.account-quick-card b{font-size:12px}.account-quick-card small{font-size:9px}.auth-intro h2{font-size:21px}}
