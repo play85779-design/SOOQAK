@@ -895,3 +895,26 @@ body{font-weight:500;background:var(--bg)}
 .listings-page .card-grid[data-count="1"]{grid-template-columns:minmax(0,1fr);justify-content:stretch}
 @media(min-width:700px){.search-sparse{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:start}}
 @media(max-width:460px){.search-discovery{padding:12px}.active-search-chips button{font-size:12px}}
+
+/* V116: stable carousel geometry, legible search, brighter furniture treatment */
+#hero-carousel .hero{height:clamp(220px,32vw,270px);min-height:0;grid-template-rows:minmax(0,1fr)}
+#hero-carousel .hero-copy{min-width:0;min-height:0}
+#hero-carousel .hero-figure{height:100%;min-height:0}
+#hero-carousel .hero-figure img{max-height:100%;max-width:100%}
+#hero-carousel .hero-amber{background:radial-gradient(ellipse at 18% 35%,#fff4ce 0%,transparent 58%),linear-gradient(115deg,#fff0d7,#e9bb7d);border-color:#e8c48e;box-shadow:0 8px 22px #9f70331a}
+#hero-carousel .hero-amber h1{color:#49301c;text-shadow:none}
+#hero-carousel .hero-amber h1 span{color:#8b4817}
+#hero-carousel .hero-amber p{color:#543b25}
+#hero-carousel .hero-amber .hero-chip{background:#fff8eb;color:#70421b;border-color:#e1bc83}
+#hero-carousel .hero-amber .hero-photo-figure{padding:0;align-self:stretch;overflow:hidden}
+#hero-carousel .hero-amber .hero-photo-figure img{height:100%;width:100%;max-height:none;object-fit:cover;object-position:50% 65%;border-radius:0;filter:brightness(1.17) saturate(.94)}
+#hero-carousel .hero-amber .hero-spark,#hero-carousel .hero-amber .hero-swoosh{display:none}
+.search input::placeholder{color:#59685f;opacity:1}
+.card-photo img.stock-photo[src$="phone-photo.jpg"]{object-position:10% 100%;transform:scale(1.12);transform-origin:left bottom}
+.card-photo img.stock-photo[src$="phone-photo.jpg"]:hover{transform:scale(1.12)}
+.card-photo img.stock-photo[src$="sofa-photo.jpg"]{filter:brightness(1.12)}
+@keyframes sooqak-slide-enter{from{opacity:.74;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+#hero-carousel .hero-copy,#hero-carousel .hero-figure{animation:sooqak-slide-enter .24s ease-out both}
+@media(max-width:600px){#hero-carousel .hero{height:clamp(200px,54vw,230px)}#hero-carousel .hero-copy{padding-block:8px}#hero-carousel .hero h1{font-size:clamp(19px,5.3vw,25px)}#hero-carousel .hero p{font-size:11px;margin:4px 0 8px}#hero-carousel .hero .cta{min-height:38px;padding-block:7px}}
+@media(max-width:360px){#hero-carousel .hero h1{font-size:18px}#hero-carousel .hero p{font-size:10px}}
+@media(prefers-reduced-motion:reduce){#hero-carousel .hero-copy,#hero-carousel .hero-figure{animation:none}}
