@@ -24,5 +24,5 @@ test('V114 sofa sample photo is complete in listing and home store',async({page}
  await expect.poll(()=>page.locator('.detail-primary-image').evaluate(x=>x.complete&&x.naturalWidth>600)).toBeTruthy();
  await expect(page.locator('.detail-primary-image')).toHaveCSS('object-fit','contain');
  await page.goto('/v101/index.html#store/home');
- await expect(page.locator('.store-cover img')).toHaveAttribute('src','./assets/sofa-photo.jpg');
+ await expect(page.locator('.store-cover img')).toHaveAttribute('src','./assets/home-store-photo.jpg');
 });
