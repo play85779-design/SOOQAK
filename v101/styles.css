@@ -1019,3 +1019,44 @@ body,.site{background:radial-gradient(ellipse at 99% 4%,#bce5d9 0,transparent 32
 .nav.active:not(.add){background:#d9f0e4;border-radius:16px;margin:5px 2px 7px;color:#075c37}
 .nav .add-ring{background:linear-gradient(145deg,#0c9e65,#035939)}
 @media(prefers-reduced-motion:reduce){.cat,.shop,.nav,.top button{transition:none!important;animation:none!important}}
+
+/* V130 — Poster 4: scoped home refinement, original dimensional illustrations, unchanged existing routes. */
+body,.site{background:radial-gradient(ellipse at 94% 5%,#c9e6dc 0,transparent 24rem),radial-gradient(ellipse at 4% 19%,#eee3f5 0,transparent 21rem),linear-gradient(150deg,#f7f8fa,#f9f9f8 55%,#f1f8f5)}
+.top{border-bottom:0;background:radial-gradient(ellipse at 52% 100%,#76b7af 0,transparent 37%),linear-gradient(113deg,#043b2c,#085d43 72%,#03402c);overflow:visible}
+.top:after{content:"";position:absolute;inset:auto 0 -2px;height:17px;pointer-events:none;background:radial-gradient(ellipse at 17% 0%,transparent 69%,#eac877 71%,#fff1bc 74%,transparent 78%);border-bottom:1px solid #e9c36b;z-index:-1}
+.top .wordmark-tagline{display:none;color:#e7f5ee;font-size:10px;line-height:1.2;font-weight:500;white-space:nowrap;margin-top:3px}
+.wordmark-tagline{display:none}
+@media(min-width:700px){.top .wordmark-tagline{display:block}.top-inner{min-height:91px}.top:before{opacity:.92;background:url('./assets/poster4-skyline.svg') 45% 100% / auto 84% no-repeat}.top .header-quick{border-inline-start:1px solid #e5f5eb75;border-radius:0}.top .header-quick:hover{border-radius:10px}}
+.search-row .search{background:linear-gradient(145deg,#f2f5fa,#fff);box-shadow:0 5px 13px #21413924,inset 0 1px 3px #fff}
+.location-box{background:linear-gradient(150deg,#f7f9fc,#fff);box-shadow:0 5px 12px #203b3920}
+#hero-carousel .hero{height:clamp(200px,25vw,265px);border-radius:23px;box-shadow:0 9px 20px #153d3026}
+#hero-carousel .hero-emerald{background:radial-gradient(ellipse at 15% 0%,#82bf9f,transparent 52%),linear-gradient(135deg,#087359,#06422f 75%);border-color:#d7f1dd}
+#hero-carousel .hero-emerald .hero-figure{padding:0;align-self:stretch;overflow:hidden}
+#hero-carousel .hero-emerald .hero-figure img{width:100%;height:100%;max-height:none;object-fit:cover;object-position:42% 50%;filter:none;mask-image:linear-gradient(to right,#000 0%,#000 72%,transparent 100%)}
+#hero-carousel .hero-amber .hero-photo-figure img{mask-image:linear-gradient(to right,#000 0%,#000 78%,transparent 100%)}
+#hero-carousel .hero-copy{padding-inline:clamp(27px,4.8vw,48px) 0}
+#hero-carousel .hero-chip{font-weight:700}
+.hero-edge{position:absolute;z-index:4;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:#fffffff0;color:#075f40;font-size:26px;font-weight:800;box-shadow:0 3px 10px #103d3440}
+.hero-prev{left:6px}.hero-next{right:6px}
+.hero-edge:focus-visible{outline:3px solid #f4b83c;outline-offset:2px}
+.catbar{gap:9px;margin-bottom:18px}
+.cat{padding:7px 3px 5px;min-height:88px;gap:1px;border-radius:19px;box-shadow:0 5px 11px #303a3b19}
+.cat .cat-icon{width:100%;height:clamp(44px,8vw,85px);background:none!important;box-shadow:none;display:flex;align-items:center;justify-content:center}
+.cat .cat-icon img{width:100%;height:100%;max-width:150px;object-fit:contain;filter:drop-shadow(0 3px 2px #4539391c)}
+.cat b{font-size:clamp(10px,1.8vw,17px)}
+.poster-store-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.poster-store-grid .shop,.shop-gateway{position:relative;isolation:isolate;overflow:hidden;border-radius:16px;padding:0;min-width:0;aspect-ratio:1.55;border:1px solid #fff;box-shadow:0 5px 11px #203d3324;background:#07613e;text-align:right}
+.poster-store-grid .shop .shop-figure{height:100%;width:100%;position:absolute;inset:0;border-radius:0}
+.poster-store-grid .shop .shop-figure img,.shop-gateway img{width:100%;height:100%;object-fit:cover;padding:0;max-width:none;position:absolute;inset:0}
+.poster-store-grid .shop:after,.shop-gateway:after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(transparent 39%,#074e33b0 67%,#03472f 100%)}
+.poster-store-grid .shop[data-shop='tech']:after{background:linear-gradient(transparent 39%,#6a2ca6b0 67%,#4a197b 100%)}
+.poster-store-grid .shop[data-shop='home']:after{background:linear-gradient(transparent 39%,#975b26b0 67%,#754016 100%)}
+.poster-store-grid .shop strong,.shop-gateway strong{position:absolute;inset:auto 7px 9px 30px;z-index:2;font-size:clamp(11px,1.65vw,19px);font-weight:800;color:#fff;line-height:1.25;margin:0;white-space:normal;text-shadow:0 1px 2px #0007}
+.poster-store-grid .shop small{display:none}
+.poster-store-grid .shop-open,.shop-gateway span{position:absolute;z-index:2;left:7px;bottom:8px;width:24px;height:24px;border:1.5px solid #fff;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:0;padding:0}
+.poster-store-grid .shop-open svg{width:15px;height:15px;stroke:#fff}
+.shop-gateway span{font-size:21px;line-height:1}
+.bottom{border-radius:30px;left:clamp(6px,1.5vw,18px);right:clamp(6px,1.5vw,18px);bottom:max(5px,env(safe-area-inset-bottom));height:70px;padding-bottom:0;box-shadow:0 5px 20px #2140392b;background:#ffffffef}
+@media(max-width:600px){#hero-carousel .hero{height:clamp(195px,49vw,230px)}#hero-carousel .hero-copy{padding-inline:24px 0}.hero-edge{width:24px;height:36px;font-size:20px}.hero-prev{left:2px}.hero-next{right:2px}.catbar{gap:5px}.cat{min-height:74px}.poster-store-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.bottom{height:64px}}
+@media(max-width:360px){.cat b{font-size:10px}.cat{min-height:67px}#hero-carousel .hero h1{font-size:17px}}
+@media(prefers-reduced-motion:reduce){.hero-edge,.shop-gateway{animation:none;transition:none}}

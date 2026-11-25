@@ -29,3 +29,7 @@
 
 ## V121–V123
 - shopping-photo.jpg: Iuliia Pilipeichenko، https://images.unsplash.com/photo-1760565030243-c92ed557e8da ؛ مصدر الملف الوسيط https://github.com/zohaib65-ch/kafka-ecommerce/blob/c4e16db056d9f60ebda82c1f4f26325f2111e224/client/docs/image-credits/site.md ؛ ترخيص https://unsplash.com/license . تمت معاينة الملف بصريًا، صورة حقائب ورقية مع يد دون وجه أو شعار ظاهر؛ تستخدم للمعاينة فقط. جرى التحقق من ترخيص Unsplash العام وصفحات المصورة ذات الموضوع نفسه، لكن ربط معرّف CDN بصفحة الصورة الأصلية لم يثبت قطعًا. قبل الإطلاق يجب التحقق من حقوق كل أصل على حدة. لا ادعاء بإعلان حقيقي أو تأييد علامة. لم تُستبدل صورة السيارة، جرى تحسين سطوعها بالـCSS.
+
+
+## V130
+- `poster4-shopping.svg` و`poster4-car.svg` و`poster4-laptop.svg` و`poster4-house.svg` و`poster4-tools.svg` و`poster4-grid.svg`: رسوم متجهية جديدة أصلية مستوحاة من المرجع البصري، ليست صورًا فوتوغرافية أو قصاصات من البوستر. الأصول السابقة محفوظة. الصور الفوتوغرافية القائمة لا تزال للمعاينة وفق القيود السابقة.
