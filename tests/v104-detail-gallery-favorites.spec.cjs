@@ -6,7 +6,7 @@ test('V104 detail photo fits within the page and location icon never expands',as
  await page.locator('[data-detail="laptop"]').first().click();
  await expect(page.locator('.detail-gallery')).toBeVisible();
  await expect(page.locator('.detail-thumb')).toHaveCount(1);
- await expect(page.locator('.detail-primary-image')).toHaveAttribute('src','./assets/laptop.svg');
+ await expect(page.locator('.detail-primary-image')).toHaveAttribute('src','./assets/laptop-photo.jpg');
  const sizes=await page.evaluate(()=>{
   const image=document.querySelector('.detail-primary-image');
   const pin=document.querySelector('.detail-location svg');
