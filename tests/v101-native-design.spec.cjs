@@ -34,7 +34,7 @@ test('V101 users can actually change country and city',async({page})=>{
  await page.locator('#region').selectOption('المنطقة الشرقية');
  await page.locator('#city').selectOption('الخبر');
  await expect(page.locator('.card')).toHaveCount(1);
- await expect(page.locator('.card')).toContainText('كنب بيج');
+ await expect(page.locator('.card')).toContainText('كنب جلدي بني');
 });
 test('V101 favorite heart only one per photo and toggles',async({page})=>{
  await page.goto('/v101/index.html#home',{waitUntil:'domcontentloaded'});
