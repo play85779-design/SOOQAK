@@ -872,3 +872,26 @@ body{font-weight:500;background:var(--bg)}
 .account-page .profile-row{min-height:48px;padding-block:10px}
 .account-page .profile-list{gap:7px}
 @media(max-width:460px){.hero-photo-figure{padding:7px}.hero-photo-figure img{max-height:165px}}
+
+/* V115 — explicit filters and honest discovery for sparse search */
+.active-search-chips{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:10px 0}
+.active-search-chips button{display:flex;align-items:center;gap:8px;max-width:100%;overflow-wrap:anywhere;min-height:36px;padding:6px 11px;border:1px solid #d9e9df;border-radius:11px;background:#edf8f0;color:#14663b;font-size:13px;font-weight:700}
+.active-search-chips button span{font-size:18px;color:#527e64}
+.active-search-chips .clear-search-all{color:#693ca0;border-color:#eadff5;background:#f5effb}
+.search-results-layout{display:grid;gap:12px}
+.search-primary{min-width:0}
+.search-discovery{padding:16px;border:1px solid #e7e1ed;border-radius:18px;background:linear-gradient(135deg,#fff,#f6f0ff)}
+.discovery-intro{display:flex;gap:10px;align-items:flex-start}
+.discovery-icon{display:grid;place-items:center;flex:none;width:42px;height:42px;background:#ece2fb;color:#693ca0;border-radius:14px}
+.discovery-icon svg{width:22px;height:22px}
+.discovery-intro h3{margin:2px 0 5px;font-size:18px;color:#352743}
+.discovery-intro p{font-size:13px;line-height:1.6;color:#625a6b;margin:0}
+.discovery-categories{display:grid;gap:7px;margin:13px 0}
+.discovery-categories button{display:flex;align-items:center;gap:9px;min-height:42px;padding:8px 10px;border:1px solid #e7e1ed;background:#fff;border-radius:11px;color:#216d45;font-weight:700}
+.discovery-categories button svg{width:19px;height:19px;flex:none}
+.discovery-categories button span{flex:1;text-align:start}
+.search-discovery .more{font-size:13px}
+.listings-page .empty-search{max-width:none;margin:0}
+.listings-page .card-grid[data-count="1"]{grid-template-columns:minmax(0,1fr);justify-content:stretch}
+@media(min-width:700px){.search-sparse{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:start}}
+@media(max-width:460px){.search-discovery{padding:12px}.active-search-chips button{font-size:12px}}
