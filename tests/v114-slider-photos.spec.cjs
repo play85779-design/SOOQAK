@@ -9,7 +9,8 @@ test('V114 carousel autoplay, pause, and manual selection',async({page})=>{
  await page.waitForTimeout(5200);
  await expect(page.locator('[data-hero-slide="1"]')).toHaveAttribute('aria-pressed','true');
  await page.locator('[data-hero-slide="2"]').click();
- await expect(page.locator('.hero-figure img')).toHaveAttribute('src','./assets/sofa-photo.jpg');
+ await expect(page.locator('.hero-figure img')).toHaveAttribute('src','./assets/home-store-photo.jpg');
+ await expect.poll(()=>page.locator('.hero-figure img').evaluate(x=>x.complete&&x.naturalWidth>=600)).toBeTruthy();
 });
 test('V114 reduced motion and horizontal swipe',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});
