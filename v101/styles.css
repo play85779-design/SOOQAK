@@ -979,3 +979,43 @@ body{font-weight:500;background:var(--bg)}
 @media(min-width:601px){.top .header-quick,.top .header-auth-btn{min-height:44px;padding-inline:12px}.search-row .search{height:52px}.search-row .search-filter-btn{min-height:48px}}
 @media(max-width:600px){.home-activity{gap:5px}.home-activity .activity-link{font-size:10px;min-height:30px}.top .header-quick,.top .header-auth-btn{border-radius:11px}}
 @media(prefers-reduced-motion:reduce){.top button,.top select,.search-row button,.location-box select,.activity-link,.active-search-chips button{transition:none!important;transform:none!important}}
+
+/* V129 — Poster 4 visual foundation. Existing markup, handlers and demo data preserved. */
+:root{--poster-emerald:#064c35;--poster-emerald-mid:#087659;--poster-gold:#f5b94b;--poster-pearl:#f9f8f5;--poster-surface:#ffffffed;--poster-lift:0 4px 13px #173e3517}
+body,.site{background:radial-gradient(ellipse at 99% 4%,#bce5d9 0,transparent 32rem),radial-gradient(ellipse at 0 24%,#ede0f7 0,transparent 29rem),radial-gradient(ellipse at 2% 0%,#f7e5ce 0,transparent 22rem),radial-gradient(ellipse at 94% 75%,#d9efe6 0,transparent 30rem),var(--poster-pearl)}
+.top{isolation:isolate;background:radial-gradient(ellipse at 47% 100%,#208f82 0,transparent 55%),linear-gradient(112deg,#043c2d,#076044 65%,#03452f);border-bottom:2px solid var(--poster-gold);box-shadow:0 4px 14px #073e302b;backdrop-filter:none}
+.top:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 54% 100%,#c2ecd52e,transparent 45%),linear-gradient(160deg,transparent 31%,#a9e8d70b 32%,transparent 61%)}
+.top .wordmark-ar{color:#fff;filter:none;text-shadow:0 1px 2px #032d24}
+.top .wordmark-en{color:#ffd377}
+.top .brand-mark{filter:none}
+.top .locale{background:linear-gradient(145deg,#fff,#e3f3eb);border-color:#ffffffa6;box-shadow:0 2px 6px #052b2729}
+.top .locale-field{color:#164a36}
+.top .header-quick,.top .header-notifications{background:transparent;border-color:transparent;box-shadow:none;color:#fff;border-radius:10px}
+.top .header-quick:hover,.top .header-notifications:hover{background:#ffffff19}
+.top .header-auth-btn{background:linear-gradient(150deg,#ffda73,#ffaf22 75%);border-color:#ffcf6d;color:#352100;box-shadow:0 3px 9px #032d253d;border-radius:50px}
+.top button:focus-visible,.top select:focus-visible{outline:2px solid #ffda73;outline-offset:2px}
+@media(min-width:601px){.top .header-quick{flex-direction:column;gap:2px;font-size:11px;line-height:1.2;padding:5px 10px}.top .header-auth-btn{padding-inline:16px}.top-inner{min-height:74px}}
+@media(min-width:760px){.top:before{background:linear-gradient(90deg,#043c2d00 35%,#0c705500 64%,#03452f00),url('./assets/poster4-skyline.svg') 50% 100% / auto 90% no-repeat;opacity:.56}.top-inner{min-height:78px}}
+@media(max-width:600px){.top .header-quick,.top .header-auth-btn{min-height:44px}.top .header-quick{border-radius:9px}.top .header-auth-btn{border-radius:50px}.top .header-quick span{display:none}}
+/* B — polish surfaces, retain native selectors and truthful preview labels */
+.search-row .search{background:linear-gradient(120deg,#fff,#f7f8fc);border-color:#fff;box-shadow:var(--poster-lift);border-radius:50px}
+.search-row .search-filter-btn{color:#fff;background:linear-gradient(145deg,#963bd2,#58208b);border-color:#ffffffba;border-radius:50px;box-shadow:0 3px 8px #51267a29}
+.location-box{border-radius:22px;background:var(--poster-surface);border-color:#fff;box-shadow:var(--poster-lift)}
+.location-box select{min-height:30px}
+.home-activity{margin-bottom:9px}
+.home-activity .notice{color:#74521e}
+@media(max-width:600px){.location-box select{min-height:28px}}
+/* C/D — safe style-only treatment; no new stores, discounts, stats or product imagery */
+.cat{position:relative;isolation:isolate;overflow:hidden;gap:5px;background:linear-gradient(145deg,#fff,#edf8f1);border-color:#fff;box-shadow:var(--poster-lift)}
+.cat:before{content:"";position:absolute;inset: auto -15% -64% auto;width:90%;height:95%;background:#80d7aa30;border-radius:50%;z-index:-1;pointer-events:none}
+.cat:nth-child(2){background:linear-gradient(145deg,#fff,#eaf4ff)}.cat:nth-child(2):before{background:#7db9ef30}
+.cat:nth-child(3){background:linear-gradient(145deg,#fff,#fff0df)}.cat:nth-child(3):before{background:#f6bc7a38}
+.cat:nth-child(4){background:linear-gradient(145deg,#fff,#fff3d6)}.cat:nth-child(4):before{background:#f3c76a38}
+.cat:nth-child(5){background:linear-gradient(145deg,#fff,#f0e5fa)}.cat:nth-child(5):before{background:#bd8ae83b}
+.cat b{color:#202b27;font-weight:800}
+.cat.active{outline:2px solid #087d42;outline-offset:-2px}
+.shop{box-shadow:var(--poster-lift);border-color:#fff}
+.bottom{background:#fffffff0;border:1px solid #fff;box-shadow:0 -3px 16px #183b3420;border-radius:24px 24px 0 0}
+.nav.active:not(.add){background:#d9f0e4;border-radius:16px;margin:5px 2px 7px;color:#075c37}
+.nav .add-ring{background:linear-gradient(145deg,#0c9e65,#035939)}
+@media(prefers-reduced-motion:reduce){.cat,.shop,.nav,.top button{transition:none!important;animation:none!important}}
