@@ -5,13 +5,13 @@ test('V106 selected listing survives reload and direct preview link',async({page
  await page.goto('/v101/index.html?preview=1#home',{waitUntil:'domcontentloaded'});
  await page.locator('[data-detail="laptop"]').first().click();
  await expect(page).toHaveURL(/\?preview=1#detail\/laptop$/);
- await expect(page.locator('.detail-primary-image')).toHaveAttribute('src','./assets/laptop.svg');
+ await expect(page.locator('.detail-primary-image')).toHaveAttribute('src','./assets/laptop-photo.jpg');
  await page.locator('.detail-fav').click();
  await page.reload();
- await expect(page.locator('.detail-primary-image')).toHaveAttribute('src','./assets/laptop.svg');
+ await expect(page.locator('.detail-primary-image')).toHaveAttribute('src','./assets/laptop-photo.jpg');
  await expect(page.locator('.detail-fav')).toHaveAttribute('aria-pressed','true');
  await page.goto('/v101/index.html#detail/phone');
- await expect(page.locator('.detail-primary-image')).toHaveAttribute('src','./assets/phone.svg');
+ await expect(page.locator('.detail-primary-image')).toHaveAttribute('src','./assets/phone-photo.jpg');
  await expect(page.locator('.detail-fav')).toHaveAttribute('aria-pressed','false');
 });
 
@@ -20,14 +20,14 @@ test('V106 browser history restores the correct product for each detail entry',a
  await page.locator('[data-detail="laptop"]').first().click();
  await page.locator('.screen-title button[data-go="listings"]').click();
  await page.locator('[data-detail="phone"]').first().click();
- await expect(page.locator('.detail-primary-image')).toHaveAttribute('src','./assets/phone.svg');
+ await expect(page.locator('.detail-primary-image')).toHaveAttribute('src','./assets/phone-photo.jpg');
  await page.goBack();
  await expect(page.locator('.detail-primary-image')).toHaveCount(0);
  await page.goBack();
- await expect(page.locator('.detail-primary-image')).toHaveAttribute('src','./assets/laptop.svg');
+ await expect(page.locator('.detail-primary-image')).toHaveAttribute('src','./assets/laptop-photo.jpg');
  await page.goForward();
  await page.goForward();
- await expect(page.locator('.detail-primary-image')).toHaveAttribute('src','./assets/phone.svg');
+ await expect(page.locator('.detail-primary-image')).toHaveAttribute('src','./assets/phone-photo.jpg');
 });
 
 test('V106 unknown listing identifier never substitutes an unrelated product',async({page})=>{
