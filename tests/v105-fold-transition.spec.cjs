@@ -9,13 +9,13 @@ test('V105 fold transition preserves laptop detail, gallery and favorite',async(
   await page.locator('[data-detail="laptop"]').first().click();
   const image=page.locator('.detail-primary-image');
   const heart=page.locator('.detail-fav');
-  await expect(image).toHaveAttribute('src','./assets/laptop.svg');
+  await expect(image).toHaveAttribute('src','./assets/laptop-photo.jpg');
   await expect(heart).toHaveAttribute('aria-pressed','false');
   await heart.click();
   for(const width of [330,790,1180,390,330]){
     await page.setViewportSize({width,height:880});
     await expect(image).toBeVisible();
-    await expect(image).toHaveAttribute('src','./assets/laptop.svg');
+    await expect(image).toHaveAttribute('src','./assets/laptop-photo.jpg');
     await expect(heart).toHaveAttribute('aria-pressed','true');
     await expect(heart).toHaveClass(/is-saved/);
     await expect(page.locator('.detail-thumb')).toHaveCount(1);
