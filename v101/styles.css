@@ -918,3 +918,12 @@ body{font-weight:500;background:var(--bg)}
 @media(max-width:600px){#hero-carousel .hero{height:clamp(200px,54vw,230px)}#hero-carousel .hero-copy{padding-block:8px}#hero-carousel .hero h1{font-size:clamp(19px,5.3vw,25px)}#hero-carousel .hero p{font-size:11px;margin:4px 0 8px}#hero-carousel .hero .cta{min-height:38px;padding-block:7px}}
 @media(max-width:360px){#hero-carousel .hero h1{font-size:18px}#hero-carousel .hero p{font-size:10px}}
 @media(prefers-reduced-motion:reduce){#hero-carousel .hero-copy,#hero-carousel .hero-figure{animation:none}}
+
+/* V118–V120: scoped visual polish; preserve home banner and product images. */
+#hero-carousel .hero-violet .hero-photo-figure{padding:0;align-self:stretch;overflow:hidden;border-radius:18px 0 0 18px}
+#hero-carousel .hero-violet .hero-photo-figure img{width:100%;height:100%;max-height:none;object-fit:cover;object-position:50% 58%;border-radius:0;filter:brightness(1.06)}
+#hero-carousel .hero-emerald .hero-figure img{object-fit:contain;max-width:100%;filter:drop-shadow(0 9px 10px #05382045)}
+.shop-figure.photo-figure img{object-position:center;filter:none}
+.shop[data-shop='cars'] .photo-figure img{object-position:50% 60%}
+.store-cover .store-photo{object-position:center;aspect-ratio:4/3}
+@media(max-width:460px){#hero-carousel .hero-violet .hero-photo-figure{border-radius:12px 0 0 12px}.store-cover .store-photo{min-width:0}}

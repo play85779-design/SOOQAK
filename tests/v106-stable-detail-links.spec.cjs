@@ -35,7 +35,7 @@ test('V106 unknown listing identifier never substitutes an unrelated product',as
  await expect(page.locator('.detail-primary-image')).toHaveCount(0);
  await expect(page.locator('.card')).not.toHaveCount(0);
  await page.goto('/v101/index.html#detail');
- await expect(page.locator('.detail-primary-image')).toHaveAttribute('src','./assets/hero-car.svg');
+ await expect(page.locator('.detail-primary-image')).toHaveAttribute('src','./assets/car-photo.jpg');
 });
 
 test('V106 favorite still responds if browser storage writes are blocked',async({page})=>{

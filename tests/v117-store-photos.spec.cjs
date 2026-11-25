@@ -2,7 +2,7 @@ const {test,expect}=require('@playwright/test');
 for(const width of [390,790]){
  test('V117 category photography is distinct, loads locally and opens its own store '+width,async({page})=>{
   await page.setViewportSize({width,height:940});
-  for(const [id,asset,product] of [['home','home-store-photo.jpg','sofa-photo.jpg'],['tech','tech-store-photo.jpg','laptop-photo.jpg']]){
+  for(const [id,asset,product] of [['home','home-store-photo.jpg','sofa-photo.jpg'],['tech','tech-cover-photo.jpg','laptop-photo.jpg'],['cars','car-store-photo.jpg','car-photo.jpg']]){
    await page.goto('/v101/index.html#stores');
    const card=page.locator('[data-shop="'+id+'"]');
    await expect(card.locator('img')).toHaveAttribute('src','./assets/'+asset);

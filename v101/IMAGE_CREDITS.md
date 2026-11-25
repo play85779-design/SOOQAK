@@ -19,3 +19,10 @@
 - `tech-store-photo.jpg`: وفق سجل https://github.com/Deepaksinghpatel052/local_business_demo/blob/main/demos/sample-car-service/placeholders/CREDITS.md ؛ https://images.unsplash.com/photo-1601524909162-ae8725290836 ؛ https://unsplash.com/license . أجهزة إلكترونية في مساحة عمل لا متجر فعلي. التحقق من حقوق العلامات والمصدر الأصلي قبل الاستخدام التجاري واجب. لا ادعاء بوجود شراكة أو عرض فعلي.
 
 تمت معاينة الأصلين بصريًا وحفظهما محليًا؛ لم نعثر على صورة سيارة مناسبة موثقة المصدر حتى هذه الدفعة.
+
+## V118–V120 — معاينة فقط
+- `car-photo.jpg`: صورة سيارة بيضاء، Unsplash photo-1788873481773-99d1c731857e، https://images.unsplash.com/photo-1788873481773-99d1c731857e ؛ المصدر الوسيط https://github.com/codervinitjangir/sahayak/blob/1219c797897bc0ab8e0c78ce8f4a72a0c9c0aaa6/mobile/assets/photos/CREDITS.md .
+- `car-store-photo.jpg`: David Barros، https://unsplash.com/photos/4vzz2_srItQ ؛ سجل المصدر https://github.com/Ajipaul1/Ajipaul1.github.io/blob/96be538aab19bd8f7c2bc8b8bbb34440d62434e5/assets/images/library/CREDITS.md . صورة تعريفية لقسم السيارات، ليست معرضًا تابعًا لسوقك.
+- `tech-cover-photo.jpg`: Kari Shea، https://images.unsplash.com/photo-1496181133206-80ce9b88a853 ؛ سجل المصدر https://github.com/zohaib65-ch/kafka-ecommerce/blob/c4e16db056d9f60ebda82c1f4f26325f2111e224/client/docs/image-credits/site.md . صورة تعريفية، ليست متجرًا فعليًا.
+- `marketplace-hero.svg`: رسم متجهي أصلي لهذا المشروع، لا قصاصة أو صورة من طرف ثالث.
+تمت مراجعة الصور الثلاث بصريًا؛ تراخيصها موثقة وفق سجلات المصادر الوسيطة ومرجع https://unsplash.com/license، لكن تعذر التحقق المباشر من صفحات الصور الأصلية. تظل للاختبار والتقييم فقط، ولا يُعتمد استخدامها تجاريًا قبل التحقق المستقل من الأصل والحقوق والعلامات، ولا يُفهم منها توفر مركبة أو ارتباط بأي معرض.

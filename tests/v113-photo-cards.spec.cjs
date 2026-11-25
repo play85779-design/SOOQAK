@@ -13,7 +13,7 @@ for(const width of [390,790]){
    await page.goto('/v101/index.html#home');
   }
   await page.locator('[data-shop="tech"]').click();
-  await expect(page.locator('.store-cover img')).toHaveAttribute('src','./assets/tech-store-photo.jpg');
+  await expect(page.locator('.store-cover img')).toHaveAttribute('src','./assets/tech-cover-photo.jpg');
   await expect.poll(()=>page.locator('.store-cover img').evaluate(x=>x.complete&&x.naturalWidth>=600)).toBeTruthy();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(2);
  });
