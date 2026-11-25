@@ -927,3 +927,26 @@ body{font-weight:500;background:var(--bg)}
 .shop[data-shop='cars'] .photo-figure img{object-position:50% 60%}
 .store-cover .store-photo{object-position:center;aspect-ratio:4/3}
 @media(max-width:460px){#hero-carousel .hero-violet .hero-photo-figure{border-radius:12px 0 0 12px}.store-cover .store-photo{min-width:0}}
+
+/* V121–V123: photographic hero and integrated covers; no change to home banner or global navigation. */
+#hero-carousel .hero-emerald .hero-photo-figure{padding:0;align-self:stretch;overflow:hidden}
+#hero-carousel .hero-emerald .hero-photo-figure img{width:100%;height:100%;max-height:none;object-fit:cover;object-position:45% 50%;border-radius:0;filter:saturate(.91) brightness(1.04);mask-image:linear-gradient(to right,#000 0%,#000 75%,transparent 100%)}
+#hero-carousel .hero-emerald .hero-spark,#hero-carousel .hero-emerald .hero-swoosh,#hero-carousel .hero-violet .hero-spark,#hero-carousel .hero-violet .hero-swoosh{display:none}
+#hero-carousel .hero-violet .hero-photo-figure img{filter:brightness(1.19) saturate(.95);mask-image:linear-gradient(to right,#000 0%,#000 78%,transparent 100%)}
+.store-preview .store-cover{position:relative;isolation:isolate;display:flex;align-items:center;min-height:clamp(156px,25vw,228px);padding:clamp(16px,3vw,30px);background:linear-gradient(115deg,#7337ae,#50217e);gap:0}
+.store-preview .store-cover>div{position:relative;z-index:2;flex:0 0 51%;min-width:0}
+.store-preview .store-cover .store-photo{position:absolute;z-index:0;inset:0 auto 0 0;width:62%;height:100%;max-height:none;border-radius:0;aspect-ratio:auto;object-fit:cover;object-position:center;mask-image:linear-gradient(to right,#000 0%,#000 60%,transparent 100%)}
+.store-preview .store-cover h2{font-size:clamp(20px,3.9vw,32px);line-height:1.35}
+.store-preview .store-cover p{font-size:clamp(12px,1.8vw,15px);line-height:1.5}
+.store-preview .card-grid[data-count="1"]{grid-template-columns:minmax(0,1fr);justify-content:stretch}
+.store-preview .card-grid[data-count="1"] .card{max-width:none;width:100%}
+.card-photo img.stock-photo[src$="car-photo.jpg"],.detail-primary-image[src$="car-photo.jpg"]{filter:brightness(1.19) saturate(.95)}
+@media(min-width:600px){
+.store-preview .card-grid[data-count="1"] .card{display:grid;grid-template-columns:minmax(0,52%) minmax(0,1fr);align-items:stretch}
+.store-preview .card-grid[data-count="1"] .card-photo{height:clamp(205px,32vw,320px);aspect-ratio:auto}
+.store-preview .card-grid[data-count="1"] .card-content{align-self:center;padding:clamp(16px,3vw,28px);text-align:right}
+.store-preview .card-grid[data-count="1"] .card-content strong{font-size:clamp(18px,3vw,26px);white-space:normal}
+.store-preview .card-grid[data-count="1"] .card-content .price{font-size:clamp(25px,4vw,36px)}
+.store-preview .card-grid[data-count="1"] .card-meta{font-size:12px;flex-wrap:wrap;justify-content:flex-start;gap:12px}
+}
+@media(max-width:599px){.store-preview .card-grid[data-count="1"] .card-photo{aspect-ratio:1.6}.store-preview .store-cover .store-photo{width:58%;mask-image:linear-gradient(to right,#000 0%,#000 51%,transparent 100%)}}

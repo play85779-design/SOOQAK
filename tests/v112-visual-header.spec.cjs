@@ -15,7 +15,7 @@ test('V112 interactive promotions and honest quick access',async({page})=>{
  await expect(page.locator('.hero-dots button')).toHaveCount(3);
  await page.locator('[data-hero-slide="1"]').click();
  await expect(page.locator('.hero')).toHaveClass(/hero-emerald/);
- await expect(page.locator('.hero-figure img')).toHaveAttribute('src','./assets/marketplace-hero.svg');
+ await expect(page.locator('.hero-figure img')).toHaveAttribute('src','./assets/shopping-photo.jpg');
  await expect.poll(()=>page.locator('.hero-figure img').evaluate(x=>x.complete&&x.naturalWidth>0)).toBeTruthy();
  await page.locator('[data-hero-slide="2"]').click();
  await expect(page.locator('.hero')).toHaveClass(/hero-amber/);

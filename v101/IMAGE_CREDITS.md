@@ -26,3 +26,6 @@
 - `tech-cover-photo.jpg`: Kari Shea، https://images.unsplash.com/photo-1496181133206-80ce9b88a853 ؛ سجل المصدر https://github.com/zohaib65-ch/kafka-ecommerce/blob/c4e16db056d9f60ebda82c1f4f26325f2111e224/client/docs/image-credits/site.md . صورة تعريفية، ليست متجرًا فعليًا.
 - `marketplace-hero.svg`: رسم متجهي أصلي لهذا المشروع، لا قصاصة أو صورة من طرف ثالث.
 تمت مراجعة الصور الثلاث بصريًا؛ تراخيصها موثقة وفق سجلات المصادر الوسيطة ومرجع https://unsplash.com/license، لكن تعذر التحقق المباشر من صفحات الصور الأصلية. تظل للاختبار والتقييم فقط، ولا يُعتمد استخدامها تجاريًا قبل التحقق المستقل من الأصل والحقوق والعلامات، ولا يُفهم منها توفر مركبة أو ارتباط بأي معرض.
+
+## V121–V123
+- shopping-photo.jpg: Iuliia Pilipeichenko، https://images.unsplash.com/photo-1760565030243-c92ed557e8da ؛ مصدر الملف الوسيط https://github.com/zohaib65-ch/kafka-ecommerce/blob/c4e16db056d9f60ebda82c1f4f26325f2111e224/client/docs/image-credits/site.md ؛ ترخيص https://unsplash.com/license . تمت معاينة الملف بصريًا، صورة حقائب ورقية مع يد دون وجه أو شعار ظاهر؛ تستخدم للمعاينة فقط. جرى التحقق من ترخيص Unsplash العام وصفحات المصورة ذات الموضوع نفسه، لكن ربط معرّف CDN بصفحة الصورة الأصلية لم يثبت قطعًا. قبل الإطلاق يجب التحقق من حقوق كل أصل على حدة. لا ادعاء بإعلان حقيقي أو تأييد علامة. لم تُستبدل صورة السيارة، جرى تحسين سطوعها بالـCSS.
