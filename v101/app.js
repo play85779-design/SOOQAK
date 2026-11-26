@@ -95,7 +95,7 @@ function eligible(){
  if(state.country!=='السعودية')return[];
  const allowed=state.region==='كل المناطق'?null:(locationMap[state.country][state.region]||[]);
  const words=normalizeSearch(state.term).split(/\s+/).filter(Boolean);
- return items.filter(x=>(!allowed||(x.local?x.region===state.region:allowed.includes(x.city)))&&(state.city==='كل المدن'||x.city===state.city)&&(state.filter==='الكل'||x.section===state.filter)&&words.every(w=>normalizeSearch([x.title,x.city,x.section,x.note].join(' ')).includes(w))).sort((a,b)=>Number(Boolean(b.local))-Number(Boolean(a.local)));
+ return items.filter(x=>(!allowed||(x.local?x.region===state.region:allowed.includes(x.city)))&&(state.city==='كل المدن'||x.city===state.city)&&(state.filter==='الكل'||x.section===state.filter)&&words.every(w=>normalizeSearch([x.title,x.city,x.section,x.note].join(' ')).includes(w))).sort((a,b)=>Number(Boolean(b.local))-Number(Boolean(a.local))||(a.local&&b.local?items.indexOf(b)-items.indexOf(a):0));
 }
 const imageSrc=(x,p)=>x.local?p:'./assets/'+p;
 const formatted=n=>Number(n).toLocaleString('en-US',{maximumFractionDigits:2});
@@ -172,7 +172,7 @@ function render(preserve=false){
  const y=window.scrollY;
  $('#app').innerHTML='<div class="site'+(['welcome','role'].includes(state.route)?' onboarding':'')+'">'+side()+header()+'<main class="main">'+(views[state.route]||home)()+'</main>'+nav()+'</div>';
  hydrateLocationFields();scheduleHero();
- document.title='سوقك — '+({welcome:'أهلا بك',role:'نوع الحساب',store:'متجر',home:'الرئيسية',listings:'الإعلانات',stores:'المتاجر',post:'إضافة إعلان',account:'حسابي',auth:'تسجيل الدخول','my-ads':'إعلاناتي',messages:'الرسائل',favorites:'المفضلة',detail:'تفاصيل الإعلان','create-store':'إنشاء متجر',services:'الخدمات'}[state.route]||'SOOQAK');
+ document.title='سوقك — '+({welcome:'أهلا بك',role:'نوع الحساب',store:'متجر',home:'الرئيسية',listings:'الإعلانات',stores:'المتاجر',post:'إضافة إعلان',account:'حسابي',auth:'تسجيل الدخول','my-ads':'إعلاناتي',messages:'الرسائل',favorites:'المفضلة',detail:'تفاصيل الإعلان','create-store':'إنشاء متجر',services:'الخدمات','my-stores':'متاجري','my-store':'متجري'}[state.route]||'SOOQAK');
  if(preserve)window.scrollTo({top:y,behavior:'instant'});else window.scrollTo({top:0,behavior:'instant'});
 }
 // Store only known fixture identifiers in the URL. Legacy #detail remains readable.
@@ -302,7 +302,7 @@ function openDetailImage(img){$('#dialog-root').innerHTML='<div class="dialog-ba
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('.image-dialog'))action('close');if((e.key==='Enter'||e.key===' ')&&e.target.matches('.detail-primary-image')){e.preventDefault();openDetailImage(e.target)}});
 window.addEventListener('popstate',()=>syncRoute());
 window.addEventListener('hashchange',()=>syncRoute());
-const initialRoute=routeFromHash();state.route=initialRoute.route;if(initialRoute.item)state.item=initialRoute.item;if(initialRoute.storeId)state.storeId=initialRoute.storeId;
+const initialRoute=routeFromHash();state.route=initialRoute.route;if(initialRoute.item)state.item=initialRoute.item;if(initialRoute.storeId)state.storeId=initialRoute.storeId;if(initialRoute.localStoreId)state.localStoreId=initialRoute.localStoreId;
 if(!location.hash)history.replaceState({},'',location.pathname+location.search+'#home');
 render();
 window.SOOQAK_V101={version:'V138',getState:()=>({route:state.route,country:state.country,city:state.city,filter:state.filter,saved:state.favorites.size,previewOnly:true})};
