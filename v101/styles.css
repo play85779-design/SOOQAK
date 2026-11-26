@@ -1233,3 +1233,12 @@ html{scroll-padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
 .auth-preview-page .auth-intro h2{font-size:clamp(22px,3.6vw,32px)}
 @media(min-width:700px){.messages-layout{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)}.merchant-cover{min-height:230px}.store-product-grid:has(>.store-product-unit:only-child) .card{display:grid;grid-template-columns:minmax(0,40%) minmax(0,1fr);align-items:center}.store-product-grid:has(>.store-product-unit:only-child) .card-photo{height:200px;aspect-ratio:auto}.store-product-grid:has(>.store-product-unit:only-child) .card-content{padding:20px}}
 @media(max-width:500px){.photo-source button{flex:1 1 40%}.merchant-tools>*{flex:1 1 40%}.merchant-logo{width:62px}.merchant-cover{padding:16px}.activity-entry small{font-size:11px}}
+
+/* V146–V147: search controls and compact internal pages. */
+.filter-dialog form{display:grid;gap:12px}.filter-dialog label{display:block;font-weight:700;color:#304b3d}.filter-dialog select,.filter-dialog input[type=number]{display:block;width:100%;min-width:0;min-height:46px;padding:9px 10px;border:1px solid #d4e4db;border-radius:12px;background:#f8faf8;color:#23382c}
+.price-filter-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.filter-dialog .filter-check{display:flex;align-items:center;gap:8px}.filter-dialog input[type=checkbox]{accent-color:#156c44;width:20px;height:20px}#advanced-filter-error{color:#9e354b;font-size:13px}#advanced-filter-error:empty{display:none}
+.card-photo{background:#edf1ed}.card-photo img.local-product{max-height:100%;object-fit:contain;background:#edf1ed}
+.card-content strong{font-weight:800}.card-meta{border-top:1px solid #edf0ed}
+.store-product-unit .store-unlink{font-weight:700}.detail-box .cta{line-height:1.35}
+@media(min-width:700px){.listings-page .card-photo,.favorites-page .card-grid:not([data-count="1"]) .card-photo{aspect-ratio:1.65}.wizard-summary{align-items:center}.wizard-summary-info{padding:12px 0}.wizard-panel .review-checks>div{min-height:50px}}
+@media(max-width:420px){.price-filter-grid{grid-template-columns:1fr}}
