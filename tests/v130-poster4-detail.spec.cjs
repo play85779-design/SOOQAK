@@ -4,7 +4,7 @@ for(const width of [330,390,790,1180]){
   await page.emulateMedia({reducedMotion:'reduce'});
   await page.setViewportSize({width,height:940});
   await page.goto('/v101/index.html#home');
-  await expect(page).toHaveTitle(/V130/);
+  await expect(page).toHaveTitle(/سوقك/);
   await expect(page.locator('.hero-emerald img')).toHaveAttribute('src',/poster4-shopping\.svg/);
   await expect(page.locator('.catbar img')).toHaveCount(5);
   await expect(page.locator('.poster-store-grid button')).toHaveCount(4);
