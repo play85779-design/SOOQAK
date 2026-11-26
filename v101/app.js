@@ -326,5 +326,5 @@ window.addEventListener('hashchange',()=>syncRoute());
 const initialRoute=routeFromHash();state.route=initialRoute.route;if(initialRoute.item)state.item=initialRoute.item;if(initialRoute.storeId)state.storeId=initialRoute.storeId;if(initialRoute.localStoreId)state.localStoreId=initialRoute.localStoreId;
 if(!location.hash)history.replaceState({},'',location.pathname+location.search+'#home');
 render();
-window.SOOQAK_V101={version:'V146-candidate',getState:()=>({route:state.route,country:state.country,city:state.city,filter:state.filter,saved:state.favorites.size,previewOnly:true})};
+window.SOOQAK_V101={version:'V147-candidate',getState:()=>({route:state.route,country:state.country,city:state.city,filter:state.filter,saved:state.favorites.size,previewOnly:true})};
 })();
