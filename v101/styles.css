@@ -1203,3 +1203,9 @@ html{scroll-padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
 .auth-preview-page .auth-demo-error:empty{display:none}
 @media(min-width:700px){.owned-store-grid:has(>.owned-store:only-child) .owned-store{display:grid;grid-template-columns:minmax(180px,32%) minmax(0,1fr);gap:8px 20px;align-items:center}.owned-store-grid:has(>.owned-store:only-child) .owned-store-cover{grid-row:1/5;height:100%}.owned-store-grid:has(>.owned-store:only-child) .owned-store-actions{grid-column:2}.owned-store-grid:has(>.owned-store:only-child) .owned-store h3{margin:0}.auth-preview-page .auth-intro{min-height:125px}}
 @media(max-width:360px){.store-pick-item{grid-template-columns:52px minmax(0,1fr) auto;gap:7px}.store-pick-item img{width:52px;height:52px}}
+
+/* V141: preserve search context and separate store removal from listing deletion. */
+.scope-hint{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 16px;margin:12px 0;border-radius:16px;border:1px solid #cce1d5;background:#f1faf4;color:#184c35}
+.scope-hint>div{flex:1;min-width:160px}.scope-hint p{font-size:13px;margin-top:4px;color:#476353}.scope-hint .more{padding:9px 13px;background:#fff;border:1px solid #bed8ca;border-radius:12px}
+.store-product-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.store-product-unit{min-width:0;background:white;border-radius:18px;border:1px solid #e1e8e3;overflow:hidden}.store-product-unit .card{border:0;box-shadow:none;border-radius:0}.store-unlink{display:block;width:100%;padding:11px 8px;color:#8b3947!important;border-top:1px solid #e5e8e6;text-align:center}
+@media(max-width:360px){.store-product-grid{grid-template-columns:1fr}}
