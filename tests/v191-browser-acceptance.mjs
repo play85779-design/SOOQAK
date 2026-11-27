@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 const root=path.resolve('v101');
 const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml'};
-const server=createServer(async(req,res)=>{try{const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);const file=path.resolve(root,'.'+(pathname==='/'?'/index.html':pathname));if(!file.startsWith(root+path.sep))throw Error();res.writeHead(200,{'content-type':mime[path.extname(file)]||'application/octet-stream'});res.end(await readFile(file))}catch{res.writeHead(404);res.end('Not found')}});
+const server=createServer(async(req,res)=>{try{const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);const file=path.resolve(root,'.'+(pathname==='/'?'/index.html':pathname));if(!file.startsWith(root+path.sep))throw Error();const data=await readFile(file);res.writeHead(200,{'content-type':mime[path.extname(file)]||'application/octet-stream'});res.end(data)}catch{res.writeHead(404);res.end('Not found')}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const base='http://127.0.0.1:'+server.address().port;
 const browser=await chromium.launch({headless:true});
@@ -23,10 +23,10 @@ for(const [name,width,height] of [['phone',390,844],['fold',720,780],['desktop',
  check(name+' no horizontal overflow',await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+2));
  await page.goto(base+'/#services');await page.locator('.service-tile').first().waitFor();check(name+' nine unique service icons',await page.locator('.service-tile>span>svg').evaluateAll(xs=>new Set(xs.map(x=>x.innerHTML)).size)===9);
  await page.goto(base+'/#about');await page.locator('.about-guide').waitFor();check(name+' about has FAQ',await page.locator('.about-guide details').count()>=4);
- await page.goto(base+'/#home');await page.locator('#hero-carousel').waitFor();
+ await page.goto(base+'/#home');await page.locator('#hero-carousel').waitFor();await page.waitForTimeout(350);
  // Seed a synthetic old-format local advertisement, never real personal data.
  await page.evaluate(async b=>{const blob=new Blob([new Uint8Array(b)],{type:'image/png'});await new Promise((resolve,reject)=>{const req=indexedDB.open('sooqak-preview-workspace',1);req.onsuccess=()=>{const db=req.result,tx=db.transaction('workspace','readwrite');tx.objectStore('workspace').put({schema:1,ads:[{id:'local-77',title:'إعلان تجربة',price:30,region:'الشرقية',city:'الجبيل',section:'أخرى',note:'قديم',images:[blob],local:true}],stores:[],draftPhotos:[],favorites:[],activity:[],nextDemoId:77},'current');tx.oncomplete=()=>{db.close();resolve()};tx.onerror=()=>reject(tx.error)};req.onerror=()=>reject(req.error)})},[...png]);
- await page.goto(base+'/#detail/local-77');await page.locator('[data-edit-local="local-77"]').waitFor();
+ await page.goto(base+'/#detail/local-77');await page.reload();await page.locator('[data-edit-local="local-77"]').waitFor();
  await page.locator('[data-edit-local="local-77"]').click();await page.locator('#edit-title').fill('إعلان بعد التعديل');await page.locator('#edit-price').fill('40');
  // Select a real offered region rather than relying on a spelling guess.
  const region=await page.locator('#edit-region option').nth(1).getAttribute('value')||await page.locator('#edit-region option').nth(1).innerText();await page.locator('#edit-region').selectOption({label:region});
