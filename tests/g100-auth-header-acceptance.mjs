@@ -16,6 +16,7 @@ for(const [name,width,height] of [['phone',390,844],['fold',720,780],['desktop',
  const context=await browser.newContext({viewport:{width,height},reducedMotion:'reduce',isMobile:name!=='desktop',hasTouch:name!=='desktop'});
  await context.route('**/*',r=>r.request().url().startsWith(base)||/^(blob:|data:)/.test(r.request().url())?r.continue():r.abort());
  const page=await context.newPage();
+ const pageErrors=[];page.on('pageerror',e=>{pageErrors.push(e.message);console.error('PAGE ERROR:',e.message)});
  try{
  await page.goto(base+'/#auth');
  await page.locator('#connected-login-form').waitFor();
@@ -63,6 +64,10 @@ for(const [name,width,height] of [['phone',390,844],['fold',720,780],['desktop',
  await page.locator('.crop-dialog').waitFor({state:'detached'});await page.locator('.upload-thumb img').first().evaluate(img=>img.decode());
  check(name+' draft crop saved at 4:3',await page.locator('.upload-thumb img').first().evaluate(img=>img.naturalWidth===1200&&img.naturalHeight===900));
  await page.locator('[data-post-next]').click();
+ check(name+' nine approved listing sections',await page.locator('#post-cat option').count()===9);
+ await page.locator('#post-cat').selectOption('إلكترونيات');
+ check(name+' five dependent subcategories',await page.locator('#post-subcategory option').count()===6);
+ await page.locator('#post-subcategory').selectOption('جوالات');
  await page.locator('#post-title').fill('إعلان حالة تجريبي');
  await page.locator('#post-price').fill('99');
  await page.locator('#post-condition').selectOption('مستعمل');
@@ -81,6 +86,11 @@ for(const [name,width,height] of [['phone',390,844],['fold',720,780],['desktop',
  check(name+' condition filter excludes other states',await local.count()===0);
  await page.locator('[data-clear-search="condition"]').click();await local.waitFor();
  check(name+' condition chip clears filter',await local.count()===1);
+ await page.locator('.search-filter-btn').click();await page.locator('#advanced-category').selectOption('إلكترونيات');await page.locator('#advanced-subcategory').selectOption('كمبيوترات');await page.locator('#advanced-filter-form [type=submit]').click();
+ check(name+' subcategory excludes different listing',await local.count()===0);
+ await page.locator('[data-clear-search="subcategory"]').click();await local.waitFor();
+ check(name+' subcategory chip restores result',(await local.locator('.g100-card-meta').innerText()).includes('جوالات'));
+ await page.locator('[data-clear-search="category"]').click();
  await page.waitForTimeout(250);await page.reload();await local.waitFor();
  check(name+' condition and date survive reload',(await local.locator('.g100-card-meta').innerText()).includes('مستعمل')&&await local.locator('time[datetime]').count()===1);
 
@@ -97,6 +107,7 @@ for(const [name,width,height] of [['phone',390,844],['fold',720,780],['desktop',
  const pw=page.locator('#connected-change-password input[type=password]');
  await pw.fill('synthetic-only-456');await page.locator('#connected-change-password [data-live-toggle]').click();
  check(name+' settings password visibility works',await page.locator('#connected-change-password input').getAttribute('type')==='text');
+ check(name+' no uncaught script errors',pageErrors.length===0);
 
 
  }finally{await context.close()}
