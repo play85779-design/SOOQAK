@@ -1,0 +1,28 @@
+/* V191 shared test data, isolated from original local workspace. */
+(()=>{const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const tag='اختبار V191 — ',test=x=>typeof x?.title==='string'&&x.title.startsWith(tag),valid=id=>/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(id||'');
+const active=x=>test(x)&&!x.hidden_at&&['active','reserved'].includes(x.status)&&Date.parse(x.expires_at)>Date.now();
+const url=(id)=>'./cloud-test.html?listing='+encodeURIComponent(id)+'#shared-listing';
+const desk='./cloud-test.html';
+let last=null,session=null,ticket=0;
+const account=()=>window.sooqakPasswordRecoveryPending?null:window.sooqakCloud?.getUser();
+const img=u=>{try{const v=new URL(u);return v.origin===window.SOOQAK_SUPABASE.url&&v.pathname.startsWith('/storage/v1/object/public/sooqak-listing-photos/')?v.href:''}catch{return ''}};
+function card(x,owned=false){const photo=img(x.photos?.[0]?.url);return '<article class="shared-route-card">'+(photo?'<img src="'+esc(photo)+'" loading="lazy" alt="صورة الاختبار">':'')+'<div><small>'+esc(x.city)+' · '+esc(x.category)+'</small><h3>'+esc(x.title)+'</h3><p>'+esc(x.price??'')+' ر.س</p>'+(owned?'<a href="'+desk+'?edit='+encodeURIComponent(x.id)+'#ct-own">إدارة الإعلان المشترك</a>':active(x)?'<a href="'+esc(url(x.id))+'">تفاصيل الإعلان المشترك</a>':'')+'</div></article>'}
+const list=(rows,own=false)=>rows.length?'<div class="shared-route-grid">'+rows.map(x=>card(x,own)).join('')+'</div>':'<p>لا توجد نتائج اختبار مشتركة مطابقة.</p>';
+const gate='<p>سجّل دخولك بحساب مؤكد لعرض بياناتك المشتركة.</p><button class="cta" data-go="auth">تسجيل الدخول</button>';
+const note='<p class="shared-route-note">هذه البيانات مشتركة في بيئة الاختبار. لا تُرفع بيانات المتصفح المحلية تلقائيًا.</p>';
+function stores(rows){const seen=new Map();for(const x of rows)if(test(x)&&x.seller_kind==='business'&&valid(x.account_id)&&!seen.has(x.account_id))seen.set(x.account_id,x);return [...seen.values()].map(x=>'<article class="shared-route-card"><div><small>حساب تاجر تجريبي</small><h3>متجر اختبار مشترك</h3><a href="./shared-store.html?account='+encodeURIComponent(x.account_id)+'">زيارة المتجر ورابطه</a></div></article>').join('')||'<p>لا توجد متاجر اختبار مشتركة مرتبطة بإعلانات.</p>'}
+async function mount(force=false){const el=$('#shared-route-root');if(!el){last=null;return}const uid=account()?.id||null;if(!force&&last===el&&session===uid)return;last=el;session=uid;const stamp=++ticket,kind=el.dataset.sharedKind;
+const heading='<h2>بيانات الاختبار المشتركة</h2>'+note;el.innerHTML=heading+'<p>جارٍ تحميل البيانات…</p>';
+if(!window.SOOQAK_CLOUD_ENABLED){el.innerHTML=heading+'<p>تتوفر على رابط الاختبار الثابت فقط.</p>';return}
+try{await import('./cloud-adapter.js');const s=window.sooqakCloud,u=account(),userId=u?.id||null;if(!s)throw Error();const still=()=>$('#shared-route-root')===el&&stamp===ticket&&(account()?.id||null)===userId;let body='';
+if(kind==='listings'||kind==='stores'){const rows=(await s.fetchListings(0,60,{q:'اختبار V191'})).filter(active);body=kind==='stores'?'<div class="shared-route-grid">'+stores(rows)+'</div>':list(rows.filter(x=>valid(x.id)));}
+else if(!u)body=gate;
+else if(kind==='my-ads'||kind==='my-stores'){const own=(await Promise.all([s.fetchMyListings(0,40,'personal'),s.fetchMyListings(0,40,'business')])).flat().filter(x=>test(x)&&x.seller_user_id===userId&&valid(x.id));body=kind==='my-stores'?'<div class="shared-route-grid">'+stores(own)+'</div><a class="cta" href="'+desk+'#ct-publish">إضافة منتج إلى حساب التاجر المشترك</a>':list(own.filter(x=>!x.hidden_at&&x.status!=='sold'),true)+'<a class="cta" href="'+desk+'#ct-publish">نشر إعلان اختبار مشترك</a>';}
+else if(kind==='favorites'){const rows=(await s.fetchFavoriteListings()).filter(x=>active(x)&&valid(x.id));body=list(rows)+'<a class="more" href="'+desk+'#ct-favorites">إدارة المفضلة المشتركة</a>';}
+else if(kind==='messages'||kind==='notifications'){const [threads,market,a,b,summary]=await Promise.all([s.listConversations(),s.fetchListings(0,60,{q:'اختبار V191'}),s.fetchMyListings(0,40,'personal'),s.fetchMyListings(0,40,'business'),s.unreadSummary()]);const byId=new Map([...market,...a,...b].filter(test).map(x=>[x.id,x])),unread=new Map((summary?.conversations||[]).map(x=>[x.id,Number(x.unread)||0]));const matched=threads.filter(x=>valid(x.id)&&byId.has(x.listing_id)&&(x.buyer_id===userId||x.seller_id===userId));const total=matched.reduce((n,x)=>n+(unread.get(x.id)||0),0);body='<p>رسائل اختبار غير مقروءة: <strong>'+total+'</strong></p><div class="shared-route-grid">'+matched.map(x=>'<article class="shared-route-card"><div><h3>'+esc(byId.get(x.listing_id).title)+'</h3><p>'+(unread.get(x.id)||0)+' غير مقروءة</p><a href="'+desk+'?thread='+encodeURIComponent(x.id)+'#ct-conversations">فتح المحادثة</a></div></article>').join('')+'</div>'+(matched.length?'':'<p>لا توجد محادثات اختبار مطابقة.</p>');}
+else if(kind==='post')body='<p>للنشر على الأجهزة الأخرى، أنشئ إعلان اختبار متصلًا؛ لن ينسخ المسودة المحلية أو ينشرها دون موافقتك.</p><a class="cta" href="'+desk+'#ct-publish">فتح نموذج الإعلان المشترك</a>';
+if(still()){el.innerHTML=heading+body;session=userId}
+}catch{if($('#shared-route-root')===el&&stamp===ticket)el.innerHTML=heading+'<p role="alert">تعذر تحميل البيانات المشتركة.</p><button class="more" data-shared-retry>إعادة المحاولة</button>'}}
+document.addEventListener('sooqak:view-rendered',()=>mount());window.addEventListener('sooqak:auth',()=>mount());document.addEventListener('click',e=>{if(e.target.closest('[data-shared-retry]'))mount(true)});mount();
+})();
