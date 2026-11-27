@@ -3,7 +3,8 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
-      - 'v101/connected-auth.js'
+      - 'v101/**'
+      - 'tests/v191-browser-acceptance.mjs'
       - 'tests/g100-auth-header-acceptance.mjs'
       - '.github/workflows/g100-browser-acceptance.yml'
 permissions:
@@ -20,6 +21,13 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
+      - name: Validate JavaScript syntax before browser tests
+        run: |
+          node --check v101/app.js
+          node --check v101/connected-auth.js
+          node --check v101/cloud-test.js
+          node --check tests/g100-auth-header-acceptance.mjs
+          node --check tests/v191-browser-acceptance.mjs
       - run: npm install --no-save --ignore-scripts --no-audit --no-fund playwright@1.58.2
       - run: npx --no-install playwright install --with-deps chromium webkit
       - run: node tests/g100-auth-header-acceptance.mjs
