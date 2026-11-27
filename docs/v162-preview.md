@@ -1,0 +1,2 @@
+
+27 نوفمبر 2026 — نشر معاينة V162: Vercel READY target=null، dpl_9NBh6ekcheH15b54ojmFMZrzU6ZP https://sooqak-v101-public-showcase-ac6y32j0t-play85779-5487.vercel.app/ . المصدر GitHub SHA 68f570023da4b39b48b113a0c0d7d885caf2cd0b؛ تحقق من شجرة النشر: 23 ملفًا و20 أصلًا مطابقًا لـV160 بحسب معرفات الملفات، وتغيرت ملفات HTML/CSS/JS. لم يجر اختبار العرض الفعلي على المتصفح أو الأجهزة بعد. نسخة الرجوع V160 محفوظة. لا إطلاق إنتاج أو قاعدة بيانات.
