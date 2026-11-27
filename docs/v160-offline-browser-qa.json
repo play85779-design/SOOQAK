@@ -1,0 +1,89 @@
+{
+  "codeCommit": "2f0147551d071b9980bff4a5c46bde0df2b60cc2",
+  "date": "2026-11-27",
+  "mode": "Local Chromium with inlined exact source JS/CSS, about:blank hash history adapter and local new SVG decoding; no external network. Existing media/fonts not validated offline; no real iPhone/Fold or remote URL test.",
+  "blobSha": {
+    "app": "0b2cb068bbdec1d75297217ca2e110e38a6be657",
+    "css": "1882598a4c9957384e37ad1e40bd6f247a118c30",
+    "html": "af2fc35a6c5afc62b03cfb8da36d39c286deb95d"
+  },
+  "tests": [
+    [
+      "17 routes, width 320",
+      "PASS"
+    ],
+    [
+      "17 routes, width 360",
+      "PASS"
+    ],
+    [
+      "17 routes, width 390",
+      "PASS"
+    ],
+    [
+      "17 routes, width 790",
+      "PASS"
+    ],
+    [
+      "17 routes, width 1280",
+      "PASS"
+    ],
+    [
+      "market hero renders",
+      "PASS"
+    ],
+    [
+      "electronics icon loads",
+      "PASS"
+    ],
+    [
+      "tech cover loads",
+      "PASS"
+    ],
+    [
+      "real browser password show/hide",
+      "PASS"
+    ],
+    [
+      "unexpected autofill value never revealed",
+      "PASS"
+    ],
+    [
+      "demo submit no actual account",
+      "PASS"
+    ],
+    [
+      "single and multiple local photo selection",
+      "PASS"
+    ],
+    [
+      "create local listing",
+      "PASS"
+    ],
+    [
+      "Arabic search of created listing",
+      "PASS"
+    ],
+    [
+      "favorite newly created listing",
+      "PASS"
+    ],
+    [
+      "store creation attach and unlink",
+      "PASS"
+    ],
+    [
+      "advanced price and own listing filters",
+      "PASS"
+    ],
+    [
+      "no javascript errors",
+      "PASS"
+    ],
+    [
+      "no outgoing writes",
+      "PASS"
+    ]
+  ],
+  "rawResults": "https://drive.google.com/file/d/1ajz_8awglxCNblwUSTo7LCay5cZr9-lJ/view"
+}
