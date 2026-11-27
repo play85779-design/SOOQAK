@@ -1,4 +1,4 @@
-import { chromium } from 'playwright';
+import { chromium, webkit } from 'playwright';
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
@@ -8,7 +8,7 @@ const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript'
 const server=createServer(async(req,res)=>{try{const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);const file=path.resolve(root,'.'+(pathname==='/'?'/index.html':pathname));if(!file.startsWith(root+path.sep))throw Error();res.writeHead(200,{'content-type':mime[path.extname(file)]||'application/octet-stream'});res.end(await readFile(file))}catch{if(!res.headersSent)res.writeHead(404);res.end()}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const base='http://127.0.0.1:'+server.address().port;
-const browser=await chromium.launch({headless:true});
+const browser=await (process.env.G100_BROWSER==='webkit'?webkit:chromium).launch({headless:true});
 let passed=0;
 const check=(name,ok)=>{assert.ok(ok,name);passed++;console.log('PASS',name)};
 try{
@@ -38,6 +38,22 @@ for(const [name,width,height] of [['phone',390,844],['fold',720,780],['desktop',
  check(name+' display watermark present',await photo.evaluate(e=>getComputedStyle(e,'::after').content.includes('سوقك')&&getComputedStyle(e,'::after').pointerEvents==='none'));
  await photo.locator('button[data-detail]').click();const detail=page.locator('.detail-gallery .detail-hero:has(img)');await detail.waitFor();
  check(name+' detail watermark present',await detail.evaluate(e=>getComputedStyle(e,'::after').content.includes('سوقك')&&getComputedStyle(e,'::after').pointerEvents==='none'));
+ await page.locator('.detail-primary-image').evaluate(img=>img.decode());
+ const original=await page.locator('.detail-primary-image').getAttribute('src');
+ await page.locator('.detail-primary-image').click();
+ await page.locator('.g100-image-dialog').waitFor();
+ check(name+' full gallery branding and controls',await page.locator('.g100-gallery-brand').innerText()==='سوقك'&&await page.locator('.g100-image-dialog [data-brand-photo]').isVisible());
+ await page.locator('.g100-gallery-frame img').evaluate(img=>img.decode());
+ const downloadEvent=page.waitForEvent('download');
+ await page.locator('.g100-image-dialog [data-brand-photo]').click();
+ const download=await downloadEvent;
+ const bytes=await readFile(await download.path());
+ check(name+' PNG copy exported',download.suggestedFilename()==='sooqak-image.png'&&bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])));
+ const branded=await page.evaluate(async data=>{const im=new Image();im.src='data:image/png;base64,'+data;await im.decode();const c=document.createElement('canvas');c.width=im.naturalWidth;c.height=im.naturalHeight;const ctx=c.getContext('2d');ctx.drawImage(im,0,0);return [...ctx.getImageData(0,c.height-1,1,1).data]},bytes.toString('base64'));
+ check(name+' actual pixels carry brand band',branded[0]===18&&branded[1]===62&&branded[2]===50);
+ await page.locator('.g100-image-dialog [data-close-image]').click();
+ check(name+' original image reference unchanged',await page.locator('.detail-primary-image').getAttribute('src')===original);
+
  }finally{await context.close()}
 }
 }finally{await browser.close();server.close()}
