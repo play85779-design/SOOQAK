@@ -1576,3 +1576,5 @@ body{overflow-x:clip}
 @media(max-width:450px){.g100-gallery-tools button{font-size:12px;padding:6px 8px}.g100-image-dialog{padding:8px}}
 
 .crop-frame.draft{aspect-ratio:4/3;max-width:450px}.upload-thumb [data-draft-crop]{top:35px;left:5px;width:auto;height:auto;min-height:28px;border-radius:8px;padding:4px 6px;font:700 11px/1.2 var(--font);background:#fff;color:#155b3e;z-index:5}.upload-thumb{min-height:118px}
+
+.g100-card-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;color:#52675c;font-size:11px;margin-top:5px}.g100-card-meta:empty{display:none}.g100-card-meta span,.g100-condition{background:#eaf5ee;color:#155b3e;border-radius:7px;padding:3px 8px;font-weight:700}.g100-condition{display:inline-block;font-size:12px;margin-inline-start:6px}.g100-listing-date{font-size:12px;color:#66776c;margin:8px 0}
