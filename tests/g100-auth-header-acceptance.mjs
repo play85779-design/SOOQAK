@@ -71,7 +71,7 @@ for(const [name,width,height] of [['phone',390,844],['fold',720,780],['desktop',
  await page.locator('[data-post-next]').click();
  check(name+' review shows selected condition', (await page.locator('.wizard-summary-info').innerText()).includes('مستعمل'));
  await page.locator('[data-post-preview]').click();
- await page.locator('.dialog-card [data-action="close"]').click();
+ await page.locator('.dialog-card .cta[data-action="close"]').click();
  await page.goto(base+'/#listings');
  const local=page.locator('.card').filter({hasText:'إعلان حالة تجريبي'});
  await local.waitFor();
@@ -81,6 +81,9 @@ for(const [name,width,height] of [['phone',390,844],['fold',720,780],['desktop',
  check(name+' condition filter excludes other states',await local.count()===0);
  await page.locator('[data-clear-search="condition"]').click();await local.waitFor();
  check(name+' condition chip clears filter',await local.count()===1);
+ await page.waitForTimeout(250);await page.reload();await local.waitFor();
+ check(name+' condition and date survive reload',(await local.locator('.g100-card-meta').innerText()).includes('مستعمل')&&await local.locator('time[datetime]').count()===1);
+
  // Isolated simulated account; neither real mail nor database requests are made.
  await page.route('**/cloud-config.js',r=>r.fulfill({contentType:'text/javascript',body:'window.SOOQAK_CLOUD_ENABLED=true;window.SOOQAK_AUTH_CALLBACK=false;'}));
  await page.route('**/cloud-adapter.js',r=>r.fulfill({contentType:'text/javascript',body:`const u={id:'mock-user',user_metadata:{full_name:'اسم اختبار'},email_confirmed_at:'2026-01-01'};let profile={city:''};window.sooqakCloud={getUser:()=>u,loadPrivateProfile:async()=>profile,getContactPrefs:async()=>({}),listMyAccountKinds:async()=>[{kind:'personal'}],savePrivateProfile:async v=>{profile={city:v.city};u.user_metadata.full_name=v.display_name}};`}));
