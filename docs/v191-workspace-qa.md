@@ -1,0 +1,13 @@
+# V191 — workspace and marketplace candidate
+Base V190 b207e0da5024e97ca0aa1e900afda6677ea9861d; code a9c279d4b978d50996e1ec6378e5e2e240a2cb94.
+User approved the 40-task batch, including secure test-only backend. This is a partial implementation, not 40 completed tasks.
+- 21: detail gallery previous/next controls; markup check passed.
+- 22: move a photo one position in either direction; controls checked, click behavior pending device test.
+- 25: local IndexedDB workspace stores draft text and image blobs, ads, photos, stores, links, favorites, activity; snapshot/restore mock checks passed, browser acceptance pending.
+- 27: native suggestions from existing listing titles/categories; markup check passed.
+- Partial 5,9: reused existing market scene instead of bags on create store/welcome, not new premium artwork.
+- Partial 11,12,13,14,15,16,18,23,24,26,29: detail navigation and sharing sample only, store setup layout, durable local stores/ads/favorites, marketplace home architecture and search suggestions, photo ordering/cover controls, explicit draft deletion, responsive CSS. Do not count these as full approved scope.
+- Other tasks remain open including new visual assets, actual account auth, shared server persistence, owner-only remote modification, cross-device data, shared stores and messaging.
+New independent preview alias https://sooqak-testing-workspace-play85779-5487.vercel.app/ verified mapped to deployment dpl_94LY1eUTY6Cwf1PZk545SWBLLHuz READY target=null. Unique URL https://sooqak-v101-public-showcase-kimme66o0-play85779-5487.vercel.app/. Local storage is origin-specific; use the same alias for subsequent previews. No migration of old transient data or cross-device sync. Multi-tab concurrent edits not tested. V190 rollback retained.
+14/14 mocked template and state roundtrip checks passed, JavaScript syntax passed. Chromium isolated probe blocked by administrator; DNS unavailable for deployed URL. No full browser/device/CI acceptance. 
+Existing Supabase project found active: 24 public tables with RLS; inspected ownership/verified-email policies, grants, and selected security-definer functions; linter 3 informational no-policy, 17 authenticated security-definer warnings, 1 leaked-password warning. Warnings not proof of vulnerabilities. Existing backend cloud.js is present at repository root and should be reused, not replaced; no DB or account changes, no production, no paid services. Existing backend has 60-day listing expiry and 5 confirmed-photo reorder limit; conflicts with persistent-test requirement/10 local photos need explicit test-specific resolution. Two-account authorization, storage and auth callback acceptance pending.
