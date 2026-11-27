@@ -91,7 +91,7 @@ for(const [name,width,height] of [['phone',390,844],['fold',720,780],['desktop',
  await page.locator('[data-clear-search="subcategory"]').click();await local.waitFor();
  check(name+' subcategory chip restores result',(await local.locator('.g100-card-meta').innerText()).includes('جوالات'));
  await page.locator('[data-clear-search="category"]').click();
- await page.waitForTimeout(250);await page.reload();await local.waitFor();
+ await page.waitForFunction(async()=>{const db=await new Promise((ok,no)=>{const q=indexedDB.open('sooqak-preview-workspace',1);q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error)});try{return await new Promise(ok=>{const q=db.transaction('workspace','readonly').objectStore('workspace').get('current');q.onsuccess=()=>ok(!!q.result?.ads?.some(x=>x.title==='إعلان حالة تجريبي'&&x.images?.[0]?.bytes instanceof ArrayBuffer));q.onerror=()=>ok(false)})}finally{db.close()}},{},{timeout:15000});await page.reload();await local.waitFor();
  check(name+' condition and date survive reload',(await local.locator('.g100-card-meta').innerText()).includes('مستعمل')&&await local.locator('time[datetime]').count()===1);
 
  // Isolated simulated account; neither real mail nor database requests are made.
