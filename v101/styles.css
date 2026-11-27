@@ -1290,3 +1290,6 @@ html,body{max-width:100%;overflow-x:clip}
 }
 @media(max-width:360px){.catbar .cat b{font-size:10px}.bottom .nav span{font-size:9px}.top .locale{min-width:0}.wizard-steps button{font-size:10px}}
 @supports(padding:max(0px)){.main{padding-inline:max(0px,env(safe-area-inset-right,0px)) max(0px,env(safe-area-inset-left,0px))}}
+
+/* V160 mobile QA: keep hero controls away from the copy. */
+@media(max-width:600px){#hero-carousel .hero-edge{top:auto;bottom:9px;transform:none;width:28px;height:28px}#hero-carousel .hero-prev{left:8px;right:auto}#hero-carousel .hero-next{left:40px;right:auto}#hero-carousel .hero-copy{padding-inline:12px 4px}}
