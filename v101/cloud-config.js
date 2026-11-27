@@ -1,1 +1,2 @@
 window.SOOQAK_SUPABASE=Object.freeze({url:"https://zwbtiyqgrgjybwaguuyn.supabase.co",publishableKey:"sb_publishable_42t2ty_ID8MfKoxQkw3CkA_3p1GG4kr"});window.SOOQAK_CLOUD_ENABLED=location.hostname==='sooqak-testing-workspace-play85779-5487.vercel.app';
+window.SOOQAK_AUTH_CALLBACK=/[?&#](access_token|refresh_token|code|error|error_code|token_hash)=/.test(location.href);
