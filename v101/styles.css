@@ -1337,3 +1337,44 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .shell{padding-bottom:calc(108px + env(safe-area-inset-bottom,0px))}
 }
 @media(prefers-reduced-motion:reduce){#hero-carousel .hero,.card,.catbar .cat,.bottom .nav{transition:none;animation:none}}
+
+
+/* V163–V169: visual upgrade layered on V162, no replacement of navigation or business logic. */
+#hero-carousel .hero-emerald .hero-figure.market-scene{padding:0;align-self:stretch;overflow:hidden;min-width:0;background:#87bfa4}
+#hero-carousel .hero-emerald .hero-figure.market-scene img{display:block;width:100%;height:100%;object-fit:contain;object-position:50% 50%;mask-image:linear-gradient(to right,#000 0%,#000 78%,transparent 100%);-webkit-mask-image:linear-gradient(to right,#000 0%,#000 78%,transparent 100%);filter:none}
+#hero-carousel .hero-emerald{background:linear-gradient(110deg,#78b69c 0%,#237c60 39%,#0c573e 67%,#073b2b 100%)}
+#hero-carousel .hero-amber .hero-copy .cta{color:#34250e}
+.catbar .cat .cat-icon img{max-width:160px;object-fit:contain}
+.catbar .cat{background:linear-gradient(150deg,#fff 0%,#eef8f3 100%);box-shadow:0 5px 15px #193d3010;border:1px solid #e1eae3}
+.catbar .cat:nth-child(2){background:linear-gradient(150deg,#fff,#e9eefb)}
+.catbar .cat:nth-child(3){background:linear-gradient(150deg,#fff,#f9ebda)}
+.catbar .cat:nth-child(4){background:linear-gradient(150deg,#fff,#fff0cd)}
+.catbar .cat:nth-child(5){background:linear-gradient(150deg,#fff,#eee5fc)}
+.shop[data-shop="tech"] .shop-figure img,.poster-store-grid .shop[data-shop="tech"] .shop-figure img{height:100%;width:100%;object-fit:cover;object-position:center;padding:0;filter:none}
+.shop-gateway img{object-fit:cover;object-position:42% 50%}
+.store-preview .store-cover[data-tone="tech"]{background:radial-gradient(ellipse at 16% 22%,#a7a3e2,transparent 51%),linear-gradient(110deg,#5f5a9e,#4d287e 78%,#37205e)}
+.store-preview .store-cover[data-tone="home"]{background:linear-gradient(110deg,#f2d4a7,#a77445 65%,#684125)}
+.store-preview .store-cover[data-tone="cars"]{background:linear-gradient(110deg,#79aa94,#185b49 65%,#093c2d)}
+.store-preview .store-cover .store-photo{width:62%;height:100%;mask-image:linear-gradient(to right,#000 0%,#000 66%,transparent 100%);-webkit-mask-image:linear-gradient(to right,#000 0%,#000 66%,transparent 100%)}
+.store-preview .store-cover .store-slide-controls{position:absolute;z-index:5;bottom:10px;inset-inline-start:14px;display:flex;gap:7px;width:auto;min-width:0;flex:none;align-items:center}
+.store-preview .store-cover .store-slide-controls button{min-width:35px;min-height:35px;background:#173b35b0}
+.store-preview .store-cover .store-slide-controls span{padding:4px 8px;background:#173b35b0}
+.store-preview .store-cover>div:first-child{padding-bottom:35px}
+.account-page .account-quick-card{border:1px solid #ffffffb0;box-shadow:0 4px 12px #24382e0b}
+.account-groups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start;margin-bottom:12px}
+.account-group{min-width:0;padding:14px;background:#fff;border:1px solid #dfe8e1;border-radius:20px;box-shadow:0 6px 18px #173d300d}
+.account-group h3{font:800 clamp(16px,2.1vw,20px) var(--round);color:#154b37;margin:0}
+.account-group p{color:#58685f;font-size:12px;line-height:1.5;margin:4px 0 12px}
+.account-group .profile-row{border:0;border-radius:12px;box-shadow:none;background:#f6f8f6;padding:10px;min-width:0;gap:5px;font-size:clamp(12px,1.8vw,15px)}
+.account-group .profile-row .item{min-width:0;gap:7px;white-space:normal;overflow-wrap:anywhere}
+.account-group .profile-row svg{flex:none}
+.account-group .profile-row:hover{background:#eaf5ef}
+.card-photo img.stock-photo[src$="phone-photo.jpg"]{object-position:5% 100%;transform:scale(1.65);transform-origin:5% 100%}
+.card-photo img.stock-photo[src$="phone-photo.jpg"]:hover{transform:scale(1.65)}
+.top .header-quick{border-radius:14px}
+.top .header-quick:focus-visible,.top .header-auth-btn:focus-visible{outline-color:#ffe0a2}
+.bottom .nav.add{isolation:isolate}
+@media(max-width:699px){.account-groups{grid-template-columns:1fr;gap:9px}.account-group{padding:12px}.account-group .profile-row{font-size:14px}}
+@media(max-width:600px){#hero-carousel .hero-emerald .hero-figure.market-scene{padding-bottom:32px}#hero-carousel .hero-emerald .hero-figure.market-scene img{object-fit:contain}.store-preview .store-cover .store-photo{width:58%}.store-preview .store-cover>div:first-child{padding-bottom:39px}.store-preview .store-cover .store-slide-controls{bottom:7px;inset-inline-start:8px;gap:5px}}
+/* Fold touch layouts: leave a lower clearance for browser-owned scroll controls. Actual device verification pending. */
+@media(pointer:coarse) and (min-width:650px) and (max-width:1000px){.bottom{bottom:max(42px,calc(env(safe-area-inset-bottom,0px) + 12px))}.shell{padding-bottom:calc(150px + env(safe-area-inset-bottom,0px))}#toast{bottom:calc(124px + env(safe-area-inset-bottom,0px))}}
