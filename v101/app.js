@@ -206,7 +206,7 @@ function routeFromHash(){
  return {route:routes.has(hash)?hash:'home'};
 }
 function syncRoute(initial=false){
- const next=routeFromHash();
+ const next=window.SOOQAK_AUTH_CALLBACK&&/[?&#](access_token|refresh_token|code|error|error_code|token_hash)=/.test(location.href)?{route:'auth'}:routeFromHash();
  const changed=state.route!==next.route||(next.route==='my-store'&&state.localStoreId!==next.localStoreId)||(next.route==='detail'&&state.item!==next.item)||(next.route==='store'&&next.storeId&&state.storeId!==next.storeId);
  state.route=next.route;if(next.localStoreId)state.localStoreId=next.localStoreId;if(next.storeId)state.storeId=next.storeId;
  if(next.route==='detail'){if(state.item!==next.item)state.detailIndex=0;state.item=next.item;}
@@ -358,7 +358,7 @@ document.addEventListener('keydown',e=>{const modal=$('.dialog-card');if(modal&&
 document.addEventListener('input',e=>{if(['crop-zoom','crop-x','crop-y'].includes(e.target.id))cropUpdate()});document.addEventListener('change',saveWorkspace);document.addEventListener('click',e=>{if(e.target.closest('button')&&!e.target.closest('#connected-auth-root'))saveWorkspace()});document.addEventListener('submit',saveWorkspace);
 window.addEventListener('popstate',()=>syncRoute());
 window.addEventListener('hashchange',()=>syncRoute());
-async function boot(){try{workspaceDB=await openWorkspace();restoreWorkspace(await workspaceRead());workspaceReady=true}catch{workspaceFailed=true}if(!location.hash)history.replaceState({},'',location.pathname+location.search+'#home');syncRoute(true)}
+async function boot(){try{workspaceDB=await openWorkspace();restoreWorkspace(await workspaceRead());workspaceReady=true}catch{workspaceFailed=true}if(!location.hash&&!window.SOOQAK_AUTH_CALLBACK)history.replaceState({},'',location.pathname+location.search+'#home');syncRoute(true)}
 boot();
 window.SOOQAK_V101={version:'V191-candidate',getState:()=>({route:state.route,country:state.country,city:state.city,filter:state.filter,saved:state.favorites.size,previewOnly:true})};
 })();
