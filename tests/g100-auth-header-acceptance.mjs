@@ -54,7 +54,7 @@ for(const [name,width,height] of [['phone',390,844],['fold',720,780],['desktop',
  await page.locator('.g100-image-dialog [data-close-image]').click();
  check(name+' original image reference unchanged',await page.locator('.detail-primary-image').getAttribute('src')===original);
  await page.goto(base+'/#post');
- await page.locator('#preview-images').setInputFiles({name:'test.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+Wn4kAAAAASUVORK5CYII=','base64')});
+ await page.locator('#preview-images').setInputFiles({name:'test.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAACgAAAAeCAIAAADRv8uKAAAAL0lEQVR4nO3NIQEAMAgAsPMadCIK/SUVcJitwCK73oV/sorFYrFYLBaLxWKxeGUAnxYBEyCi9ycAAAAASUVORK5CYII=','base64')});
  const beforeCrop=await page.locator('.upload-thumb img').first().getAttribute('src');
  await page.locator('[data-draft-crop="0"]').click();await page.locator('#crop-image').evaluate(img=>img.decode());
  await page.locator('[data-crop-cancel]').click();
