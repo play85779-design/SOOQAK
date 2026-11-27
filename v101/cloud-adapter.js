@@ -60,7 +60,7 @@ if (window.SOOQAK_CLOUD_ENABLED) {
         .in('status',['active','reserved'])
         .is('hidden_at',null)
         .gt('expires_at',new Date().toISOString());
-      if(criteria.category)query=query.eq('category',criteria.category);
+      if(criteria.accountId&&/^[0-9a-f-]{36}$/i.test(criteria.accountId))query=query.eq('account_id',criteria.accountId);if(criteria.category)query=query.eq('category',criteria.category);
       if(criteria.city)query=query.eq('city',criteria.city);
       if(criteria.kind)query=query.eq('listing_kind',criteria.kind==='مطلوب'?'wanted':'sale');
       if(criteria.district)query=query.ilike('district','%'+String(criteria.district).replace(/[%_*,()\\]/g,'').slice(0,70)+'%');
@@ -433,6 +433,9 @@ if(!currentUser)throw new Error('يجب تسجيل الدخول لرفع الص�
     async function savePrivateProfile(v){if(!currentUser)throw Error('سجّل الدخول أولًا');const {error}=await supabase.from('sooqak_private_profiles').upsert({user_id:currentUser.id,city:v.city,district:v.district,birth_year:v.birth_year,updated_at:new Date().toISOString()},{onConflict:'user_id'});errorIfAny({error});const r=await supabase.auth.updateUser({data:{full_name:v.display_name}});errorIfAny(r);if(r.data?.user)currentUser=r.data.user;const own=await supabase.from('sooqak_accounts').update({display_name:v.display_name}).eq('owner_id',currentUser.id);errorIfAny(own);window.dispatchEvent(new CustomEvent('sooqak:auth',{detail:{user:currentUser}}));return true;}
     window.sooqakCloud = Object.freeze({
       getUser:()=>currentUser,refreshUser,
+      async listTestProviders(){const {data,error}=await supabase.from('sooqak_service_directory').select('id,name,city,specialty,hours_text,description,moderation_state').eq('status','active').eq('moderation_state','approved').like('name','اختبار V191 — %').limit(60);errorIfAny({error});return data||[]},
+      async listMyTestProviders(){if(!currentUser)return [];const {data,error}=await supabase.from('sooqak_service_directory').select('id,name,city,specialty,hours_text,description,moderation_state').eq('owner_id',currentUser.id).like('name','اختبار V191 — %').limit(20);errorIfAny({error});return data||[]},
+      async submitTestProvider(v){if(!currentUser||window.sooqakPasswordRecoveryPending)throw Error('يلزم حساب مؤكد');const kind={'صيانة السيارات':'workshop','السباكة':'plumbing','نقل الأثاث':'delivery'}[v.category];if(!kind)throw Error('القسم غير مدعوم في الخادم الحالي');const name=String(v.name||'').trim(),city=String(v.city||'').trim();if(name.length<3||name.length>60||city.length<2||city.length>60)throw Error('تحقق من الاسم والمدينة');const {data,error}=await supabase.from('sooqak_service_directory').insert({owner_id:currentUser.id,kind,name:'اختبار V191 — '+name,city,specialty:v.category,hours_text:String(v.hours||'').slice(0,100),description:String(v.description||'').slice(0,300),phone_public:false,phone_e164:null}).select('id,moderation_state').single();errorIfAny({error});return data},
       loadPrivateProfile,savePrivateProfile,hasAcceptedPledge,acceptPledge,getContactPrefs,saveContactPrefs,listFavorites,setFavorite,listSavedSearches,addSavedSearch,deleteSavedSearch,
       ensureAccount,getPublicSellerProfile,savePublicSellerProfile,
       fetchListings,fetchFavoriteListings,fetchListingById,fetchMyListings,countMyListings,
