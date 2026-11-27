@@ -53,6 +53,15 @@ for(const [name,width,height] of [['phone',390,844],['fold',720,780],['desktop',
  check(name+' actual pixels carry brand band',branded[0]===18&&branded[1]===62&&branded[2]===50);
  await page.locator('.g100-image-dialog [data-close-image]').click();
  check(name+' original image reference unchanged',await page.locator('.detail-primary-image').getAttribute('src')===original);
+ await page.goto(base+'/#post');
+ await page.locator('#preview-images').setInputFiles({name:'test.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+Wn4kAAAAASUVORK5CYII=','base64')});
+ const beforeCrop=await page.locator('.upload-thumb img').first().getAttribute('src');
+ await page.locator('[data-draft-crop="0"]').click();await page.locator('#crop-image').evaluate(img=>img.decode());
+ await page.locator('[data-crop-cancel]').click();
+ check(name+' cancel crop preserves original',await page.locator('.upload-thumb img').first().getAttribute('src')===beforeCrop);
+ await page.locator('[data-draft-crop="0"]').click();await page.locator('#crop-image').evaluate(img=>img.decode());await page.locator('[data-crop-save]').click();
+ await page.locator('.crop-dialog').waitFor({state:'detached'});await page.locator('.upload-thumb img').first().evaluate(img=>img.decode());
+ check(name+' draft crop saved at 4:3',await page.locator('.upload-thumb img').first().evaluate(img=>img.naturalWidth===1200&&img.naturalHeight===900));
  // Isolated simulated account; neither real mail nor database requests are made.
  await page.route('**/cloud-config.js',r=>r.fulfill({contentType:'text/javascript',body:'window.SOOQAK_CLOUD_ENABLED=true;window.SOOQAK_AUTH_CALLBACK=false;'}));
  await page.route('**/cloud-adapter.js',r=>r.fulfill({contentType:'text/javascript',body:`const u={id:'mock-user',user_metadata:{full_name:'اسم اختبار'},email_confirmed_at:'2026-01-01'};let profile={city:''};window.sooqakCloud={getUser:()=>u,loadPrivateProfile:async()=>profile,getContactPrefs:async()=>({}),listMyAccountKinds:async()=>[{kind:'personal'}],savePrivateProfile:async v=>{profile={city:v.city};u.user_metadata.full_name=v.display_name}};`}));
