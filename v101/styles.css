@@ -1378,3 +1378,64 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:600px){#hero-carousel .hero-emerald .hero-figure.market-scene{padding-bottom:32px}#hero-carousel .hero-emerald .hero-figure.market-scene img{object-fit:contain}.store-preview .store-cover .store-photo{width:58%}.store-preview .store-cover>div:first-child{padding-bottom:39px}.store-preview .store-cover .store-slide-controls{bottom:7px;inset-inline-start:8px;gap:5px}}
 /* Fold touch layouts: leave a lower clearance for browser-owned scroll controls. Actual device verification pending. */
 @media(pointer:coarse) and (min-width:650px) and (max-width:1000px){.bottom{bottom:max(42px,calc(env(safe-area-inset-bottom,0px) + 12px))}.shell{padding-bottom:calc(150px + env(safe-area-inset-bottom,0px))}#toast{bottom:calc(124px + env(safe-area-inset-bottom,0px))}}
+
+
+/* V171–V189: owner visual polish, preserving routes and preview behavior. */
+.top{background:radial-gradient(ellipse at 84% -60%,#277c61 0%,transparent 64%),linear-gradient(110deg,#073e2d,#0c5c43 58%,#0a4f38);border-bottom:2px solid #e9c176}
+.top .top-inner{max-width:1280px;margin-inline:auto}
+.top .header-quick{background:#ffffff0c;border-color:#ffffff40}
+.top .header-quick:hover{background:#ffffff20}
+.top .header-auth-btn{box-shadow:0 3px 8px #092e2055}
+#hero-carousel .hero-violet{background:radial-gradient(ellipse at 15% 15%,#a798e0,transparent 55%),linear-gradient(115deg,#51448c,#57318b 55%,#402462 100%);border-color:#6e559d}
+#hero-carousel .hero-violet .hero-copy h1 span{color:#ffe5a1}
+#hero-carousel .hero-emerald .hero-figure.market-scene{background:transparent}
+#hero-carousel .hero-emerald .hero-figure.market-scene img{object-fit:cover}
+#hero-carousel .hero-amber .hero-copy .cta{border-color:#fff0b0}
+#hero-carousel .hero-edge{box-shadow:0 3px 12px #172f3929}
+#hero-carousel .hero-dots button{min-height:32px}
+.catbar .cat{box-shadow:0 3px 12px #173d3010}
+.catbar .cat-icon{height:clamp(45px,8vw,85px)}
+.catbar .cat .cat-icon img[src$="category-car-v171.svg"]{max-width:170px}
+.shop-grid .shop{border:1px solid #e3e9e4;overflow:hidden}
+.shop-grid .shop .shop-open{color:#66349a}
+.shop-grid .shop:not(.poster-store-grid .shop) .shop-figure{border-bottom:1px solid #e8ece9}
+.shop[data-shop="tech"] .shop-figure img[src$="tech-photo-v172.svg"]{object-fit:cover;object-position:center 48%;width:100%;height:100%;padding:0}
+.store-preview .store-cover[data-tone="tech"]{background:linear-gradient(110deg,#b0b0cf,#514478 55%,#30244e)}
+.store-preview .store-cover[data-tone="tech"] img[src$="tech-photo-v172.svg"]{object-position:center 47%}
+.account-page .account-hero{position:relative;overflow:hidden;isolation:isolate;gap:14px;background:linear-gradient(120deg,#f3edf9 0%,#fff7e4 78%);border:1px solid #eee8e1}
+.account-page .account-hero-content{position:relative;z-index:1;min-width:0}
+.account-hero-art{margin-inline-start:auto;display:flex;align-items:center;justify-content:center;gap:clamp(7px,1.8vw,17px);min-width:0;padding:8px 10px}
+.account-hero-art span{display:grid;place-items:center;width:clamp(38px,6vw,68px);aspect-ratio:1;background:linear-gradient(145deg,#fff,#e8f2e8);color:#267e59;border:1px solid #fff;border-radius:19px;box-shadow:0 6px 18px #234b3820}
+.account-hero-art span:nth-child(2){background:linear-gradient(145deg,#fff,#f8e2ee);color:#ad5279;transform:translateY(8px)}
+.account-hero-art span:nth-child(3){background:linear-gradient(145deg,#fff,#eee4fb);color:#7848ae}
+.account-hero-art svg{width:49%;height:49%}
+.account-groups{align-items:stretch}
+.account-group{display:flex;flex-direction:column}
+.account-group .profile-list{flex:1;align-content:start}
+.account-group h3{border-bottom:1px solid #e8eee9;padding-bottom:8px}
+.account-page .account-quick-card{min-height:100px}
+.messages-page .messages-layout{align-items:stretch}
+.messages-page .messages-layout aside{padding:clamp(14px,3vw,24px)}
+.message-empty-lines{display:grid;gap:11px;margin-top:20px;opacity:.65}
+.message-empty-lines i{display:block;height:9px;border-radius:9px;background:#e4ebe6;width:90%}
+.message-empty-lines i:nth-child(2){width:64%}.message-empty-lines i:nth-child(3){width:80%}
+.messages-page .account-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:clamp(16px,3vw,30px);gap:9px;min-height:220px}
+.message-art{display:flex;align-items:flex-end;gap:3px}
+.message-art span,.notice-empty-icon{display:grid;place-items:center;width:56px;height:56px;border-radius:18px;background:linear-gradient(145deg,#fff,#ddf2e5);color:#176b46;border:1px solid #d7e9dd}
+.message-art span:nth-child(2){width:32px;height:32px;border-radius:11px;background:#f3eafb;color:#713da1;transform:translate(7px,6px)}
+.message-art svg,.notice-empty-icon svg{width:26px;height:26px}
+.message-art span:nth-child(2) svg{width:18px;height:18px}
+.notice-empty-icon{margin:0 auto 12px}
+.activity-page .account-empty{padding:clamp(18px,3vw,30px)}
+.detail-box .detail-facts span{border:1px solid #dfece3;background:#f3f8f4}
+.detail-gallery .detail-thumbnail-strip button:focus-visible,.upload-thumb button:focus-visible{outline-offset:-2px}
+.wizard-panel .wizard-fields .field input,.wizard-panel .wizard-fields .field select,.wizard-panel .wizard-fields .field textarea{border-color:#d7e4dc;background:#fbfcfb}
+.wizard-panel .wizard-fields .field input:focus,.wizard-panel .wizard-fields .field select:focus,.wizard-panel .wizard-fields .field textarea:focus{border-color:#187655}
+.photo-source button{box-shadow:0 2px 7px #163d2b0b}
+.dialog-card{border:1px solid #e3e9e4;box-shadow:0 16px 44px #132f2b32}
+.bottom .nav[aria-current="page"]{font-weight:800}
+.bottom .nav:focus-visible{outline-offset:-3px}
+@media(pointer:coarse) and (min-width:650px) and (max-width:1000px){.bottom{bottom:max(32px,calc(env(safe-area-inset-bottom,0px) + 12px))}.shell{padding-bottom:calc(140px + env(safe-area-inset-bottom,0px))}#toast{bottom:calc(114px + env(safe-area-inset-bottom,0px))}}
+@media(max-width:699px){.account-hero-art{display:none}.account-groups{align-items:start}.account-page .account-quick-card{min-height:88px}.messages-page .account-empty{min-height:190px}.message-empty-lines{display:none}.messages-page .messages-layout{gap:9px}}
+@media(max-width:360px){.catbar .cat .cat-icon{height:41px}.top .header-quick{padding-inline:4px}.account-page .account-quick-card small{overflow-wrap:anywhere}}
+@media(prefers-reduced-motion:reduce){.top .header-quick,.account-hero-art span,.shop-grid .shop{animation:none;transition:none}}
