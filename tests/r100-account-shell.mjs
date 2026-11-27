@@ -21,6 +21,10 @@ await page.goto(base+'/#auth');await page.waitForURL('**/#account');
 check(name+' signed auth alias resolves to account',await page.locator('#account-identity').isVisible());
 await page.goto(base+'/#home');await page.locator('.home-compact').waitFor();
 check(name+' no lab link on home',await page.locator('.home-compact a[href*="cloud-test"]').count()===0);
+check(name+' all nine main sections shown',await page.locator('.reborn-categories [data-category]').count()===9);
+await page.locator('[data-hero-slide="3"]').click();check(name+' technology carousel slide and control',await page.locator('[data-hero-panel="3"]').isVisible()&&await page.locator('.hero-next').getAttribute('data-hero-edge')==='0');
+await page.locator('.hero-next').click();check(name+' carousel wraps to first slide',await page.locator('[data-hero-panel="0"]').isVisible());
+
 await page.evaluate(()=>scrollTo(0,Math.min(450,document.documentElement.scrollHeight-innerHeight)));await page.waitForTimeout(100);
 check(name+' header brand remains fixed when scrolling',await page.evaluate(()=>{const b=document.querySelector('.site>.top').getBoundingClientRect();return scrollY>100&&b.top>=-2&&b.top<8&&b.bottom>0}));
 check(name+' viewport has no horizontal overflow',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
