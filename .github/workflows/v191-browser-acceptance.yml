@@ -1,0 +1,28 @@
+name: V191 browser acceptance
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'v101/**'
+      - 'tests/v191-browser-acceptance.mjs'
+      - '.github/workflows/v191-browser-acceptance.yml'
+permissions:
+  contents: read
+concurrency:
+  group: v191-browser-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  chromium:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'design/sooqak-v191-workspace-20261127'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install pinned test-only dependency
+        run: npm install --no-save --ignore-scripts --no-audit --no-fund playwright@1.58.2
+      - name: Install Chromium
+        run: npx --no-install playwright install --with-deps chromium
+      - name: Run browser checks against local fixture data
+        run: node tests/v191-browser-acceptance.mjs
