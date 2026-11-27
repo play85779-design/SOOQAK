@@ -432,7 +432,7 @@ if(!currentUser)throw new Error('يجب تسجيل الدخول لرفع الص�
     async function loadPrivateProfile(){if(!currentUser)throw Error('سجّل الدخول أولًا');const {data,error}=await supabase.from('sooqak_private_profiles').select('city,district,birth_year').eq('user_id',currentUser.id).maybeSingle();errorIfAny({error});return data;}
     async function savePrivateProfile(v){if(!currentUser)throw Error('سجّل الدخول أولًا');const {error}=await supabase.from('sooqak_private_profiles').upsert({user_id:currentUser.id,city:v.city,district:v.district,birth_year:v.birth_year,updated_at:new Date().toISOString()},{onConflict:'user_id'});errorIfAny({error});const r=await supabase.auth.updateUser({data:{full_name:v.display_name}});errorIfAny(r);if(r.data?.user)currentUser=r.data.user;const own=await supabase.from('sooqak_accounts').update({display_name:v.display_name}).eq('owner_id',currentUser.id);errorIfAny(own);window.dispatchEvent(new CustomEvent('sooqak:auth',{detail:{user:currentUser}}));return true;}
     window.sooqakCloud = Object.freeze({
-      getUser:()=>currentUser,
+      getUser:()=>currentUser,refreshUser,
       loadPrivateProfile,savePrivateProfile,hasAcceptedPledge,acceptPledge,getContactPrefs,saveContactPrefs,listFavorites,setFavorite,listSavedSearches,addSavedSearch,deleteSavedSearch,
       ensureAccount,getPublicSellerProfile,savePublicSellerProfile,
       fetchListings,fetchFavoriteListings,fetchListingById,fetchMyListings,countMyListings,
