@@ -465,6 +465,7 @@ if(!currentUser)throw new Error('يجب تسجيل الدخول لرفع الص�
       markSold:(id,price)=>runRpc('sooqak_mark_sold',{p_listing:id,p_price:price}),
       reserve:(id,hours)=>runRpc('sooqak_reserve',{p_listing:id,p_hours:hours}),
       bump:id=>runRpc('sooqak_bump',{p_listing:id}),
+      resendConfirmation:async email=>{const normalized=String(email||'').trim().toLowerCase();if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)||normalized.length>254)throw Error('البريد الإلكتروني غير صالح');errorIfAny(await supabase.auth.resend({type:'signup',email:normalized,options:{emailRedirectTo:sooqakAuthReturnURL()}}));return true;},
       resetPasswordEmail:async email=>{
         const normalized=String(email||'').trim().toLowerCase();
         if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)||normalized.length>254)throw new Error('البريد الإلكتروني غير صالح');
