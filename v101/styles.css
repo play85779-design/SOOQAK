@@ -1468,3 +1468,56 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 
 /* V191 connected-workspace entry and compact dashboard navigation */
 .ct-entry{display:flex;align-items:center;gap:12px;text-decoration:none;color:#0d5237;border:1px solid #bcdaca;background:linear-gradient(115deg,#fff,#e9f6ed);border-radius:16px;padding:14px;margin:14px 0;min-height:60px;box-shadow:0 3px 12px #17433108}.ct-entry>span{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:#d8eddf;flex:none}.ct-entry svg{width:21px;height:21px}.ct-entry>div{flex:1;min-width:0}.ct-entry b,.ct-entry small{display:block;line-height:1.5}.ct-entry small{font-size:12px;color:#536c5d;margin-top:2px}.ct-entry:focus-visible{outline:3px solid #be9137;outline-offset:3px}.ct-home-entry{margin:20px 0}.ct-entry:hover{border-color:#479069}@media(max-width:500px){.ct-entry{padding:11px;gap:9px}.ct-entry>span{width:35px;height:35px}.ct-entry small{font-size:11px}}
+
+
+/* V191 correction: fixed-height carousel with persistent controls. */
+#hero-carousel{overflow-anchor:none;position:relative}
+#hero-carousel .hero-stage{position:relative;height:clamp(210px,27vw,300px);isolation:isolate;overflow:hidden;border-radius:22px;box-shadow:0 8px 20px #173d3020;touch-action:pan-y}
+#hero-carousel .hero-stage .hero{position:absolute;inset:0;width:100%;height:100%;min-height:0!important;margin:0;grid-template-columns: minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr);border-radius:inherit;box-shadow:none}
+#hero-carousel .hero-stage .hero[hidden]{display:none!important}
+#hero-carousel .hero-copy{padding:18px 42px 18px 12px;align-self:center;min-width:0;animation:none!important;z-index:3}
+#hero-carousel .hero-copy h2{font:800 clamp(23px,3.4vw,42px)/1.2 var(--round);color:#fff;margin:8px 0;overflow-wrap:anywhere}
+#hero-carousel .hero-copy h2 span{color:#ffe099}
+#hero-carousel .hero-copy p{margin:6px 0 12px;line-height:1.5}
+#hero-carousel .hero-stage .hero-figure{padding:0;margin:0;align-self:stretch;overflow:hidden;animation:none!important}
+#hero-carousel .hero-stage .hero-figure img{display:block;width:100%;height:100%;max-height:none;object-fit:cover;object-position:center;filter:none;margin:0;mask-image:linear-gradient(to right,#000 0%,#000 65%,transparent 100%);-webkit-mask-image:linear-gradient(to right,#000 0%,#000 65%,transparent 100%)}
+#hero-carousel .hero-stage .hero-emerald{background:linear-gradient(115deg,#1e8064,#075840 65%,#073d30);border-color:#145f49}
+#hero-carousel .hero-stage .hero-violet{background:linear-gradient(115deg,#655896,#3f285f 66%,#2e234c)}
+#hero-carousel .hero-stage .hero-amber{background:linear-gradient(115deg,#bc915a,#6b471f 75%,#533515)}
+#hero-carousel .hero-stage .hero-edge{top:50%;bottom:auto;transform:translateY(-50%);width:40px;height:40px;touch-action:manipulation}
+#hero-carousel .hero-stage .hero-prev{left:8px;right:auto}
+#hero-carousel .hero-stage .hero-next{right:8px;left:auto}
+#hero-carousel .hero-control-row{display:flex;align-items:center;justify-content:center;gap:12px;height:38px}
+#hero-carousel .hero-dots{margin:0;gap:2px}
+#hero-carousel .hero-control-row .hero-pause{position:static;display:grid;place-items:center;min-width:36px;min-height:36px;border-radius:10px;border:1px solid #e3d9ed;color:#6635a0;background:#fff}
+#hero-carousel .hero-dots button{width:32px;height:36px;min-height:36px}
+.home-compact .market-search{padding:0;background:transparent;box-shadow:none;border:0;margin-bottom:5px}
+.home-compact .search-row{margin-bottom:6px}
+.home-compact .location-picker{margin-bottom:0}
+.home-compact .location-box{min-height:48px;padding-block:4px;box-shadow:0 3px 9px #123e2d0d}
+.home-compact .home-activity{margin:6px 0 7px}
+.home-compact .market-stage{grid-template-columns:minmax(0,1fr);gap:7px}
+.home-compact .market-categories .catbar{margin:0}
+.home-compact .market-actions{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.home-compact .market-action{min-height:64px;padding:9px;box-shadow:none}
+.home-compact .market-section{margin-top:14px}
+.home-compact .market-action>span{width:35px;height:35px}
+.shell{scroll-margin-bottom:120px}
+html{scroll-padding-bottom:120px}
+.auth-v191 #connected-auth-root{display:grid;gap:10px}
+.auth-v191 #connected-auth-root form{display:grid;gap:11px}
+.auth-v191 .auth-live-note{font-size:12px;line-height:1.5;padding:10px;background:#f4f8f4;border:1px solid #dce9df;border-radius:12px;color:#3d6751}
+.auth-v191 .auth-live-status{font-size:13px;line-height:1.5;color:#4a6657;min-height:20px}
+.auth-v191 .auth-live-status.error{color:#933e43}
+.auth-v191 .auth-password-wrap{position:relative;display:flex;align-items:center}
+.auth-v191 .auth-password-wrap input{padding-inline-end:92px}
+.auth-v191 .auth-live-tabs{display:flex;gap:6px;background:#f4f0f8;padding:5px;border-radius:13px}
+.auth-v191 .auth-live-tabs button{flex:1;min-height:43px;border-radius:9px;color:#613d8c;font-weight:700}
+.auth-v191 .auth-live-tabs button.active{background:#fff;box-shadow:0 2px 6px #4b286b18}
+.auth-v191 .auth-live-toggle{position:absolute;left:5px;min-height:40px;min-width:75px;background:#f0eaf8;color:#66389c;border-radius:9px;font-weight:700}
+.auth-v191 .auth-live-primary{min-height:48px;background:linear-gradient(135deg,#126e4c,#0a5238);color:white;font-weight:800;border-radius:13px;padding:10px}
+.auth-v191 .auth-live-primary:disabled{opacity:.5}
+.auth-v191 .auth-live-secondary{min-height:42px;color:#643593;font-weight:700}
+.auth-v191 .auth-live-account{background:#eaf5ee;padding:14px;border:1px solid #d5e7db;border-radius:13px}
+@media(max-width:600px){#hero-carousel .hero-stage{height:clamp(185px,52vw,230px)}#hero-carousel .hero-copy{padding:10px 32px 10px 4px}#hero-carousel .hero-copy h2{font-size:clamp(17px,5vw,24px)}#hero-carousel .hero-copy p{font-size:11px;line-height:1.4}#hero-carousel .hero-stage .hero-edge{width:28px;height:32px;font-size:21px}#hero-carousel .hero-stage .hero-prev{left:4px}#hero-carousel .hero-stage .hero-next{right:4px}.home-compact .market-action{min-height:58px;flex-direction:row;gap:4px;padding:5px}.home-compact .market-action>span{width:24px;height:24px}.home-compact .market-action>span svg{width:15px;height:15px}.home-compact .market-action b{font-size:11px}.auth-v191 .auth-intro{margin-bottom:10px}.auth-v191 .auth-preview-card{margin-top:6px}}
+@media(prefers-reduced-motion:reduce){#hero-carousel *{animation:none!important;transition:none!important}}
