@@ -21,6 +21,9 @@ jobs:
         with:
           persist-credentials: false
       - run: npm install --no-save --ignore-scripts --no-audit --no-fund playwright@1.58.2
-      - run: npx --no-install playwright install --with-deps chromium
+      - run: npx --no-install playwright install --with-deps chromium webkit
       - run: node tests/g100-auth-header-acceptance.mjs
       - run: node tests/v191-browser-acceptance.mjs
+      - run: node tests/g100-auth-header-acceptance.mjs
+        env:
+          G100_BROWSER: webkit
