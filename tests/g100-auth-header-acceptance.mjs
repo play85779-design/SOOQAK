@@ -53,6 +53,20 @@ for(const [name,width,height] of [['phone',390,844],['fold',720,780],['desktop',
  check(name+' actual pixels carry brand band',branded[0]===18&&branded[1]===62&&branded[2]===50);
  await page.locator('.g100-image-dialog [data-close-image]').click();
  check(name+' original image reference unchanged',await page.locator('.detail-primary-image').getAttribute('src')===original);
+ // Isolated simulated account; neither real mail nor database requests are made.
+ await page.route('**/cloud-config.js',r=>r.fulfill({contentType:'text/javascript',body:'window.SOOQAK_CLOUD_ENABLED=true;window.SOOQAK_AUTH_CALLBACK=false;'}));
+ await page.route('**/cloud-adapter.js',r=>r.fulfill({contentType:'text/javascript',body:`const u={id:'mock-user',user_metadata:{full_name:'اسم اختبار'},email_confirmed_at:'2026-01-01'};let profile={city:''};window.sooqakCloud={getUser:()=>u,loadPrivateProfile:async()=>profile,getContactPrefs:async()=>({}),listMyAccountKinds:async()=>[{kind:'personal'}],savePrivateProfile:async v=>{profile={city:v.city};u.user_metadata.full_name=v.display_name}};`}));
+ await page.goto(base+'/#settings');await page.reload();
+ const progress=page.locator('.g100-completion progress');await progress.waitFor();
+ check(name+' profile completion uses saved data',await progress.getAttribute('value')==='75');
+ await page.locator('#connected-profile-form [name=city]').fill('الجبيل');
+ await page.locator('#connected-profile-form button').click();
+ await page.waitForFunction(()=>document.querySelector('.g100-completion progress')?.value===100);
+ check(name+' profile completion refreshes after mock save',await progress.getAttribute('value')==='100');
+ const pw=page.locator('#connected-change-password input[type=password]');
+ await pw.fill('synthetic-only-456');await page.locator('#connected-change-password [data-live-toggle]').click();
+ check(name+' settings password visibility works',await page.locator('#connected-change-password input').getAttribute('type')==='text');
+
 
  }finally{await context.close()}
 }
