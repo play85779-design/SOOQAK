@@ -7,6 +7,7 @@ on:
       - 'tests/v191-browser-acceptance.mjs'
       - 'tests/g100-auth-header-acceptance.mjs'
       - 'tests/g100-auth-submit-isolated.mjs'
+      - 'tests/r100-account-shell.mjs'
       - '.github/workflows/g100-browser-acceptance.yml'
 permissions:
   contents: read
@@ -27,12 +28,16 @@ jobs:
           node --check v101/app.js
           node --check v101/connected-auth.js
           node --check v101/cloud-test.js
+          node --check v101/shared-routes.js
+          node --check tests/r100-account-shell.mjs
           node --check tests/g100-auth-header-acceptance.mjs
           node --check tests/v191-browser-acceptance.mjs
       - run: npm install --no-save --ignore-scripts --no-audit --no-fund playwright@1.58.2
       - run: npx --no-install playwright install --with-deps chromium webkit
       - name: Focused authentication form regression (Chromium and WebKit)
         run: node tests/g100-auth-submit-isolated.mjs
+      - name: R100 account shell and canonical navigation
+        run: node tests/r100-account-shell.mjs
       - run: node tests/g100-auth-header-acceptance.mjs
       - run: node tests/v191-browser-acceptance.mjs
       - run: node tests/g100-auth-header-acceptance.mjs
