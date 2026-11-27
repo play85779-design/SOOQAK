@@ -10,7 +10,7 @@ await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const base='http://127.0.0.1:'+server.address().port;
 const browser=await chromium.launch({headless:true});
 let passed=0;const check=(name,condition)=>{assert.ok(condition,name);passed++;console.log('PASS',name)};
-const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+Wn4kAAAAASUVORK5CYII=','base64');
+const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAACgAAAAeCAIAAADRv8uKAAAAL0lEQVR4nO3NIQEAMAgAsPMadCIK/SUVcJitwCK73oV/sorFYrFYLBaLxWKxeGUAnxYBEyCi9ycAAAAASUVORK5CYII=','base64');
 try{
 for(const [name,width,height] of [['phone',390,844],['fold',720,780],['desktop',1280,900]]){
  const context=await browser.newContext({viewport:{width,height},reducedMotion:'reduce',isMobile:name!=='desktop',hasTouch:name!=='desktop'});
