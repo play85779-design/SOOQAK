@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 const auth=await readFile('v101/connected-auth.js','utf8');
-const html='<!doctype html><html lang="ar" dir="rtl"><body><div id="connected-auth-root"></div><script>window.SOOQAK_CLOUD_ENABLED=true;</script><script src="/connected-auth.js"></script></body></html>';
+const html='<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"></head><body><div id="connected-auth-root"></div><script>window.SOOQAK_CLOUD_ENABLED=true;</script><script src="/connected-auth.js"></script></body></html>';
 const adapter=`window.calls=[];window.sooqakCloud={getUser:()=>null,signInPassword:async(e,p)=>{window.calls.push(['login',e,p]);throw {code:'invalid_credentials'}},signUpPassword:async(e,p,d)=>{window.calls.push(['signup',e,p,d]);throw {code:'unexpected_failure',message:'Error sending confirmation email'}},resetPasswordEmail:async(e)=>{window.calls.push(['recover',e]);return true}};`;
-const server=createServer((req,res)=>{res.setHeader('Content-Type',req.url==='/'?'text/html':'text/javascript');res.end(req.url==='/'?html:req.url==='/connected-auth.js'?auth:adapter)});
+const server=createServer((req,res)=>{res.setHeader('Content-Type',req.url==='/'?'text/html; charset=utf-8':'text/javascript; charset=utf-8');res.end(req.url==='/'?html:req.url==='/connected-auth.js'?auth:adapter)});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 let n=0;
 try{
