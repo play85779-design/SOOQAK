@@ -1563,3 +1563,14 @@ body{overflow-x:clip}
 .site:not(.onboarding)>.top{position:sticky;inset-block-start:0;align-self:start;z-index:30}
 .card-photo:has(img)::after,.detail-gallery .detail-hero:has(img)::after{content:'سوقك';position:absolute;inset-inline-end:9px;inset-block-end:9px;z-index:2;pointer-events:none;color:#fff;background:#123e32b8;border:1px solid #ffffff70;border-radius:7px;padding:3px 9px;font-size:12px;font-weight:800;line-height:1.4;text-shadow:0 1px 2px #0005}
 @media(max-width:600px){.site:not(.onboarding)>.top .top-inner{min-height:58px}.card-photo:has(img)::after{font-size:10px;padding:2px 6px}}
+
+/* G100 gallery and account progress: responsive, non-destructive image tools. */
+.g100-image-dialog{width:min(980px,calc(100vw - 16px));max-width:none;max-height:calc(100dvh - 16px);overflow:auto;display:grid;gap:10px;padding:12px;box-sizing:border-box}
+.g100-gallery-tools{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.g100-gallery-tools button,.detail-share [data-brand-photo]{min-height:44px;padding:8px 12px;border:1px solid #d2e4d9;background:#f3faf6;color:#185a40;border-radius:10px;font-weight:700}
+.g100-gallery-frame{position:relative;background:#112d25;border-radius:14px;overflow:hidden;display:grid;place-items:center;touch-action:pan-y}
+.g100-gallery-frame img{display:block;max-width:100%;width:auto;height:auto;max-height:calc(100dvh - 180px);object-fit:contain}
+.g100-gallery-brand{position:absolute;inset-inline-end:12px;inset-block-end:12px;background:#123e32d9;color:#fff;border:1px solid #ffffff70;border-radius:8px;padding:4px 12px;font-weight:800;pointer-events:none}
+.detail-share{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.detail-hero{touch-action:pan-y}
+.g100-completion{display:grid;gap:8px;background:linear-gradient(135deg,#f1faf5,#f6f1fb);border:1px solid #dce9df;border-radius:14px;padding:12px;margin:10px 0}.g100-completion strong{color:#155b3e}.g100-completion progress{width:100%;height:12px;accent-color:#16835d}.g100-completion ul{margin:0;padding-inline-start:20px;line-height:1.65;font-size:13px}.g100-completion li[data-complete="true"]{color:#176547}.g100-completion li[data-complete="false"]{color:#59476c}
+@media(max-width:450px){.g100-gallery-tools button{font-size:12px;padding:6px 8px}.g100-image-dialog{padding:8px}}
