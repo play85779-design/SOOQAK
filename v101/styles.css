@@ -1242,3 +1242,51 @@ html{scroll-padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
 .store-product-unit .store-unlink{font-weight:700}.detail-box .cta{line-height:1.35}
 @media(min-width:700px){.listings-page .card-photo,.favorites-page .card-grid:not([data-count="1"]) .card-photo{aspect-ratio:1.65}.wizard-summary{align-items:center}.wizard-summary-info{padding:12px 0}.wizard-panel .review-checks>div{min-height:50px}}
 @media(max-width:420px){.price-filter-grid{grid-template-columns:1fr}}
+
+/* V156–V159 — accessible preview credentials, visual balance and iOS safe areas. */
+#hero-carousel .hero-emerald{background:radial-gradient(ellipse at 18% 10%,#70bd9a,transparent 54%),linear-gradient(115deg,#127759,#064632 78%)}
+#hero-carousel .hero-emerald .hero-figure{padding:0;align-self:stretch}
+#hero-carousel .hero-emerald .hero-figure img{object-fit:cover;object-position:45% 50%;filter:none;mask-image:linear-gradient(to right,#000 0%,#000 72%,transparent 100%);-webkit-mask-image:linear-gradient(to right,#000 0%,#000 72%,transparent 100%)}
+#hero-carousel .hero-copy{min-width:0}
+#hero-carousel .hero-copy h1,#hero-carousel .hero-copy p{overflow-wrap:anywhere}
+.catbar .cat{min-width:0;overflow:hidden;border:1px solid #fff}
+.catbar .cat-icon{padding:2px 3px}.catbar .cat-icon img{object-fit:contain}
+.catbar .cat b{line-height:1.3}
+.poster-store-grid .shop,.shop-gateway{min-width:0;aspect-ratio:1.5;border:1px solid #fff}
+.poster-store-grid .shop[data-shop='tech'] .shop-figure img{object-fit:cover;object-position:center 43%}
+.shop-gateway img{object-position:center 43%}
+.store-cover img[src$="tech-v152.svg"]{object-fit:cover;width:52%;height:100%;max-width:none;mask-image:linear-gradient(to right,#000 0%,#000 75%,transparent 100%)}
+.auth-preview-page .auth-intro{background:radial-gradient(ellipse at 3% 3%,#4d9a72,transparent 70%),linear-gradient(120deg,#075139,#0c6d4b);padding:clamp(16px,3vw,27px);border:1px solid #cae6d1}
+.auth-preview-page .auth-intro .auth-illustration{filter:none;flex-shrink:0}
+.auth-preview-page .auth-preview-card{background:#fff;box-shadow:0 8px 24px #163a2715;border:1px solid #e5ece6}
+.auth-preview-page .auth-preview-card input{font-size:16px;min-width:0;background:#f8faf8;color:#263e31;border:1px solid #cdded2}
+.auth-preview-page .auth-preview-card input:read-only{cursor:default}
+.auth-preview-page .auth-preview-card input:-webkit-autofill{-webkit-box-shadow:0 0 0 1000px #f8faf8 inset!important;-webkit-text-fill-color:#263e31!important}
+.auth-password-wrap{position:relative;min-width:0}
+.auth-password-wrap input{padding-inline-start:96px!important}
+.auth-password-wrap input[type=text][data-visible=true]{-webkit-text-security:none!important}
+.auth-password-wrap input[type=password]{-webkit-text-security:disc}
+.auth-password-toggle{display:flex;align-items:center;justify-content:center;gap:5px;min-width:78px;min-height:44px;border-radius:9px;color:#66309a;background:#f3eef8}
+.auth-password-toggle svg{width:19px;height:19px;flex:none}
+.auth-preview-page .auth-sample{background:#f3eef8;color:#69369a;border-color:#dacbe8}
+.auth-preview-page .auth-merchant{display:flex;align-items:center;justify-content:center;gap:7px;min-height:44px}
+.auth-preview-page .auth-merchant svg{width:19px;height:19px}
+.photo-source button{min-width:0;white-space:normal;line-height:1.4}
+html,body{max-width:100%;overflow-x:clip}
+.site,.main,.shell,.wizard-panel,.wizard-steps,.wizard-panel-header{min-width:0;max-width:100%}
+.bottom{bottom:max(8px,env(safe-area-inset-bottom,0px));background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none}
+.shell{padding-bottom:calc(136px + env(safe-area-inset-bottom,0px))}
+@media(max-width:600px){
+.top{padding-top:env(safe-area-inset-top,0px);overflow:hidden}
+.shell{padding-inline:clamp(10px,3vw,16px)}
+#hero-carousel .hero-copy{padding-inline:25px 4px}
+#hero-carousel .hero-copy h1{font-size:clamp(17px,4.7vw,25px)}
+#hero-carousel .hero-copy p{font-size:clamp(10px,2.8vw,13px)}
+#hero-carousel .hero-copy .cta{max-width:100%;font-size:13px;white-space:normal;min-height:40px}
+.wizard-steps{gap:5px}.wizard-steps button{min-width:0;font-size:clamp(10px,2.8vw,14px);padding-inline:5px;white-space:normal}
+.photo-source button{flex:1 1 40%;font-size:13px}
+.bottom{left:6px;right:6px;height:64px}
+.auth-preview-page .auth-intro h2{font-size:clamp(20px,5.5vw,27px)}
+}
+@media(max-width:360px){.catbar .cat b{font-size:10px}.bottom .nav span{font-size:9px}.top .locale{min-width:0}.wizard-steps button{font-size:10px}}
+@supports(padding:max(0px)){.main{padding-inline:max(0px,env(safe-area-inset-right,0px)) max(0px,env(safe-area-inset-left,0px))}}
