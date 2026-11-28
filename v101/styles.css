@@ -1672,3 +1672,13 @@ html,body,#app{min-width:0;overflow-x:clip}
 @media(min-width:700px) and (max-width:899px){.home-compact .market-categories .reborn-categories{grid-template-columns:repeat(5,minmax(0,1fr))}.home-compact .market-stage{gap:12px}}
 @media(min-width:900px){.home-compact .market-stage{grid-template-columns:minmax(0,1.8fr) minmax(0,1fr);gap:14px;align-items:start}.home-compact .market-feature{grid-column:1/-1}.home-compact .market-categories .reborn-categories{grid-template-columns:repeat(5,minmax(0,1fr))}.home-compact .market-actions{grid-template-columns:1fr;align-self:stretch}.home-compact .market-actions .market-action{min-height:60px}}
 @media(max-width:699px){.home-compact .market-section{padding:9px}.home-compact .market-actions{gap:6px}.home-compact .market-categories{padding:6px 8px}}
+
+/* R054/R055 — listing facts and display-only watermark, original images unchanged. */
+.reborn-connected-media{position:relative;overflow:hidden;border-radius:12px;background:#e8f1ec;min-width:0}
+.reborn-connected-media>a{display:block}
+.reborn-connected-media img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.reborn-media-mark{position:absolute;inset-inline-end:10px;bottom:10px;padding:3px 9px;background:#103f33d9;color:#fff7dd;border:1px solid #e9c47b8c;border-radius:7px;font-weight:800;font-size:13px;pointer-events:none}
+.reborn-detail-photos>.reborn-connected-media{width:100%;flex:none;scroll-snap-align:start}
+.reborn-detail-photos>.reborn-connected-media img{object-fit:contain}
+.reborn-listing-facts{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-block:8px;color:#52675d;font-size:12px}
+.reborn-listing-facts>span,.reborn-listing-facts>time{background:#edf5ef;border:1px solid #dce7e0;padding:3px 7px;border-radius:8px}
