@@ -1,0 +1,64 @@
+import {chromium,webkit} from 'playwright';
+import assert from 'node:assert/strict';
+import {createServer} from 'node:http';
+import {readFile} from 'node:fs/promises';
+import path from 'node:path';
+const root=path.resolve('v101'),mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml'};
+const server=createServer(async(req,res)=>{try{const p=new URL(req.url,'http://localhost').pathname,f=path.resolve(root,'.'+(p==='/'?'/index.html':p));if(!f.startsWith(root+path.sep))throw Error();res.setHeader('Content-Type',mime[path.extname(f)]||'application/octet-stream');res.end(await readFile(f))}catch{res.statusCode=404;res.end()}});
+await new Promise(r=>server.listen(0,'127.0.0.1',r));const base='http://127.0.0.1:'+server.address().port;
+const mock=`let u={id:'r100-mock-user',email_confirmed_at:'2026-11-28',user_metadata:{full_name:'عضو تجريبي'}};const empty=async()=>[],listing={id:'11111111-1111-4111-8111-111111111111',seller_user_id:u.id,title:'اختبار V191 — منتج للمراجعة',category:'إلكترونيات',city:'الجبيل',price:100,description:'وصف تجريبي',status:'active',created_at:'2026-11-28T00:00:00Z',expires_at:'2099-01-01',photos:[]},store={id:'22222222-2222-4222-8222-222222222222',name:'اختبار V191 — متجر المراجعة',city:'الجبيل',about:'منتجات تجريبية',published:true},provider={id:'33333333-3333-4333-8333-333333333333',name:'اختبار V191 — سباكة تجريبية',city:'الجبيل',specialty:'السباكة',moderation_state:'approved',description:'خدمة للمعاينة'};window.searchCalls=[];window.sooqakCloud={getUser:()=>u,refreshUser:async()=>u,loadPrivateProfile:async()=>({city:'الجبيل',district:''}),getContactPrefs:async()=>({}),listMyAccountKinds:async()=>[{kind:'personal'}],listFavorites:empty,fetchFavoriteListings:empty,fetchMyListings:empty,fetchListings:async(a,b,c)=>{window.searchCalls.push(c);return [listing]},listTestStores:async()=>[store],listMyTestStores:empty,getTestStore:async id=>id===store.id?store:null,fetchTestStoreProducts:async()=>[listing],fetchListingById:async id=>id===listing.id?listing:null,saveListing:async(payload,id)=>{if(id!==listing.id)throw Error();Object.assign(listing,payload);return id},listTestProviders:async()=>[provider],listMyTestProviders:empty,listConversations:empty,unreadSummary:async()=>({conversations:[]}),signOut:async()=>{u=null;window.dispatchEvent(new Event('sooqak:auth'))}};`;
+let passed=0;
+const check=(label,ok)=>{assert.ok(ok,label);passed++;console.log('PASS '+label)};
+try{for(const [engineName,engine] of [['Chromium',chromium],['WebKit',webkit]]){const browser=await engine.launch();try{for(const [device,width,height] of [['phone',390,844],['fold',720,780],['desktop',1280,900]]){const name=engineName+' '+device,context=await browser.newContext({viewport:{width,height},reducedMotion:'reduce'});try{await context.route('**/*',r=>r.request().url().startsWith(base)||/^(blob:|data:)/.test(r.request().url())?r.continue():r.abort());await context.route('**/cloud-config.js',r=>r.fulfill({contentType:'text/javascript; charset=utf-8',body:'window.SOOQAK_CLOUD_ENABLED=true;window.SOOQAK_AUTH_CALLBACK=false;'}));await context.route('**/cloud-adapter.js',r=>r.fulfill({contentType:'text/javascript; charset=utf-8',body:mock}));const page=await context.newPage();let errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(base+'/#account');await page.waitForFunction(()=>document.querySelector('#account-display-name')?.textContent==='عضو تجريبي');
+check(name+' real session name shown',await page.locator('#account-identity').evaluate(e=>e.classList.contains('is-member'))&&await page.locator('#account-member-status').innerText()==='البريد الإلكتروني مؤكد');
+check(name+' header directs member to account',await page.locator('.header-auth-btn').getAttribute('data-go')==='account');
+check(name+' single logout in account',await page.locator('[data-live-logout]:visible').count()===1);
+check(name+' no lab entry in account',await page.locator('.account-page a[href*="cloud-test"]').count()===0);
+await page.locator('#account-primary-action').click();await page.locator('#connected-profile-form').waitFor();
+check(name+' district freely entered and initially empty',await page.locator('[name=district]').inputValue()===''&&await page.locator('[name=district]').getAttribute('autocomplete')==='off');
+check(name+' settings has no duplicate logout',await page.locator('[data-live-logout]').count()===0);
+const mediaBytes=await page.evaluate(()=>{const c=document.createElement('canvas');c.width=24;c.height=24;const x=c.getContext('2d');x.fillStyle='#234e3d';x.fillRect(0,0,24,24);return c.toDataURL('image/png').split(',')[1]});
+for(const kind of ['avatar','cover']){await page.locator('[data-profile-image="'+kind+'"]').setInputFiles({name:'profile.png',mimeType:'image/png',buffer:Buffer.from(mediaBytes,'base64')});await page.locator('#profile-preview-'+kind).waitFor({state:'visible'});}
+check(name+' profile media kept in account-specific device storage',await page.evaluate(()=>{const m=JSON.parse(localStorage.getItem('sooqak-profile-media-v1:r100-mock-user')||'{}');return !!m.avatar&&!!m.cover}));
+await page.goto(base+'/#account');await page.locator('.reborn-avatar img').waitFor();check(name+' local profile images displayed after route change',await page.locator('.reborn-profile-cover img').count()===1);
+await page.locator('#account-primary-action').click();await page.locator('[data-profile-remove="avatar"]').waitFor();await page.locator('[data-profile-remove="avatar"]').click();await page.locator('[data-profile-remove="cover"]').click();check(name+' private local appearance removable',await page.evaluate(()=>{const m=JSON.parse(localStorage.getItem('sooqak-profile-media-v1:r100-mock-user')||'{}');return !m.avatar&&!m.cover}));
+
+await page.goto(base+'/#auth');await page.waitForURL('**/#account');
+check(name+' signed auth alias resolves to account',await page.locator('#account-identity').isVisible());
+await page.goto(base+'/#home');await page.locator('.home-compact').waitFor();
+check(name+' no lab link on home',await page.locator('.home-compact a[href*="cloud-test"]').count()===0);
+check(name+' all nine main sections shown',await page.locator('.reborn-categories [data-category]').count()===9);
+await page.locator('[data-hero-slide="1"]').click();await page.locator('.reborn-market-collage img').first().waitFor({state:'visible'});check(name+' market hero contains three product photographs',await page.locator('.reborn-market-collage img').count()===3&&await page.locator('.reborn-market-collage img').evaluateAll(imgs=>imgs.every(x=>x.getAttribute('alt')&&x.getAttribute('src').startsWith('./assets/'))));
+check(name+' distinct marketplace service and merchant entrances',await page.locator('.market-actions .reborn-entry').count()===3);
+
+await page.locator('[data-hero-slide="3"]').click();check(name+' technology carousel slide and control',await page.locator('[data-hero-panel="3"]').isVisible()&&await page.locator('.hero-next').getAttribute('data-hero-edge')==='0');
+check(name+' technology hero uses laptop and phone',await page.locator('[data-hero-panel="3"] img').count()===2&&await page.locator('[data-hero-panel="3"] img').evaluateAll(imgs=>imgs.some(x=>x.getAttribute('src').endsWith('laptop-photo.jpg'))&&imgs.some(x=>x.getAttribute('src').endsWith('phone-photo.jpg'))));
+await page.locator('.hero-next').click();check(name+' carousel wraps to first slide',await page.locator('[data-hero-panel="0"]').isVisible());
+
+await page.evaluate(()=>scrollTo(0,Math.min(450,document.documentElement.scrollHeight-innerHeight)));await page.waitForTimeout(100);
+check(name+' header brand remains fixed when scrolling',await page.evaluate(()=>{const b=document.querySelector('.site>.top').getBoundingClientRect();return scrollY>100&&b.top>=-2&&b.top<8&&b.bottom>0}));
+check(name+' viewport has no horizontal overflow',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+check(name+' discovery has separate semantic containers',await page.locator('section.reborn-discovery').count()===1&&await page.locator('section.market-categories').count()===1);
+const nav=page.locator('.site>.bottom');if(await nav.isVisible())check(name+' bottom nav stays within viewport after scroll',await nav.evaluate(e=>{const b=e.getBoundingClientRect();return getComputedStyle(e).position==='fixed'&&b.top>=0&&b.bottom<=innerHeight+1}));
+const oldY=await page.evaluate(()=>scrollY);await page.locator('.header-auth-btn').click();await page.waitForURL('**/#account');await page.goBack();await page.waitForURL('**/#home');await page.waitForFunction(y=>Math.abs(scrollY-y)<25,oldY);
+check(name+' browser back restores market scroll',await page.evaluate(y=>Math.abs(scrollY-y)<25,oldY));
+
+await page.goto(base+'/#listing/11111111-1111-4111-8111-111111111111');await page.locator('.reborn-connected-detail').waitFor();
+check(name+' connected detail keeps marketplace header',await page.locator('.site>.top .wordmark-ar').isVisible()&&await page.locator('.reborn-detail-copy h2').innerText()==='منتج للمراجعة');
+check(name+' connected detail shows actual date and listing status',await page.locator('.reborn-listing-facts time').getAttribute('datetime')==='2026-11-28T00:00:00.000Z'&&await page.locator('.reborn-listing-facts span').innerText()==='متاح');
+
+await page.locator('details.reborn-edit:has(#reborn-edit-listing) > summary').click();await page.locator('#reborn-edit-listing [name=title]').fill('منتج معدل');await page.locator('#reborn-edit-listing button').click();await page.waitForFunction(()=>document.querySelector('.reborn-detail-copy h2')?.textContent==='منتج معدل');
+check(name+' owner edit remains in same route',page.url().endsWith('#listing/11111111-1111-4111-8111-111111111111'));
+await page.goto(base+'/#messages');await page.locator('#shared-route-root').waitFor();check(name+' messages single connected surface',await page.locator('#shared-route-root').count()===1&&await page.locator('.messages-layout').count()===0);
+await page.goto(base+'/#favorites');await page.locator('#shared-route-root').waitFor();check(name+' device saved data separated',await page.locator('.reborn-local-saved').count()===1&&await page.locator('#shared-route-root').count()===1);
+await page.goto(base+'/#stores');await page.locator('a[href$="#merchant/22222222-2222-4222-8222-222222222222"]').waitFor();
+await page.locator('a[href$="#merchant/22222222-2222-4222-8222-222222222222"]').click();await page.locator('.reborn-store-hero').waitFor();check(name+' connected store retains main header',await page.locator('.reborn-store-hero h2').innerText()==='متجر المراجعة'&&await page.locator('.site>.top').isVisible());check(name+' distinct store identity uses actual name initials',await page.locator('.reborn-store-hero .reborn-merchant-initials').innerText()==='مت');
+await page.goto(base+'/#my-stores');await page.locator('#shared-route-root .shared-store-edit').waitFor();check(name+' one store manager with separate local drafts',await page.locator('#shared-route-root').count()===1&&await page.locator('.reborn-local-saved').count()===1);
+await page.goto(base+'/#services');await page.locator('.reborn-provider-card').waitFor();check(name+' directory has approved service and no application duplicate',await page.locator('.reborn-provider-card h3').innerText()==='سباكة تجريبية'&&await page.locator('#shared-provider-form').count()===0);
+await page.locator('[data-service="الكهرباء"]').click();await page.locator('#shared-services-root .account-empty').waitFor();check(name+' connected directory respects category',await page.locator('.reborn-provider-card').count()===0);
+await page.locator('[data-go="provider"]').click();await page.locator('#shared-provider-form').waitFor();check(name+' connected application separate from local draft',await page.locator('#shared-provider-form:visible').count()===1&&await page.locator('#provider-form:visible').count()===0);
+await page.goto(base+'/#listings');await page.locator('#shared-route-root .reborn-listing').waitFor();await page.locator('[data-filter="إلكترونيات"]').click();await page.waitForFunction(()=>window.searchCalls.some(c=>c.category==='إلكترونيات'));check(name+' connected search receives category filter',await page.locator('#shared-route-root').count()===1);
+await page.goto(base+'/#account');await page.locator('.reborn-logout').click();await page.locator('#connected-login-form').waitFor();check(name+' logout returns to canonical sign-in',await page.locator('#connected-login-form').isVisible());
+check(name+' no uncaught errors',errors.length===0);
+}finally{await context.close()}}}finally{await browser.close()}}}finally{server.close()}
+console.log('R100 account-shell assertions passed: '+passed);

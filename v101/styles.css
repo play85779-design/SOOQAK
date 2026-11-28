@@ -1563,3 +1563,171 @@ body{overflow-x:clip}
 .site:not(.onboarding)>.top{position:sticky;inset-block-start:0;align-self:start;z-index:30}
 .card-photo:has(img)::after,.detail-gallery .detail-hero:has(img)::after{content:'سوقك';position:absolute;inset-inline-end:9px;inset-block-end:9px;z-index:2;pointer-events:none;color:#fff;background:#123e32b8;border:1px solid #ffffff70;border-radius:7px;padding:3px 9px;font-size:12px;font-weight:800;line-height:1.4;text-shadow:0 1px 2px #0005}
 @media(max-width:600px){.site:not(.onboarding)>.top .top-inner{min-height:58px}.card-photo:has(img)::after{font-size:10px;padding:2px 6px}}
+
+/* G100 gallery and account progress: responsive, non-destructive image tools. */
+.g100-image-dialog{width:min(980px,calc(100vw - 16px));max-width:none;max-height:calc(100dvh - 16px);overflow:auto;display:grid;gap:10px;padding:12px;box-sizing:border-box}
+.g100-gallery-tools{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.g100-gallery-tools button,.detail-share [data-brand-photo]{min-height:44px;padding:8px 12px;border:1px solid #d2e4d9;background:#f3faf6;color:#185a40;border-radius:10px;font-weight:700}
+.g100-gallery-frame{position:relative;background:#112d25;border-radius:14px;overflow:hidden;display:grid;place-items:center;touch-action:pan-y}
+.g100-gallery-frame img{display:block;max-width:100%;width:auto;height:auto;max-height:calc(100dvh - 180px);object-fit:contain}
+.g100-gallery-brand{position:absolute;inset-inline-end:12px;inset-block-end:12px;background:#123e32d9;color:#fff;border:1px solid #ffffff70;border-radius:8px;padding:4px 12px;font-weight:800;pointer-events:none}
+.detail-share{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.detail-hero{touch-action:pan-y}
+.g100-completion{display:grid;gap:8px;background:linear-gradient(135deg,#f1faf5,#f6f1fb);border:1px solid #dce9df;border-radius:14px;padding:12px;margin:10px 0}.g100-completion strong{color:#155b3e}.g100-completion progress{width:100%;height:12px;accent-color:#16835d}.g100-completion ul{margin:0;padding-inline-start:20px;line-height:1.65;font-size:13px}.g100-completion li[data-complete="true"]{color:#176547}.g100-completion li[data-complete="false"]{color:#59476c}
+@media(max-width:450px){.g100-gallery-tools button{font-size:12px;padding:6px 8px}.g100-image-dialog{padding:8px}}
+
+.crop-frame.draft{aspect-ratio:4/3;max-width:450px}.upload-thumb [data-draft-crop]{top:35px;left:5px;width:auto;height:auto;min-height:28px;border-radius:8px;padding:4px 6px;font:700 11px/1.2 var(--font);background:#fff;color:#155b3e;z-index:5}.upload-thumb{min-height:118px}
+
+.g100-card-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;color:#52675c;font-size:11px;margin-top:5px}.g100-card-meta:empty{display:none}.g100-card-meta span,.g100-condition{background:#eaf5ee;color:#155b3e;border-radius:7px;padding:3px 8px;font-weight:700}.g100-condition{display:inline-block;font-size:12px;margin-inline-start:6px}.g100-listing-date{font-size:12px;color:#66776c;margin:8px 0}
+
+/* R100 unified customer shell — branded, responsive account, shared navigation. */
+:root{--reborn-ink:#123c31;--reborn-emerald:#075641;--reborn-gold:#e9c47b;--reborn-violet:#6b3ca4;--reborn-line:#dce7e0}
+html,body,#app{min-width:0;overflow-x:clip}
+.site:not(.onboarding){overflow:visible;min-height:100dvh}
+.site:not(.onboarding)>.top{position:sticky;top:0;inset-block-start:0;z-index:65;align-self:start;isolation:isolate;background:radial-gradient(ellipse at 15% 0%,#247b65 0,transparent 70%),linear-gradient(115deg,#073d31,#0b624a 62%,#073e30);border-block-end:2px solid var(--reborn-gold);box-shadow:0 5px 18px #0b302329}
+.site:not(.onboarding)>.main{min-width:0;overflow:visible}
+.site:not(.onboarding)>.top .header-auth-btn{min-width:0;max-width:180px}
+.header-auth-btn .auth-long{max-width:112px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.reborn-account{max-width:1100px;margin-inline:auto}
+.reborn-profile{position:relative;overflow:hidden;display:grid;gap:18px;padding:clamp(18px,4vw,35px);background:linear-gradient(133deg,#113b31,#0d604a 62%,#063e31);border:1px solid #d5b771;border-radius:25px;color:#fff;box-shadow:0 16px 35px #0c42272b}
+.reborn-profile:before{content:"";position:absolute;inset-inline-end:-70px;top:-115px;width:330px;height:330px;border:1px solid #e7c67c55;border-radius:50%;box-shadow:0 0 0 24px #e7c67c12,0 0 0 55px #e7c67c0c;pointer-events:none}
+.reborn-profile>*{position:relative;z-index:1}
+.reborn-profile-brand{display:flex;justify-content:space-between;align-items:center;gap:10px;color:#f1d89f;font-size:12px;font-weight:700}
+.reborn-profile .brand,.reborn-auth-intro .brand{display:flex;align-items:center;gap:7px;background:transparent;color:white;min-width:0}
+.reborn-profile .wordmark-ar,.reborn-auth-intro .wordmark-ar{color:#fff;font-size:25px}
+.reborn-profile .wordmark-en,.reborn-auth-intro .wordmark-en{color:#e9c47b;font-size:10px;letter-spacing:1px}
+.reborn-profile .wordmark-tagline,.reborn-auth-intro .wordmark-tagline{display:none}
+.reborn-profile .brand-mark,.reborn-auth-intro .brand-mark{width:35px;height:35px}
+.reborn-profile-body{display:flex;align-items:center;gap:clamp(12px,3vw,22px)}
+.reborn-profile-body>div{min-width:0}
+.reborn-avatar{display:grid;place-items:center;width:clamp(58px,11vw,92px);aspect-ratio:1;flex:none;background:linear-gradient(145deg,#f7e5ba,#d6a34f);color:#113d31;border:2px solid #f3d79c;border-radius:24px;box-shadow:0 7px 20px #092d2670}
+.reborn-avatar svg{width:46%;height:46%}
+.reborn-profile-body small{color:#e8ca8e;font-weight:700}
+.reborn-profile-body h2{font-size:clamp(23px,4.7vw,39px);line-height:1.35;margin:5px 0;overflow-wrap:anywhere;color:#fff}
+.reborn-profile-body p{margin:0;font-size:13px;color:#e8f2ec}
+.reborn-profile.is-member{background:radial-gradient(ellipse at 10% 100%,#1d806e,transparent 60%),linear-gradient(120deg,#063b30,#125e48)}
+.reborn-profile .account-login{justify-self:start;background:linear-gradient(130deg,#f8e1a6,#e9bd62);color:#123b2e;padding:12px 19px;border-radius:13px;min-height:44px;font-weight:800}
+.reborn-section-heading{margin-block:26px 10px}.reborn-section-heading h2{font-size:22px;margin:0;color:var(--reborn-ink)}.reborn-section-heading p{color:#596e65;margin:4px 0;font-size:13px}
+.reborn-account .account-quick{gap:clamp(7px,1.5vw,15px)}
+.reborn-account .account-quick-card{border-radius:18px;min-height:115px;border:1px solid #dce7e0;box-shadow:0 4px 12px #133f300a;transition:transform .15s}
+.reborn-account .account-quick-card:active{transform:scale(.98)}
+.reborn-account-menu{margin:20px 0;background:#fff;border:1px solid var(--reborn-line);border-radius:20px;padding:16px}
+.reborn-account-menu h2{font-size:20px;color:var(--reborn-ink);margin:0 0 10px}
+.reborn-account-menu .profile-row{width:100%;min-height:52px;border-top:1px solid #eaf0ec;border-radius:0;display:flex;justify-content:space-between;align-items:center;text-align:start}
+.reborn-account-menu .reborn-logout{color:#9d3244}
+.reborn-account-menu .reborn-logout[hidden]{display:none!important}
+.reborn-auth-intro{background:radial-gradient(ellipse at 10% 100%,#24816c,transparent 65%),linear-gradient(120deg,#073d31,#0e654a);border:1px solid #d5b771;padding:clamp(15px,3vw,30px);border-radius:22px;gap:12px}
+.reborn-auth-intro .brand{flex:none}
+.reborn-safety-note{font-size:12px}
+@media(max-width:600px){.reborn-profile{gap:13px;border-radius:19px}.reborn-profile-brand>span{font-size:11px}.reborn-account .account-quick-card{min-height:94px}.reborn-account .account-quick-card small{font-size:10px}.reborn-auth-intro .brand-mark{width:28px;height:28px}.reborn-auth-intro .wordmark-ar{font-size:18px}.reborn-auth-intro .wordmark-en{font-size:8px}.site:not(.onboarding)>.top{z-index:65}}
+@media(prefers-reduced-motion:reduce){.reborn-account .account-quick-card{transition:none}}
+
+.reborn-publish-choice{border:1px solid #d4e5dc;border-radius:17px;padding:16px;margin-top:14px;background:linear-gradient(135deg,#f5faf6,#fff8e8);display:grid;gap:9px}.reborn-publish-choice h3,.reborn-chat h3{margin:0;color:var(--reborn-ink)}.reborn-publish-choice p{margin:0;line-height:1.7}.reborn-publish-choice label{display:flex;align-items:flex-start;gap:8px;line-height:1.5}.reborn-publish-choice input[type=checkbox]{width:20px;height:20px;flex:none;accent-color:var(--reborn-emerald)}.reborn-pledge{border:1px solid #d6e5d9;border-radius:10px;padding:9px;background:white}.reborn-pledge summary{cursor:pointer;font-weight:700}.reborn-listing{align-items:stretch;flex-direction:column;overflow:hidden;box-shadow:0 4px 12px #173b3010}.reborn-listing>img,.reborn-photo-empty{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:12px;background:#eef3ef}.reborn-photo-empty{display:grid;place-items:center;color:#566f61;font-size:13px}.reborn-listing strong{display:block;font-size:21px;color:var(--reborn-emerald)}.reborn-listing details{margin-block:8px}.reborn-listing .more{display:inline-block;min-height:44px;padding:8px;border:1px solid #dbe9df;border-radius:9px;margin:3px}.reborn-chat{margin-block:14px;padding:16px;border:1px solid var(--reborn-line);border-radius:18px;background:#f8fbf9}.reborn-chat-messages{display:flex;flex-direction:column;gap:8px;max-height:420px;overflow:auto;padding:8px}.reborn-chat-messages p{max-width:84%;padding:10px 14px;border-radius:14px;overflow-wrap:anywhere;white-space:pre-wrap;margin:0}.reborn-chat-messages .mine{align-self:flex-start;background:#d9eee3;color:#174c37}.reborn-chat-messages .theirs{align-self:flex-end;background:#f1eafa;color:#392455}.reborn-chat textarea{width:100%;min-height:80px;border:1px solid #cbded3;border-radius:10px;padding:10px;font-size:16px}.reborn-chat .more,.reborn-chat .cta{min-height:44px}.reborn-action-error{color:#9d3244}
+
+/* R100 canonical connected detail */
+.reborn-connected-detail{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:clamp(14px,3vw,30px);align-items:start}.reborn-detail-photos{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;border-radius:20px;background:#e8f1ec}.reborn-detail-photos img{width:100%;flex:none;aspect-ratio:4/3;object-fit:contain;scroll-snap-align:start}.reborn-detail-copy{min-width:0;overflow-wrap:anywhere}.reborn-detail-copy h2{font-size:clamp(23px,4vw,34px);margin:8px 0}.reborn-detail-copy strong{color:var(--reborn-emerald);font-size:28px}.reborn-detail-copy p{white-space:pre-wrap;line-height:1.7}.reborn-detail-copy button{margin:6px;min-height:44px}.reborn-edit{margin:12px 0;padding:14px;border:1px solid var(--reborn-line);border-radius:13px}.reborn-edit summary{font-weight:800;cursor:pointer}.reborn-edit form{margin-top:12px}.reborn-edit textarea{min-height:85px}.reborn-detail-copy #reborn-share-status{overflow-wrap:anywhere}.shared-route-panel{max-width:1160px;margin-inline:auto;width:calc(100% - 24px)}@media(max-width:720px){.reborn-connected-detail{grid-template-columns:minmax(0,1fr)}}
+
+.reborn-category-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 4px 6px}.reborn-category-head h2{font-size:clamp(17px,2.8vw,24px);color:var(--reborn-ink);margin:0}.reborn-category-head .more{font-weight:800;font-size:12px;color:var(--reborn-emerald)}.reborn-categories{display:grid!important;grid-template-columns:repeat(9,minmax(0,1fr));gap:8px;overflow:visible!important;padding:8px 0}.reborn-categories .cat{min-width:0;width:100%;padding:7px 3px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;border:1px solid #e4ebe6;border-radius:16px;background:#fff;box-shadow:0 3px 9px #17453209}.reborn-categories .cat-icon{width:clamp(35px,5vw,60px);height:clamp(35px,5vw,60px);display:grid;place-items:center;border-radius:15px}.reborn-categories .cat-icon svg{width:58%;height:58%}.reborn-categories .cat b{font-size:clamp(10px,1.15vw,13px);white-space:normal;text-align:center;line-height:1.3}.reborn-categories .category-tone-0{background:#e4f1e8;color:#136242}.reborn-categories .category-tone-1{background:#f3eafb;color:#6a379d}.reborn-categories .category-tone-2{background:#fff2db;color:#9b671e}.reborn-categories .category-tone-3{background:#e5f1f8;color:#256484}.reborn-local-saved{margin-block:16px;padding:12px;border:1px solid var(--reborn-line);border-radius:15px;background:#fff}.reborn-local-saved summary{cursor:pointer;font-weight:800;color:var(--reborn-ink)}@media(max-width:800px){.reborn-categories{grid-template-columns:repeat(5,minmax(0,1fr))}}@media(max-width:450px){.reborn-categories{grid-template-columns:repeat(3,minmax(0,1fr))}.reborn-categories .cat{min-height:78px}}
+
+.reborn-photo-editor{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:8px;margin-block:12px}.reborn-photo-editor article{min-width:0;border:1px solid var(--reborn-line);border-radius:12px;padding:7px;background:#f7faf8}.reborn-photo-editor img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px}.reborn-photo-editor small{display:block;font-weight:700;color:var(--reborn-ink)}.reborn-photo-editor button{font-size:12px;margin:2px;min-height:44px}
+
+/* R100 shared visual grammar: a single commercial shell, not separate app themes. */
+:root{--reborn-surface:#fff;--reborn-wash:#f4f7f5;--reborn-gold-soft:#f8edd5;--reborn-radius:20px;--reborn-shadow:0 9px 26px #133c3110}
+.site:not(.onboarding)>.main{background:radial-gradient(ellipse at 92% 0%,#e9f1ec 0,transparent 44%),var(--reborn-wash)}
+.site:not(.onboarding) .screen-title{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-block:12px;margin-block:0 10px;border-bottom:1px solid var(--reborn-line)}
+.site:not(.onboarding) .screen-title h1{font-family:var(--round);font-size:clamp(22px,3.4vw,32px);font-weight:800;letter-spacing:-.4px;color:var(--reborn-ink)}
+.site:not(.onboarding) .screen-title button{min-height:44px;min-width:44px;background:var(--reborn-surface);border:1px solid var(--reborn-line);border-radius:13px;color:var(--reborn-emerald)}
+.site:not(.onboarding) .shell{padding-block-start:clamp(9px,2vw,20px)}
+.site:not(.onboarding) .interior-hero,.reborn-store-hero{position:relative;overflow:hidden;border:1px solid #cbb07966;border-radius:var(--reborn-radius);background:radial-gradient(ellipse at 0% 100%,#2b8573 0,transparent 61%),linear-gradient(120deg,#103f33,#0a5945 70%,#133e33);box-shadow:var(--reborn-shadow);color:#fff}
+.site:not(.onboarding) .interior-hero h2,.reborn-store-hero h2{color:#fff;line-height:1.4;margin:4px 0;font-size:clamp(22px,4vw,34px);font-weight:800}
+.site:not(.onboarding) .interior-hero p,.reborn-store-hero p{color:#e4f0e9;line-height:1.65;margin:4px 0;overflow-wrap:anywhere}
+.site:not(.onboarding) .interior-hero small,.reborn-store-hero small{color:#f3d99e;font-weight:800}
+.site:not(.onboarding) .interior-icon{background:linear-gradient(140deg,#f7e5b8,#dfba6a);color:#164a38;border:1px solid #f2d99e;border-radius:17px;box-shadow:none}
+.site:not(.onboarding) .interior-hero .cta{background:linear-gradient(140deg,#fff0c3,#e6bf71);color:#123d30;box-shadow:none;min-height:44px}
+.reborn-store-hero{padding:clamp(20px,4vw,36px);margin-block:8px 20px}
+.reborn-store-hero p{white-space:pre-wrap}
+.site:not(.onboarding) .settings-card,.site:not(.onboarding) .wizard-card,.site:not(.onboarding) .account-empty{border:1px solid var(--reborn-line);border-radius:var(--reborn-radius);background:#fff;box-shadow:var(--reborn-shadow)}
+.site:not(.onboarding) .section-head h2,.site:not(.onboarding) .feed-head h2{color:var(--reborn-ink);font-weight:800;letter-spacing:-.25px}
+.site:not(.onboarding) .card{border-radius:17px;overflow:hidden;border:1px solid var(--reborn-line);box-shadow:0 5px 13px #0d473209}
+.site:not(.onboarding) .card .price{color:var(--reborn-emerald);font-weight:800}
+.site:not(.onboarding) .card .card-content strong{color:var(--reborn-ink)}
+.site:not(.onboarding) .card-heart{background:#fffffff0;border:1px solid #ffffffad;box-shadow:0 2px 8px #123a3222}
+.site:not(.onboarding) .filter[aria-pressed=true],.site:not(.onboarding) .filter.active{background:#0e5d47;color:#fff;border-color:#0e5d47}
+.site:not(.onboarding) button:focus-visible,.site:not(.onboarding) a:focus-visible,.site:not(.onboarding) input:focus-visible,.site:not(.onboarding) select:focus-visible,.site:not(.onboarding) textarea:focus-visible{outline:3px solid #9b72d0;outline-offset:3px}
+.site:not(.onboarding) .shared-route-panel{border-radius:var(--reborn-radius);background:#fff}
+.reborn-provider-card{border:1px solid var(--reborn-line);border-radius:18px;overflow:hidden;background:#fff;box-shadow:var(--reborn-shadow);min-width:0}
+.reborn-service-cover{display:flex;justify-content:space-between;align-items:center;padding:20px 16px;color:#fff;background:radial-gradient(ellipse at 5% 100%,#3a8271,transparent 66%),linear-gradient(130deg,#0d513e,#133b30);font-size:24px;font-weight:800}.reborn-service-cover span{font-size:12px;color:#f7dba2}.reborn-provider-content{padding:16px;overflow-wrap:anywhere}.reborn-provider-content h3{color:var(--reborn-ink);margin:8px 0;font-size:19px}.reborn-provider-content p{color:#435c50;line-height:1.65;margin:6px 0}
+#shared-provider-form input[type=checkbox],.reborn-publish-choice input[type=checkbox]{width:20px;min-width:20px;height:20px;accent-color:var(--reborn-emerald)}
+@media(max-width:480px){.site:not(.onboarding) .interior-hero{padding:14px;gap:10px}.site:not(.onboarding) .interior-hero .interior-icon{width:46px;height:46px}.site:not(.onboarding) .screen-title{padding-block:8px}.reborn-store-hero{border-radius:17px}}
+
+/* R100 container hierarchy: retain rich media, avoid identical full-width text boxes. */
+.home-compact .market-search.reborn-discovery{padding:clamp(8px,1.7vw,16px);background:#fff;border:1px solid var(--reborn-line);border-radius:18px;box-shadow:var(--reborn-shadow);margin-bottom:10px}
+.home-compact .market-categories{min-width:0;background:#fff;border:1px solid var(--reborn-line);border-radius:18px;padding:8px 12px;box-shadow:var(--reborn-shadow)}
+.home-compact .market-feature{min-width:0}
+.home-compact .market-actions{gap:10px}
+.home-compact .market-section{min-width:0;padding:clamp(10px,1.6vw,16px);background:#fff;border:1px solid var(--reborn-line);border-radius:20px;box-shadow:var(--reborn-shadow)}
+.home-compact .market-section .card-grid,.home-compact .market-section .poster-store-grid{min-width:0}
+.home-compact .market-actions .market-action.service>span{background:#ede5f8;color:#6b3ca4}
+.site:not(.onboarding) .bottom .nav.active{color:#075641}
+.site:not(.onboarding) .bottom .nav:focus-visible{outline-offset:-3px}
+@media(min-width:700px) and (max-width:899px){.home-compact .market-categories .reborn-categories{grid-template-columns:repeat(5,minmax(0,1fr))}.home-compact .market-stage{gap:12px}}
+@media(min-width:900px){.home-compact .market-stage{grid-template-columns:minmax(0,1.8fr) minmax(0,1fr);gap:14px;align-items:start}.home-compact .market-feature{grid-column:1/-1}.home-compact .market-categories .reborn-categories{grid-template-columns:repeat(5,minmax(0,1fr))}.home-compact .market-actions{grid-template-columns:1fr;align-self:stretch}.home-compact .market-actions .market-action{min-height:60px}}
+@media(max-width:699px){.home-compact .market-section{padding:9px}.home-compact .market-actions{gap:6px}.home-compact .market-categories{padding:6px 8px}}
+
+/* R054/R055 — listing facts and display-only watermark, original images unchanged. */
+.reborn-connected-media{position:relative;overflow:hidden;border-radius:12px;background:#e8f1ec;min-width:0}
+.reborn-connected-media>a{display:block}
+.reborn-connected-media img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.reborn-media-mark{position:absolute;inset-inline-end:10px;bottom:10px;padding:3px 9px;background:#103f33d9;color:#fff7dd;border:1px solid #e9c47b8c;border-radius:7px;font-weight:800;font-size:13px;pointer-events:none}
+.reborn-detail-photos>.reborn-connected-media{width:100%;flex:none;scroll-snap-align:start}
+.reborn-detail-photos>.reborn-connected-media img{object-fit:contain}
+.reborn-listing-facts{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-block:8px;color:#52675d;font-size:12px}
+.reborn-listing-facts>span,.reborn-listing-facts>time{background:#edf5ef;border:1px solid #dce7e0;padding:3px 7px;border-radius:8px}
+
+/* R100 third direction: editorial photo composition + compact modular entrances. */
+#hero-carousel .hero-stage .hero-sapphire{background:radial-gradient(ellipse at 15% 8%,#48738b 0%,transparent 48%),linear-gradient(120deg,#213d51,#102936 68%,#11242e);border:1px solid #a7b6bb55}
+#hero-carousel .hero-stage .hero-emerald{background:radial-gradient(ellipse at 10% 10%,#559a83 0%,transparent 58%),linear-gradient(118deg,#14664f,#073d30 78%)}
+#hero-carousel .hero-stage .hero-amber{background:radial-gradient(ellipse at 8% 25%,#d8ba82 0%,transparent 54%),linear-gradient(116deg,#9a713c,#674425 72%,#442e1e)}
+#hero-carousel .hero-stage .hero-violet{background:radial-gradient(ellipse at 5% 3%,#a38bc2 0%,transparent 56%),linear-gradient(115deg,#685096,#402763 70%,#302345)}
+#hero-carousel .hero-copy h2{color:#fff;font-weight:800;line-height:1.22}
+#hero-carousel .hero-copy h2 span{color:#f5d694}
+#hero-carousel .hero-copy .hero-chip{color:#ffe8b6;background:#ffffff13;border:1px solid #ffffff33}
+#hero-carousel .hero-stage .hero-figure.reborn-market-collage{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.85fr);grid-template-rows:1fr 1fr;gap:7px;direction:ltr;padding:14px 32px 14px 8px}
+#hero-carousel .reborn-market-collage .reborn-photo-0{grid-row:1/3}
+#hero-carousel .reborn-hero-photo{border-radius:13px;overflow:hidden;border:1px solid #fff4;min-width:0;min-height:0;box-shadow:0 7px 20px #09272044}
+#hero-carousel .hero-stage .reborn-market-collage img,#hero-carousel .hero-stage .reborn-tech-collage img{width:100%;height:100%;object-fit:cover;mask-image:none;-webkit-mask-image:none}
+#hero-carousel .hero-stage .hero-figure.reborn-tech-collage{position:relative;padding:12px 24px 12px 8px;overflow:hidden}
+#hero-carousel .reborn-tech-collage .reborn-hero-photo{width:100%;height:100%}
+#hero-carousel .reborn-tech-secondary{position:absolute;bottom:12%;left:7%;width:31%;height:54%;border:2px solid #e9c47b;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 10px 22px #1c102b5c}
+.home-compact .market-actions .reborn-entry{border:1px solid #e4ebe6;border-radius:15px;box-shadow:0 4px 12px #123d3010;overflow:hidden;position:relative}
+.home-compact .reborn-entry.buy{background:linear-gradient(135deg,#f0f8f3,#fff)}
+.home-compact .reborn-entry.merchant{background:linear-gradient(135deg,#fff2d7,#fff)}
+.home-compact .reborn-entry.service{background:linear-gradient(135deg,#f2eafb,#fff)}
+.home-compact .reborn-entry>div{min-width:0}
+.home-compact .reborn-entry b{color:#183b30;white-space:normal}
+.home-compact .market-section .section-head{padding-inline:4px}
+@media(max-width:600px){#hero-carousel .hero-stage .hero-figure.reborn-market-collage{padding:12px 4px 12px 24px;gap:4px}#hero-carousel .reborn-hero-photo{border-radius:9px}#hero-carousel .hero-stage .hero-figure.reborn-tech-collage{padding:12px 3px 12px 22px}#hero-carousel .reborn-tech-secondary{border-radius:9px;width:36%;left:14%;border-width:1px}.home-compact .reborn-entry{min-height:68px}.home-compact .reborn-entry b{font-size:11px}}
+@media(min-width:601px){.home-compact .reborn-entry{min-height:78px}}
+
+/* R100 — optional private profile media and deterministic merchant identities. */
+.reborn-profile{position:relative;isolation:isolate;overflow:hidden}
+.reborn-profile-cover{position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 10% 10%,#54988255,transparent 65%)}
+.reborn-profile-cover.has-media img{width:100%;height:100%;object-fit:cover;opacity:.45}
+.reborn-profile-cover.has-media:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#103f33b0,#103f33e8)}
+.reborn-avatar{position:relative;overflow:hidden;flex-shrink:0}
+.reborn-avatar.has-media>svg{visibility:hidden}
+.reborn-avatar>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.profile-media-settings{padding:14px;border:1px solid #dce7e0;border-radius:16px;margin-block:12px;background:#f5f8f6}
+.profile-media-settings p{font-size:13px;color:#52675d;line-height:1.6}
+.profile-media-field{display:grid;gap:8px;padding:10px 0;border-bottom:1px solid #dce7e0}
+.profile-media-field img:not([hidden]){display:block;max-width:100%;max-height:150px;object-fit:cover;border-radius:10px}
+#profile-preview-avatar:not([hidden]){width:96px;height:96px;border-radius:50%}
+.profile-media-field .more{justify-self:start}
+.reborn-merchant-cover{min-height:112px;display:flex;align-items:center;gap:12px;padding:16px;border-radius:15px;background:linear-gradient(125deg,#0b7056,#103f33);color:#fff7df}
+.reborn-merchant-cover.tone-1{background:linear-gradient(125deg,#806141,#4a3524)}
+.reborn-merchant-cover.tone-2{background:linear-gradient(125deg,#77559a,#40295f)}
+.reborn-merchant-cover.tone-3{background:linear-gradient(125deg,#396b89,#17394a)}
+.reborn-merchant-initials{width:58px;height:58px;display:grid;place-items:center;background:#fff5df;color:#103f33;border:2px solid #e9c47b;border-radius:17px;font-size:24px;font-weight:800;flex:none}
+.reborn-merchant-label{font-weight:700;font-size:13px}
+.reborn-merchant-card{display:block!important;padding:10px}
+.reborn-merchant-card>div:last-child{padding:12px 4px 2px}
+.reborn-store-hero .reborn-merchant-cover{margin-bottom:14px}
