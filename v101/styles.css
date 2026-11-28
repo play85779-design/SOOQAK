@@ -1682,3 +1682,28 @@ html,body,#app{min-width:0;overflow-x:clip}
 .reborn-detail-photos>.reborn-connected-media img{object-fit:contain}
 .reborn-listing-facts{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-block:8px;color:#52675d;font-size:12px}
 .reborn-listing-facts>span,.reborn-listing-facts>time{background:#edf5ef;border:1px solid #dce7e0;padding:3px 7px;border-radius:8px}
+
+/* R100 third direction: editorial photo composition + compact modular entrances. */
+#hero-carousel .hero-stage .hero-sapphire{background:radial-gradient(ellipse at 15% 8%,#48738b 0%,transparent 48%),linear-gradient(120deg,#213d51,#102936 68%,#11242e);border:1px solid #a7b6bb55}
+#hero-carousel .hero-stage .hero-emerald{background:radial-gradient(ellipse at 10% 10%,#559a83 0%,transparent 58%),linear-gradient(118deg,#14664f,#073d30 78%)}
+#hero-carousel .hero-stage .hero-amber{background:radial-gradient(ellipse at 8% 25%,#d8ba82 0%,transparent 54%),linear-gradient(116deg,#9a713c,#674425 72%,#442e1e)}
+#hero-carousel .hero-stage .hero-violet{background:radial-gradient(ellipse at 5% 3%,#a38bc2 0%,transparent 56%),linear-gradient(115deg,#685096,#402763 70%,#302345)}
+#hero-carousel .hero-copy h2{color:#fff;font-weight:800;line-height:1.22}
+#hero-carousel .hero-copy h2 span{color:#f5d694}
+#hero-carousel .hero-copy .hero-chip{color:#ffe8b6;background:#ffffff13;border:1px solid #ffffff33}
+#hero-carousel .hero-stage .hero-figure.reborn-market-collage{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.85fr);grid-template-rows:1fr 1fr;gap:7px;direction:ltr;padding:14px 32px 14px 8px}
+#hero-carousel .reborn-market-collage .reborn-photo-0{grid-row:1/3}
+#hero-carousel .reborn-hero-photo{border-radius:13px;overflow:hidden;border:1px solid #fff4;min-width:0;min-height:0;box-shadow:0 7px 20px #09272044}
+#hero-carousel .hero-stage .reborn-market-collage img,#hero-carousel .hero-stage .reborn-tech-collage img{width:100%;height:100%;object-fit:cover;mask-image:none;-webkit-mask-image:none}
+#hero-carousel .hero-stage .hero-figure.reborn-tech-collage{position:relative;padding:12px 24px 12px 8px;overflow:hidden}
+#hero-carousel .reborn-tech-collage .reborn-hero-photo{width:100%;height:100%}
+#hero-carousel .reborn-tech-secondary{position:absolute;bottom:12%;left:7%;width:31%;height:54%;border:2px solid #e9c47b;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 10px 22px #1c102b5c}
+.home-compact .market-actions .reborn-entry{border:1px solid #e4ebe6;border-radius:15px;box-shadow:0 4px 12px #123d3010;overflow:hidden;position:relative}
+.home-compact .reborn-entry.buy{background:linear-gradient(135deg,#f0f8f3,#fff)}
+.home-compact .reborn-entry.merchant{background:linear-gradient(135deg,#fff2d7,#fff)}
+.home-compact .reborn-entry.service{background:linear-gradient(135deg,#f2eafb,#fff)}
+.home-compact .reborn-entry>div{min-width:0}
+.home-compact .reborn-entry b{color:#183b30;white-space:normal}
+.home-compact .market-section .section-head{padding-inline:4px}
+@media(max-width:600px){#hero-carousel .hero-stage .hero-figure.reborn-market-collage{padding:12px 4px 12px 24px;gap:4px}#hero-carousel .reborn-hero-photo{border-radius:9px}#hero-carousel .hero-stage .hero-figure.reborn-tech-collage{padding:12px 3px 12px 22px}#hero-carousel .reborn-tech-secondary{border-radius:9px;width:36%;left:14%;border-width:1px}.home-compact .reborn-entry{min-height:68px}.home-compact .reborn-entry b{font-size:11px}}
+@media(min-width:601px){.home-compact .reborn-entry{min-height:78px}}
