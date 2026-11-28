@@ -30,7 +30,7 @@ check(name+' header brand remains fixed when scrolling',await page.evaluate(()=>
 check(name+' viewport has no horizontal overflow',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
 await page.goto(base+'/#listing/11111111-1111-4111-8111-111111111111');await page.locator('.reborn-connected-detail').waitFor();
 check(name+' connected detail keeps marketplace header',await page.locator('.site>.top .wordmark-ar').isVisible()&&await page.locator('.reborn-detail-copy h2').innerText()==='منتج للمراجعة');
-await page.locator('.reborn-edit summary').click();await page.locator('#reborn-edit-listing [name=title]').fill('منتج معدل');await page.locator('#reborn-edit-listing button').click();await page.waitForFunction(()=>document.querySelector('.reborn-detail-copy h2')?.textContent==='منتج معدل');
+await page.locator('details.reborn-edit:has(#reborn-edit-listing) > summary').click();await page.locator('#reborn-edit-listing [name=title]').fill('منتج معدل');await page.locator('#reborn-edit-listing button').click();await page.waitForFunction(()=>document.querySelector('.reborn-detail-copy h2')?.textContent==='منتج معدل');
 check(name+' owner edit remains in same route',page.url().endsWith('#listing/11111111-1111-4111-8111-111111111111'));
 await page.goto(base+'/#messages');await page.locator('#shared-route-root').waitFor();check(name+' messages single connected surface',await page.locator('#shared-route-root').count()===1&&await page.locator('.messages-layout').count()===0);
 await page.goto(base+'/#favorites');await page.locator('#shared-route-root').waitFor();check(name+' device saved data separated',await page.locator('.reborn-local-saved').count()===1&&await page.locator('#shared-route-root').count()===1);
