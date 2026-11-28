@@ -1658,3 +1658,17 @@ html,body,#app{min-width:0;overflow-x:clip}
 .reborn-service-cover{display:flex;justify-content:space-between;align-items:center;padding:20px 16px;color:#fff;background:radial-gradient(ellipse at 5% 100%,#3a8271,transparent 66%),linear-gradient(130deg,#0d513e,#133b30);font-size:24px;font-weight:800}.reborn-service-cover span{font-size:12px;color:#f7dba2}.reborn-provider-content{padding:16px;overflow-wrap:anywhere}.reborn-provider-content h3{color:var(--reborn-ink);margin:8px 0;font-size:19px}.reborn-provider-content p{color:#435c50;line-height:1.65;margin:6px 0}
 #shared-provider-form input[type=checkbox],.reborn-publish-choice input[type=checkbox]{width:20px;min-width:20px;height:20px;accent-color:var(--reborn-emerald)}
 @media(max-width:480px){.site:not(.onboarding) .interior-hero{padding:14px;gap:10px}.site:not(.onboarding) .interior-hero .interior-icon{width:46px;height:46px}.site:not(.onboarding) .screen-title{padding-block:8px}.reborn-store-hero{border-radius:17px}}
+
+/* R100 container hierarchy: retain rich media, avoid identical full-width text boxes. */
+.home-compact .market-search.reborn-discovery{padding:clamp(8px,1.7vw,16px);background:#fff;border:1px solid var(--reborn-line);border-radius:18px;box-shadow:var(--reborn-shadow);margin-bottom:10px}
+.home-compact .market-categories{min-width:0;background:#fff;border:1px solid var(--reborn-line);border-radius:18px;padding:8px 12px;box-shadow:var(--reborn-shadow)}
+.home-compact .market-feature{min-width:0}
+.home-compact .market-actions{gap:10px}
+.home-compact .market-section{min-width:0;padding:clamp(10px,1.6vw,16px);background:#fff;border:1px solid var(--reborn-line);border-radius:20px;box-shadow:var(--reborn-shadow)}
+.home-compact .market-section .card-grid,.home-compact .market-section .poster-store-grid{min-width:0}
+.home-compact .market-actions .market-action.service>span{background:#ede5f8;color:#6b3ca4}
+.site:not(.onboarding) .bottom .nav.active{color:#075641}
+.site:not(.onboarding) .bottom .nav:focus-visible{outline-offset:-3px}
+@media(min-width:700px) and (max-width:899px){.home-compact .market-categories .reborn-categories{grid-template-columns:repeat(5,minmax(0,1fr))}.home-compact .market-stage{gap:12px}}
+@media(min-width:900px){.home-compact .market-stage{grid-template-columns:minmax(0,1.8fr) minmax(0,1fr);gap:14px;align-items:start}.home-compact .market-feature{grid-column:1/-1}.home-compact .market-categories .reborn-categories{grid-template-columns:repeat(5,minmax(0,1fr))}.home-compact .market-actions{grid-template-columns:1fr;align-self:stretch}.home-compact .market-actions .market-action{min-height:60px}}
+@media(max-width:699px){.home-compact .market-section{padding:9px}.home-compact .market-actions{gap:6px}.home-compact .market-categories{padding:6px 8px}}
