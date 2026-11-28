@@ -22,7 +22,11 @@ check(name+' signed auth alias resolves to account',await page.locator('#account
 await page.goto(base+'/#home');await page.locator('.home-compact').waitFor();
 check(name+' no lab link on home',await page.locator('.home-compact a[href*="cloud-test"]').count()===0);
 check(name+' all nine main sections shown',await page.locator('.reborn-categories [data-category]').count()===9);
+await page.locator('[data-hero-slide="1"]').click();await page.locator('.reborn-market-collage img').first().waitFor({state:'visible'});check(name+' market hero contains three product photographs',await page.locator('.reborn-market-collage img').count()===3&&await page.locator('.reborn-market-collage img').evaluateAll(imgs=>imgs.every(x=>x.getAttribute('alt')&&x.getAttribute('src').startsWith('./assets/'))));
+check(name+' distinct marketplace service and merchant entrances',await page.locator('.market-actions .reborn-entry').count()===3);
+
 await page.locator('[data-hero-slide="3"]').click();check(name+' technology carousel slide and control',await page.locator('[data-hero-panel="3"]').isVisible()&&await page.locator('.hero-next').getAttribute('data-hero-edge')==='0');
+check(name+' technology hero uses laptop and phone',await page.locator('[data-hero-panel="3"] img').count()===2&&await page.locator('[data-hero-panel="3"] img').evaluateAll(imgs=>imgs.some(x=>x.getAttribute('src').endsWith('laptop-photo.jpg'))&&imgs.some(x=>x.getAttribute('src').endsWith('phone-photo.jpg'))));
 await page.locator('.hero-next').click();check(name+' carousel wraps to first slide',await page.locator('[data-hero-panel="0"]').isVisible());
 
 await page.evaluate(()=>scrollTo(0,Math.min(450,document.documentElement.scrollHeight-innerHeight)));await page.waitForTimeout(100);
