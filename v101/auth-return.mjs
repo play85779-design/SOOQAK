@@ -1,4 +1,4 @@
-// Stable, same-origin return address for every email and OAuth confirmation.
+// Stable same-origin return address for the v101 deployment, including nested previews.
 // Supabase must separately allowlist the resulting URL in Auth > URL Configuration.
 // No secret/token, arbitrary redirect target, or third-party host is accepted.
 export function sooqakAuthReturnURL(currentLocation = location.href) {
@@ -8,12 +8,9 @@ export function sooqakAuthReturnURL(currentLocation = location.href) {
   if (current.protocol !== 'https:' && !local) {
     throw new Error('افتح سوقك من رابط HTTPS الرسمي للتجربة قبل طلب رسالة البريد.');
   }
-  // The callback must be site-root relative, even when auth starts on a nested URL.
-  // './index.html' could incorrectly resolve to /nested/index.html and break email links.
-  const target = new URL('/index.html', current);
-  target.search = '';
-  target.hash = '';
-  target.username = '';
-  target.password = '';
+  // v101 may be hosted at /v101/ or as the deployment root. Never send a
+  // nested v101 preview to the legacy application at the repository root.
+  const path = /^\/v101(?:\/|$)/.test(current.pathname) ? '/v101/index.html' : '/index.html';
+  const target = new URL(path, current.origin);
   return target.href;
 }
