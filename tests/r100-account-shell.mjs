@@ -28,6 +28,11 @@ await page.locator('.hero-next').click();check(name+' carousel wraps to first sl
 await page.evaluate(()=>scrollTo(0,Math.min(450,document.documentElement.scrollHeight-innerHeight)));await page.waitForTimeout(100);
 check(name+' header brand remains fixed when scrolling',await page.evaluate(()=>{const b=document.querySelector('.site>.top').getBoundingClientRect();return scrollY>100&&b.top>=-2&&b.top<8&&b.bottom>0}));
 check(name+' viewport has no horizontal overflow',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+check(name+' discovery has separate semantic containers',await page.locator('section.reborn-discovery').count()===1&&await page.locator('section.market-categories').count()===1);
+const nav=page.locator('.site>.bottom');if(await nav.isVisible())check(name+' bottom nav stays within viewport after scroll',await nav.evaluate(e=>{const b=e.getBoundingClientRect();return getComputedStyle(e).position==='fixed'&&b.top>=0&&b.bottom<=innerHeight+1}));
+const oldY=await page.evaluate(()=>scrollY);await page.locator('.header-auth-btn').click();await page.waitForURL('**/#account');await page.goBack();await page.waitForURL('**/#home');await page.waitForFunction(y=>Math.abs(scrollY-y)<25,oldY);
+check(name+' browser back restores market scroll',await page.evaluate(y=>Math.abs(scrollY-y)<25,oldY));
+
 await page.goto(base+'/#listing/11111111-1111-4111-8111-111111111111');await page.locator('.reborn-connected-detail').waitFor();
 check(name+' connected detail keeps marketplace header',await page.locator('.site>.top .wordmark-ar').isVisible()&&await page.locator('.reborn-detail-copy h2').innerText()==='منتج للمراجعة');
 await page.locator('details.reborn-edit:has(#reborn-edit-listing) > summary').click();await page.locator('#reborn-edit-listing [name=title]').fill('منتج معدل');await page.locator('#reborn-edit-listing button').click();await page.waitForFunction(()=>document.querySelector('.reborn-detail-copy h2')?.textContent==='منتج معدل');
